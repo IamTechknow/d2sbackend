@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Diablo II Save File Generator</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -10,22 +10,22 @@
 <body>
     <div class="container">
         <h3>Save file options</h3>
-        <form>
+        <form action="#" th:action="@{/}" th:object="${save}" method="post">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="charName">Character Name</label>
-                    <input type="text" class="form-control" id="charName" aria-describedby="charHelp" placeholder="Up to 15 characters, no numbers">
+                    <input type="text" class="form-control" id="charName" aria-describedby="charHelp" placeholder="Up to 15 characters, no numbers" maxlength="15" th:field="*{name}">
                 </div>
 
                 <div class="form-group col-md-6">
                     <label for="charName">Character Level</label>
-                    <input type="number" class="form-control" id="charLevel" aria-describedby="charHelp" placeholder="From 1 to 99">
+                    <input type="number" class="form-control" id="charLevel" aria-describedby="charHelp" min="1" max="99" th:field="*{level}">
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="charClass">Character Class</label>
-                <select class="form-control" id="charClass">
+                <select class="form-control" id="charClass" th:field="*{classNum}">
                     <option value="0">Amazon</option>
                     <option value="6">Assassin</option>
                     <option value="4">Barbarian</option>
@@ -39,25 +39,25 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="gold">Gold</label>
-                    <input type="number" class="form-control" id="gold" aria-describedby="charHelp" placeholder="Up to 10000 times character level">
+                    <input type="number" class="form-control" id="gold" aria-describedby="charHelp" placeholder="Up to 10000 times character level" min="0" th:field="*{gold}">
                 </div>
 
                 <div class="form-group col-md-6">
                     <label for="stashedGold">Stashed Gold</label>
-                    <input type="number" class="form-control" id="stashedGold" aria-describedby="charHelp" placeholder="Up to 2500000">
+                    <input type="number" class="form-control" id="stashedGold" aria-describedby="charHelp" placeholder="Up to 2500000" min="0" max="2500000" th:field="*{stashGold}">
                 </div>
             </div>
 
             <h4>Options</h4>
             <div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="expansion">
+                    <input class="form-check-input" type="checkbox" id="expansion" th:field="*{expansion}">
                     <label class="form-check-label" for="expansion">
                         Expansion
                     </label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="hardcore">
+                    <input class="form-check-input" type="checkbox" id="hardcore" th:field="*{hardcore}">
                     <label class="form-check-label" for="hardcore">
                         Hardcore
                     </label>
@@ -68,25 +68,25 @@
             <h4>Difficulty</h4>
             <div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="diffRadio" id="normalDifficulty" value="0">
+                    <input class="form-check-input" type="radio" name="diffRadio" id="normalDifficulty" value="0" th:field="*{difficulty}">
                     <label class="form-check-label" for="normalDifficulty">
                         Normal
                     </label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="diffRadio" id="nightmareDifficulty" value="5">
+                    <input class="form-check-input" type="radio" name="diffRadio" id="nightmareDifficulty" value="5" th:field="*{difficulty}">
                     <label class="form-check-label" for="nightmareDifficulty">
                         Nightmare
                     </label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="diffRadio" id="hellDifficulty" value="10">
+                    <input class="form-check-input" type="radio" name="diffRadio" id="hellDifficulty" value="10" th:field="*{difficulty}">
                     <label class="form-check-label" for="hellDifficulty">
                         Hell
                     </label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="diffRadio" id="finishedHell" value="15" checked>
+                    <input class="form-check-input" type="radio" name="diffRadio" id="finishedHell" value="15" checked th:field="*{difficulty}">
                     <label class="form-check-label" for="finishedHell">
                         Completed Hell
                     </label>
