@@ -29,6 +29,10 @@ Developer Stories:
 * [] As a developer, I should be able to unit test the save generation
 * [] As a developer, I should be utilize CI to be able to push changes from Github into a staging or production cloud environment
 
+## Instructions
+To run this web application locally, clone this repo, open Intellij IDEA, and open the repository root directory.
+Go to the Application class and run the main method, now you may load the web app at localhost:8080.
+
 ## Notes
 
 Information about the Diablo II binary save file format may be found [here.](https://github.com/nokka/d2s)
