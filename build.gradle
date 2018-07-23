@@ -38,4 +38,5 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     compile("com.google.code.gson:gson")
     testCompile("junit:junit")
+    compile group: 'org.webjars', name: 'bootstrap', version: '4.1.1'
 }

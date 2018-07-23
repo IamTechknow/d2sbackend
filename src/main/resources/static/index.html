@@ -1,10 +1,96 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="en">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>Diablo II Save File Generator</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="webjars/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="webjars/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="webjars/jquery/3.0.0/jquery.min.js"></script>
 </head>
 <body>
-<p>Get your greeting <a href="/greeting">here</a></p>
+    <div class="container">
+        <h3>Save file options</h3>
+        <form>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="charName">Character Name</label>
+                    <input type="text" class="form-control" id="charName" aria-describedby="charHelp" placeholder="Up to 15 characters, no numbers">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="charName">Character Level</label>
+                    <input type="number" class="form-control" id="charLevel" aria-describedby="charHelp" placeholder="From 1 to 99">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="charClass">Character Class</label>
+                <select class="form-control" id="charClass">
+                    <option value="0">Amazon</option>
+                    <option value="6">Assassin</option>
+                    <option value="4">Barbarian</option>
+                    <option value="5">Druid</option>
+                    <option value="2">Necromancer</option>
+                    <option value="3">Paladin</option>
+                    <option value="1">Sorceress</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="gold">Gold</label>
+                    <input type="number" class="form-control" id="gold" aria-describedby="charHelp" placeholder="Up to 10000 times character level">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="stashedGold">Stashed Gold</label>
+                    <input type="number" class="form-control" id="stashedGold" aria-describedby="charHelp" placeholder="Up to 2500000">
+                </div>
+            </div>
+
+            <h4>Options</h4>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="expansion">
+                <label class="form-check-label" for="expansion">
+                    Expansion
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="hardcore">
+                <label class="form-check-label" for="hardcore">
+                    Hardcore
+                </label>
+            </div>
+
+            <h4>Difficulty</h4>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="diffRadio" id="normalDifficulty" value="0">
+                <label class="form-check-label" for="normalDifficulty">
+                    Normal
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="diffRadio" id="nightmareDifficulty" value="5">
+                <label class="form-check-label" for="nightmareDifficulty">
+                    Nightmare
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="diffRadio" id="hellDifficulty" value="10">
+                <label class="form-check-label" for="hellDifficulty">
+                    Hell
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="diffRadio" id="finishedHell" value="15" checked>
+                <label class="form-check-label" for="finishedHell">
+                    Completed Hell
+                </label>
+            </div>
+            <br />
+
+            <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
 </body>
 </html>
