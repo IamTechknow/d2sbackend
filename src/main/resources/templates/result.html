@@ -1,15 +1,19 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Handling Form Submission</title>
+    <title>Diablo II save result</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link href="webjars/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <h1>Result</h1>
-        <p th:text="'name: ' + ${save.name}" />
-        <p th:text="'level: ' + ${save.level}" />
+        <p th:text="'Name: ' + ${save.name}" />
+        <p th:text="'Class: ' + ${save.getClassName()}" />
+        <p th:text="'Level: ' + ${save.level}" />
+        <p th:text="'Gold: ' + ${save.gold}" />
+        <p th:text="${save.expansion}? 'Expansion character' : 'Classic character'" />
+        <p th:text="${save.hardcore}? 'Hardcore character' : 'Softcore character'" />
         <a href="/">Create another save</a>
     </div>
 </body>

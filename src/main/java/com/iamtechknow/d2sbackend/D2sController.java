@@ -25,7 +25,7 @@ public class D2sController {
     @PostMapping("/")
     public String d2sSubmit(@ModelAttribute D2Save save, Model model) {
         model.addAttribute("save", save);
-        return "result";
+        return save.checkValid() ? "result" : "index";
     }
 
     /**

@@ -4,7 +4,8 @@ package com.iamtechknow.d2sbackend;
  * POJO that stores all information to serialize a d2s file.
  */
 public class D2Save {
-    private static final int STARTING_LEVEL = 1;
+    private static final int STARTING_LEVEL = 1, MAX_CLASS_NUM = 6, MAX_DIFFICULTY = 15,
+                            GOLD_PER_LEVEL = 10000, MIN_LEN = 2, MAX_LENGTH = 15;
 
     private String name;
     private int level = STARTING_LEVEL;
@@ -14,6 +15,7 @@ public class D2Save {
     private boolean expansion;
     private boolean hardcore;
     private int difficulty;
+    private boolean invalid;
 
     public String getName() {
         return name;
@@ -77,5 +79,45 @@ public class D2Save {
 
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public boolean isInvalid() {
+        return invalid;
+    }
+
+    /**
+     * Various checks to determine whether a save file could be made from this object, and caps gold amount.
+     * @return whether the form data is valid
+     */
+    public boolean checkValid() {
+        gold = Math.min(gold, level * GOLD_PER_LEVEL);
+        invalid = !(checkName() && classNum <= MAX_CLASS_NUM && difficulty <= MAX_DIFFICULTY);
+        return !invalid;
+    }
+
+    public String getClassName() {
+        String[] classes = {"Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin"};
+        return classes[classNum];
+    }
+
+    /**
+     * Checks that the name is valid, that is, it is between 2-15 characters, it starts with a letter,
+     * and contains no more than one occurrence of a dash or underscore.
+     * @return whether the name is valid or not
+     */
+    private boolean checkName() {
+        if(name == null || name.length() < MIN_LEN || name.length() > MAX_LENGTH || !Character.isAlphabetic(name.charAt(0)))
+            return false;
+
+        boolean found = false;
+        for(char c : name.toCharArray())
+            if(c == '-' || c == '_') {
+                if(found)
+                    return false;
+                else
+                    found = true;
+            }
+
+        return true;
     }
 }

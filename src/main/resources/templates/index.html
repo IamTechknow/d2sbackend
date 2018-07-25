@@ -11,6 +11,10 @@
     <div class="container">
         <h3>Save file options</h3>
         <form action="#" th:action="@{/}" th:object="${save}" method="post">
+            <p class="alert alert-danger" th:if="*{invalid}">
+                Invalid save data, please fix and then try again.
+            </p>
+
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="charName">Character Name</label>
