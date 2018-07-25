@@ -9,6 +9,7 @@ deploy:
   region: "us-east-2"
   app: "d2sbackend"
   env: "D2sbackend-env"
+  zip_file: "build\libs\d2s-backend-0.1.0.jar"
   bucket_name: "elasticbeanstalk-us-east-2-094365175063"
   on:
     branch: master
