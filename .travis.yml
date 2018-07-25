@@ -1,2 +1,14 @@
 language: java
 jdk: oraclejdk8
+
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: $ACCESSKEYID
+  secret_access_key:
+    secure: $SECRETACCESSKEY
+  region: "us-east-2"
+  app: "d2sbackend"
+  env: "D2sbackend-env"
+  bucket_name: "elasticbeanstalk-us-east-2-094365175063"
+  on:
+    branch: master
