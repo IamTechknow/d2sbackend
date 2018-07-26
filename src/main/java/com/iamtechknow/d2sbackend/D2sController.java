@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
 /**
@@ -53,11 +54,14 @@ public class D2sController {
     @GetMapping("/download/{file_name}")
     public ResponseEntity<byte[]> getFile(@PathVariable("file_name") String fileName) {
         if(fileExists(fileName)) {
+            D2sWriter writer = new D2sWriter(new ByteArrayOutputStream());
+            writer.write(cache.get(fileName));
+
             HttpHeaders header = new HttpHeaders();
             header.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            header.setContentLength(1);
+            header.setContentLength(writer.size());
 
-            return new ResponseEntity<>(new byte[]{5}, header, HttpStatus.OK);
+            return new ResponseEntity<>(writer.toByteArray(), header, HttpStatus.OK);
         } else
             throw new ResourceNotFoundException();
     }
