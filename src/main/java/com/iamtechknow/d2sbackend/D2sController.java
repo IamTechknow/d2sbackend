@@ -1,5 +1,7 @@
 package com.iamtechknow.d2sbackend;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,11 +13,22 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.Map;
+
 /**
- * Main controller that maps site URLs to specific views
+ * Main controller that maps site URLs to specific views.
+ * The constructor is automatically called to allow dependency injection.
  */
 @Controller
 public class D2sController {
+    private Map<String, D2Save> cache;
+    private int count;
+
+    @Autowired
+    public D2sController(@Qualifier("map") Map<String, D2Save> map) {
+        cache = map;
+    }
+
     @GetMapping("/")
     public String d2sForm(Model model) {
         model.addAttribute("save", new D2Save());
@@ -25,11 +38,17 @@ public class D2sController {
     @PostMapping("/")
     public String d2sSubmit(@ModelAttribute D2Save save, Model model) {
         model.addAttribute("save", save);
-        return save.checkValid() ? "result" : "index";
+        if(save.checkValid()) {
+            cache.put(Integer.toString(++count), save);
+            model.addAttribute("num", count);
+            return "result";
+        } else
+            return "index";
     }
 
     /**
-     * Map download URLs to a corresponding file if it exists
+     * Map download URLs to a corresponding file if it exists, and generate the save file to be downloaded.
+     * Otherwise send a 404 error.
      */
     @GetMapping("/download/{file_name}")
     public ResponseEntity<byte[]> getFile(@PathVariable("file_name") String fileName) {
@@ -40,10 +59,10 @@ public class D2sController {
 
             return new ResponseEntity<>(new byte[]{5}, header, HttpStatus.OK);
         } else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            throw new ResourceNotFoundException();
     }
 
     private boolean fileExists(String fileName) {
-        return false;
+        return cache.containsKey(fileName);
     }
 }
