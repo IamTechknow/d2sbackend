@@ -23,7 +23,6 @@ import java.util.Map;
 @Controller
 public class D2sController {
     private Map<String, D2Save> cache;
-    private int count;
 
     @Autowired
     public D2sController(@Qualifier("map") Map<String, D2Save> map) {
@@ -40,8 +39,8 @@ public class D2sController {
     public String d2sSubmit(@ModelAttribute D2Save save, Model model) {
         model.addAttribute("save", save);
         if(save.checkValid()) {
-            cache.put(Integer.toString(++count), save);
-            model.addAttribute("num", count);
+            cache.put(save.getName(), save);
+            model.addAttribute("name", save.getName());
             return "result";
         } else
             return "index";
@@ -51,7 +50,7 @@ public class D2sController {
      * Map download URLs to a corresponding file if it exists, and generate the save file to be downloaded.
      * Otherwise send a 404 error.
      */
-    @GetMapping("/download/{file_name}")
+    @GetMapping("/download/{file_name}.d2s")
     public ResponseEntity<byte[]> getFile(@PathVariable("file_name") String fileName) {
         if(fileExists(fileName)) {
             D2sWriter writer = new D2sWriter(new ByteArrayOutputStream());
