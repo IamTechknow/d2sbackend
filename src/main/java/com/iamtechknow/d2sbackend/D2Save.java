@@ -91,7 +91,7 @@ public class D2Save {
      */
     public boolean checkValid() {
         gold = Math.min(gold, level * GOLD_PER_LEVEL);
-        invalid = !(checkName() && classNum <= MAX_CLASS_NUM && difficulty <= MAX_DIFFICULTY);
+        invalid = !(checkName() && checkClass() && classNum <= MAX_CLASS_NUM && difficulty <= MAX_DIFFICULTY);
         return !invalid;
     }
 
@@ -119,5 +119,13 @@ public class D2Save {
             }
 
         return true;
+    }
+
+    /**
+     * Checks that the class cannot be Assassin/Druid in non-expansion save
+     * @return whether the class configuration is valid
+     */
+    private boolean checkClass() {
+        return !(classNum >= 5 && !expansion);
     }
 }
