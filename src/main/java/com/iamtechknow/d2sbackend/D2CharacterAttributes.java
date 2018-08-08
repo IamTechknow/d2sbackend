@@ -11,6 +11,11 @@ public class D2CharacterAttributes {
     private final int dex;
     private final int vit;
     private final int nrg;
+    private final int skillPoints;
+    private final int attrPoints;
+    private final int gold;
+    private final int stashGold;
+    private final int level;
     private final double life;
     private final double stamina;
     private final double mana;
@@ -21,6 +26,11 @@ public class D2CharacterAttributes {
     public D2CharacterAttributes(D2Save save) {
         int[] vals = getDefaultAttributes(save);
         str = vals[0]; dex = vals[1]; vit = vals[2]; nrg = vals[3];
+        attrPoints = 5 * (save.getLevel() - 1);
+        skillPoints = (save.getLevel() - 1);
+        gold = save.getGold();
+        stashGold = save.getStashGold();
+        level = save.getLevel();
 
         life = calcLife(save, vals[4]);
         stamina = calcStamina(save, vals[5]);
@@ -41,6 +51,26 @@ public class D2CharacterAttributes {
 
     public int getNrg() {
         return nrg;
+    }
+
+    public int getSkillPoints() {
+        return skillPoints;
+    }
+
+    public int getAttrPoints() {
+        return attrPoints;
+    }
+
+    public int getGold() {
+        return gold;
+    }
+
+    public int getStashGold() {
+        return stashGold;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     /**

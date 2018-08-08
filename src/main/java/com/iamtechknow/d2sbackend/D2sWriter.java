@@ -13,6 +13,10 @@ public class D2sWriter {
 
     private ByteArrayOutputStream stream;
 
+    // Bit writing state for attributes
+    private long bitCount;
+    private long currentByte;
+
     public D2sWriter(ByteArrayOutputStream stream) {
         this.stream = stream;
     }
@@ -23,8 +27,8 @@ public class D2sWriter {
     public void write(D2Save save) {
         writeHeader(save);
         writeAttributes(save);
-        writeSkills(save);
-        writeItems(save);
+        writeSkills();
+        writeItems();
         writeCorpse();
         writeHireling();
         writeGolem();
@@ -39,7 +43,20 @@ public class D2sWriter {
 	 */
     public byte[] toByteArray() {
         byte[] result = stream.toByteArray();
-        int len = 0, checksum = 0;
+        int len = Integer.reverseBytes(result.length), checksum = 0, offset = 8;
+
+        // Write the length
+        for(int i = 0; i < 4; i++)
+            result[offset + i] = (byte) (len >> (8 * (3 - i)) );
+
+        // Compute the checksum and write it
+        for(byte b : result)
+            checksum = (checksum << 1) + b;
+
+        offset = 12;
+        checksum = Integer.reverseBytes(checksum);
+        for(int i = 0; i < 4; i++)
+            result[offset + i] = (byte) (checksum >> (8 * (3 - i)) );
 
         return result;
     }
@@ -116,7 +133,6 @@ public class D2sWriter {
 
         writeQuests();
 
-        // Waypoints
         writeWaypoints();
 
         // Unknown byte
@@ -132,7 +148,6 @@ public class D2sWriter {
      * Write information for quests. For now, no quests have been finished nor started.
      */
     private void writeQuests() {
-        // These bytes are always the same
         writeArray(QUEST_HEADER);
 
         // Quest information for Normal, Nightmare, Hell modes.
@@ -142,7 +157,7 @@ public class D2sWriter {
     private void writeWaypoints() {
         writeArray(WAYPOINT_HEADER);
 
-        // Default data, act 1 town. Note the data is LSB first.
+        // Default data: act 1 town. Note the data is LSB first.
         byte[][] data = new byte[][]{{0x1, 0, 0, 0, 0}, {0x1, 0, 0, 0, 0}, {0x1, 0, 0, 0, 0}};
 
         // Data for each difficulty - 2 unknown bytes, 5 byte bit vector for all WPs, then padding
@@ -161,49 +176,59 @@ public class D2sWriter {
         stream.write(0x67); // "gf"
         stream.write(0x66);
 
-        // statistic availability bit vector
-        // start with values that will always be there
-        short vec = 0b0001111111001111;
-        int stats = 5 * (save.getLevel() - 1);
-        int skillPoints = (save.getLevel() - 1);
-
-        // Determine if character should have stat, skill, experience points, gold, and/or stash gold
-        if(stats != 0)
-            vec |= 1 << 4;
-        if(skillPoints != 0)
-            vec |= 1 << 5;
-        if(save.getLevel() != 0)
-            vec |= 1 << 13;
-        if(save.getGold() != 0)
-            vec |= 1 << 14;
-        if(save.getStashGold() != 0)
-            vec |= 1 << 15;
-
-        stream.write(vec);
-        stream.write(vec >> 8);
-
         D2CharacterAttributes attrs = new D2CharacterAttributes(save);
+        int[] lengths_map = new int[]{10, 10, 10, 10, 10, 8, 21, 21, 21, 21, 21, 21, 7, 32, 25, 25};
 
+        byte[] ids = getIds(attrs);
+        int[] values = getValues(attrs, ids.length);
+
+        // Put ID into integer, reverse the last 9 bits, write the 9 bits in reverse order.
+        // Repeat for the value itself
+        for(int i = 0; i < ids.length; i++) {
+            long id = ids[i], val = values[i];
+            id = reverseBits(id, 9);
+            writeBits(id, 9);
+
+            val = reverseBits(val, lengths_map[ids[i]]);
+            writeBits(val, lengths_map[ids[i]]);
+        }
+
+        stream.write(0xFF); // 0x01FF, end of attributes
+        stream.write(0x01);
     }
 
-    private void writeSkills(D2Save save) {
-
+    // No skill points allocated
+    private void writeSkills() {
+        stream.write(0x69); // "if"
+        stream.write(0x66);
+        skip(30);
     }
 
-    private void writeItems(D2Save save) {
-
+	// start with JM header then insert 0 items
+    private void writeItems() {
+		stream.write(0x4A); 
+        stream.write(0x4D);
+        skip(2);
     }
 
+	// save as first item header, number indicate how many items in corpse which shall be 0
     private void writeCorpse() {
-
+		stream.write(0x4A); 
+        stream.write(0x4D);
+		skip(2);
     }
 
+	// just write "jf", no items to store because no hireling
     private void writeHireling() {
-
+		stream.write(0x6A); 
+        stream.write(0x66);
     }
 
+	// just write "kf", and 0 indicating no golem
     private void writeGolem() {
-
+		stream.write(0x6B); 
+        stream.write(0x66);
+		stream.write(0);
     }
 
     /**
@@ -230,6 +255,9 @@ public class D2sWriter {
 			stream.write(0);
 	}
 
+    /**
+     * Get the correct bit index based on difficulty and set the 8th bit
+     */
 	private byte[] getDifficulty(D2Save save) {
 	    byte[] arr = new byte[3];
 	    int diff = save.getDifficulty(), idx = 2;
@@ -241,5 +269,100 @@ public class D2sWriter {
 	    arr[idx] = -128; // Active difficulty, act 1
 
         return arr;
+    }
+
+    private byte[] getIds(D2CharacterAttributes attrs) {
+	    ByteArrayOutputStream arr = new ByteArrayOutputStream();
+	    for(int i : new int[] {0, 1, 2, 3})
+	        arr.write(i);
+
+	    if(attrs.getAttrPoints() != 0)
+	        arr.write(4);
+	    if(attrs.getSkillPoints() != 0)
+	        arr.write(5);
+
+        for(int i : new int[] {6, 7, 8, 9, 10, 11, 12})
+            arr.write(i);
+
+        if(attrs.getGold() != 0)
+            arr.write(14);
+        if(attrs.getStashGold() != 0)
+            arr.write(15);
+
+        return arr.toByteArray();
+    }
+
+    private int[] getValues(D2CharacterAttributes attrs, int size) {
+	    if(size > 16)
+	        throw new IllegalArgumentException("Invalid attribute size, max is 16");
+
+	    int[] arr = new int[size];
+	    arr[0] = attrs.getStr(); arr[1] = attrs.getNrg(); arr[2] = attrs.getDex(); arr[3] = attrs.getVit();
+
+	    // At this point data may be missing so manage index.
+	    int idx = 4;
+	    if(attrs.getAttrPoints() != 0)
+	        arr[idx++] = attrs.getAttrPoints();
+	    if(attrs.getSkillPoints() != 0)
+	        arr[idx++] = attrs.getSkillPoints();
+
+	    arr[idx++] = attrs.getLife(); arr[idx++] = attrs.getLife();
+        arr[idx++] = attrs.getMana(); arr[idx++] = attrs.getMana();
+        arr[idx++] = attrs.getStamina(); arr[idx++] = attrs.getStamina();
+        arr[idx++] = attrs.getLevel();
+
+        if(attrs.getGold() != 0)
+            arr[idx++] = attrs.getGold();
+        if(attrs.getStashGold() != 0)
+            arr[idx] = attrs.getStashGold();
+
+	    return arr;
+    }
+
+    // Takes an int in the range of [0, 255]
+    private int reverseByte(int b) {
+        int r = 0;
+        for (int i = 0; i < 8; i++) {
+            r <<= 1;
+            r |= b & 1;
+            b >>= 1;
+        }
+        return r;
+    }
+
+    private long reverseBits(long vec, int num) {
+	    if(num > 64)
+	        throw new IllegalArgumentException("Cannot reverse more than 64 bits");
+
+        long r = 0;
+        for (int i = 0; i < num; i++) {
+            r <<= 1;
+            r |= vec & 1;
+            vec >>= 1;
+        }
+        return r;
+    }
+
+    // TODO: Ensure that the casting does not truncate data. Unsigned bytes should be able to be written
+    private void writeBits(long vec, int num) {
+        if(num > 64)
+            throw new IllegalArgumentException("Cannot write more than 64 bits");
+
+        while (num > 0) {
+            long cbit = Math.min (num, (8 - bitCount));
+
+            currentByte = (currentByte << cbit) | ((vec >>> (num - cbit)) & ((1 << cbit) - 1));
+
+            bitCount += cbit;
+            num -= cbit;
+
+            // Write the byte in reverse
+            if(bitCount == 8) {
+                int data = (int) currentByte;
+                stream.write(reverseByte(data));
+                currentByte = 0;
+                bitCount = 0;
+            }
+        }
     }
 }
