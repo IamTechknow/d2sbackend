@@ -139,7 +139,7 @@ public class D2sWriter {
 
         writeQuests();
 
-        writeWaypoints();
+        writeWaypoints(save);
 
         // Unknown byte
         stream.write(1);
@@ -152,6 +152,7 @@ public class D2sWriter {
 
     /**
      * Write information for quests. For now, no quests have been finished nor started.
+     * TODO Quest info based on completed difficulty
      */
     private void writeQuests() {
         writeArray(QUEST_HEADER);
@@ -160,17 +161,20 @@ public class D2sWriter {
         skip(96*3);
     }
 
-    private void writeWaypoints() {
+    /**
+     * Writes the waypoint data for the save. If the character has finished a difficulty,
+     * all town waypoints are unlocked for that difficulty.
+     */
+    private void writeWaypoints(D2Save save) {
         writeArray(WAYPOINT_HEADER);
-
-        // Default data: act 1 town. Note the data is LSB first.
-        byte[][] data = new byte[][]{{0x1, 0, 0, 0, 0}, {0x1, 0, 0, 0, 0}, {0x1, 0, 0, 0, 0}};
 
         // Data for each difficulty - 2 unknown bytes, 5 byte bit vector for all WPs, then padding
         for(int i = 0; i < 3; i++) {
+            byte[] currData = getWaypointForDiffAndAct(i * 5, save.getDifficulty(), save.getStartingAct());
+
             stream.write(2);
             stream.write(1);
-            writeArray(data[i]);
+            writeArray(currData);
             skip(17);
         }
     }
@@ -265,7 +269,7 @@ public class D2sWriter {
 	}
 
     /**
-     * Get the correct bit index based on difficulty and set the 8th bit
+     * Get the correct bit index based on difficulty, set the 8th bit and OR the starting act
      */
 	private byte[] getDifficulty(D2Save save) {
 	    byte[] arr = new byte[3];
@@ -275,9 +279,35 @@ public class D2sWriter {
 	        idx = 0;
 	    else if(diff >= 5 && diff < 10)
 	        idx = 1;
-	    arr[idx] = -128; // Active difficulty, act 1
+	    arr[idx] = (byte) (-128 | save.getStartingAct()); // 0x80 means active difficulty
 
         return arr;
+    }
+
+    /**
+     * Forms the byte array representing unlocked waypoints based on the completed difficulty and starting act.
+     * The bit fields are in LSB, so the 0th bit is Act 1 Town, and the 9th bit is Act 2 Town.
+     * @return Waypoint data for the specified difficulty
+     */
+    private byte[] getWaypointForDiffAndAct(int currDiff, int saveDiff, int startingAct) {
+        byte[] currData = new byte[]{0x1, 0, 0, 0, 0}, finishedData = new byte[]{0x01, 0x02, 0x04, 0x48, 0x00};
+
+        if(currDiff < saveDiff) // Finished difficulty
+            return finishedData;
+
+        if(currDiff <= saveDiff) // Current difficulty, if not there yet, only Act 1 town waypoint active
+            switch(startingAct) {
+                case 4:
+                    currData[3] |= 0x08;
+                case 3:
+                    currData[3] |= 0x40;
+                case 2:
+                    currData[2] |= 0x04;
+                case 1:
+                    currData[1] |= 0x02;
+            }
+
+        return currData;
     }
 
     private byte[] getIds(D2CharacterAttributes attrs) {

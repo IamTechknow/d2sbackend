@@ -14,7 +14,7 @@ User Stories:
   * [ ] Character Skills
   * [X] Game Difficulty
   * [X] Game Mode (Expansion / Hardcore)
-  * [ ] Current Act
+  * [X] Current Act
   * [X] Gold
   * [ ] (Optional) Patch Version
 * [X] As a user, I can start the process of creating the save file and either get a download link or an error message

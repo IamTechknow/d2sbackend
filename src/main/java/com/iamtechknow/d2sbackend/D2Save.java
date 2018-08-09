@@ -12,12 +12,13 @@ public class D2Save {
     private int classNum;
     private int gold;
     private int stashGold;
+    private int startingAct;
     private boolean expansion;
     private boolean hardcore;
     private int difficulty;
 
     // Invalid booleans for error messages
-    private boolean invalid, invalidForClassic, invalidName;
+    private boolean invalid, invalidForClassic, invalidName, invalidAct;
 
     public String getName() {
         return name;
@@ -83,6 +84,14 @@ public class D2Save {
         this.difficulty = difficulty;
     }
 
+    public int getStartingAct() {
+        return startingAct;
+    }
+
+    public void setStartingAct(int startingAct) {
+        this.startingAct = startingAct;
+    }
+
     public boolean isInvalid() {
         return invalid;
     }
@@ -95,6 +104,10 @@ public class D2Save {
         return invalidName;
     }
 
+    public boolean isInvalidAct() {
+        return invalidAct;
+    }
+
     /**
      * Various checks to determine whether a save file could be made from this object, and caps gold amount.
      * @return whether the form data is valid
@@ -103,7 +116,8 @@ public class D2Save {
         gold = Math.min(gold, level * GOLD_PER_LEVEL);
         invalidName = !checkName();
         invalidForClassic = !checkClass();
-        invalid = invalidName || invalidForClassic || classNum > MAX_CLASS_NUM || difficulty > MAX_DIFFICULTY;
+        invalidAct = !checkAct();
+        invalid = invalidName || invalidForClassic || invalidAct || classNum > MAX_CLASS_NUM || difficulty > MAX_DIFFICULTY;
         return !invalid;
     }
 
@@ -140,5 +154,13 @@ public class D2Save {
      */
     private boolean checkClass() {
         return !(classNum >= 5 && !expansion);
+    }
+
+    /**
+     * Checks that the starting act cannot be act 5 in non-expansion save
+     * @return whether the starting act is valid
+     */
+    private boolean checkAct() {
+        return !(startingAct > 3 && !expansion);
     }
 }
