@@ -16,6 +16,7 @@ public class D2CharacterAttributes {
     private final int gold;
     private final int stashGold;
     private final int level;
+    private final long experience;
     private final double life;
     private final double stamina;
     private final double mana;
@@ -31,6 +32,7 @@ public class D2CharacterAttributes {
         gold = save.getGold();
         stashGold = save.getStashGold();
         level = save.getLevel();
+        experience = getExperience(level);
 
         life = calcLife(save, vals[4]);
         stamina = calcStamina(save, vals[5]);
@@ -71,6 +73,10 @@ public class D2CharacterAttributes {
 
     public int getLevel() {
         return level;
+    }
+
+    public long getExperience() {
+        return experience;
     }
 
     /**
@@ -169,5 +175,23 @@ public class D2CharacterAttributes {
             default: // +2 mana for Sorc, Necro, Druid
                 return mana + 2 * (save.getLevel() - 1);
         }
+    }
+
+    private long getExperience(int level) {
+        if(level < 1 || level > 99)
+            throw new IllegalArgumentException("Level is not between 1 and 99");
+
+        long[] lut = new long[] {0, 0, 500, 1500, 3750, 7875, 14175, 22680, 32886, 44396, 57715,
+                72144, 90180, 112725, 140906, 176132, 220165, 275207, 344008, 430010, 537513,
+                671891, 839864, 1049830, 1312287, 1640359, 2050449, 2563061, 3203826, 3902260, 4663553,
+                5493363, 6397855, 7383752, 8458379, 9629723, 10906488, 12298162, 13815086, 15468534, 17270791,
+                19235252, 21376515, 23710491, 26254525, 29027522, 32050088, 35344686, 38935798, 42850109, 47116709,
+                51767302, 56836449, 62361819, 68384473, 74949165, 82104680, 89904191, 98405658, 107672256, 117772849,
+                128782495, 140783010, 153863570, 168121381, 183662396, 200602101, 219066380, 239192444, 261129853, 285041630,
+                311105466, 339515048, 370481492, 404234916, 441026148, 481128591, 524840254, 572485967, 624419793, 681027665,
+                742730244, 809986056, 883294891, 963201521, 1050299747, 1145236814, 1248718217, 1361512946, 1484459201, 1618470619,
+                1764543065, 1923762030, 2097310703, 2286478756L, 2492671933L, 2717422497L, 2962400612L, 3229426756L, 3520485254L
+        };
+        return lut[level];
     }
 }

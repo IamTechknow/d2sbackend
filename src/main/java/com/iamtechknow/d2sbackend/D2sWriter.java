@@ -180,7 +180,7 @@ public class D2sWriter {
         int[] lengths_map = new int[]{10, 10, 10, 10, 10, 8, 21, 21, 21, 21, 21, 21, 7, 32, 25, 25};
 
         byte[] ids = getIds(attrs);
-        int[] values = getValues(attrs, ids.length);
+        long[] values = getValues(attrs, ids.length);
 
         // Put ID into integer, reverse the last 9 bits, write the 9 bits in reverse order.
         // Repeat for the value itself
@@ -193,8 +193,11 @@ public class D2sWriter {
             writeBits(val, lengths_map[ids[i]]);
         }
 
-        stream.write(0xFF); // 0x01FF, end of attributes
-        stream.write(0x01);
+        // Write 0x01FF id, end of attributes
+        writeBits(reverseBits(0x01FF, 9), 9);
+
+        // HACK: Not all bits are written for 0x01FF, write the rest manually (already reversed)
+        stream.write((int) currentByte);
     }
 
     // No skill points allocated
@@ -284,6 +287,8 @@ public class D2sWriter {
         for(int i : new int[] {6, 7, 8, 9, 10, 11, 12})
             arr.write(i);
 
+        if(attrs.getLevel() != 1)
+            arr.write(13);
         if(attrs.getGold() != 0)
             arr.write(14);
         if(attrs.getStashGold() != 0)
@@ -292,11 +297,11 @@ public class D2sWriter {
         return arr.toByteArray();
     }
 
-    private int[] getValues(D2CharacterAttributes attrs, int size) {
+    private long[] getValues(D2CharacterAttributes attrs, int size) {
 	    if(size > 16)
 	        throw new IllegalArgumentException("Invalid attribute size, max is 16");
 
-	    int[] arr = new int[size];
+	    long[] arr = new long[size];
 	    arr[0] = attrs.getStr(); arr[1] = attrs.getNrg(); arr[2] = attrs.getDex(); arr[3] = attrs.getVit();
 
 	    // At this point data may be missing so manage index.
@@ -311,6 +316,8 @@ public class D2sWriter {
         arr[idx++] = attrs.getStamina(); arr[idx++] = attrs.getStamina();
         arr[idx++] = attrs.getLevel();
 
+        if(attrs.getLevel() != 1)
+            arr[idx++] = attrs.getExperience();
         if(attrs.getGold() != 0)
             arr[idx++] = attrs.getGold();
         if(attrs.getStashGold() != 0)

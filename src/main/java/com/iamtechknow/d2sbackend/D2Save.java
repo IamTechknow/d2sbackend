@@ -95,6 +95,7 @@ public class D2Save {
         return !invalid;
     }
 
+    // Called in result.html via Thymeleaf
     public String getClassName() {
         String[] classes = {"Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin"};
         return classes[classNum];
