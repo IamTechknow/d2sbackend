@@ -7,7 +7,7 @@ import java.time.Instant;
  * Primary class to create a byte chunk representing a Diablo 2 Save
  */
 public class D2sWriter {
-    private static final int MAGIC_NUMBER = Integer.reverseBytes(0xaa55aa55), VERSION = Integer.reverseBytes(0x0060);
+    private static final int MAGIC_NUMBER = 0xaa55aa55, VERSION = 0x0060;
     private static final byte[] QUEST_HEADER = new byte[]{0x57, 0x6F, 0x6F, 0x21, 0x6, 0, 0, 0, 0x2A, 0x1},
                                 WAYPOINT_HEADER = new byte[]{0x57, 0x53, 0x1, 0, 0, 0, 0x50, 0};
 
@@ -43,20 +43,20 @@ public class D2sWriter {
 	 */
     public byte[] toByteArray() {
         byte[] result = stream.toByteArray();
-        int len = Integer.reverseBytes(result.length), checksum = 0, offset = 8;
+        int len = result.length, checksum = 0, offset = 8;
 
         // Write the length
         for(int i = 0; i < 4; i++)
-            result[offset + i] = (byte) (len >> (8 * (3 - i)) );
+            result[offset + i] = (byte) (len >> (8 * i) );
 
-        // Compute the checksum and write it
+        // Compute the checksum and write it. The bytes need to be unsigned
+        // Info on checksum is at https://evilertoaster.wordpress.com/2008/05/19/diablo-2-111-save-file/#comment-179
         for(byte b : result)
-            checksum = (checksum << 1) + b;
+            checksum = (checksum << 1) + Byte.toUnsignedInt(b) + ( (checksum & 0x80000000) != 0 ? 1 : 0);
 
         offset = 12;
-        checksum = Integer.reverseBytes(checksum);
         for(int i = 0; i < 4; i++)
-            result[offset + i] = (byte) (checksum >> (8 * (3 - i)) );
+            result[offset + i] = (byte) (checksum >> (8 * i) );
 
         return result;
     }
@@ -102,14 +102,14 @@ public class D2sWriter {
 
         // Unknown bytes, timestamp
         writeInt(0);
-        writeInt(Integer.reverseBytes((int) Instant.now().getEpochSecond()));
+        writeInt((int) Instant.now().getEpochSecond());
 
         // Unknown bytes
         writeInt(0xFFFFFFFF);
 
         // Hotkeyed skills for 16 keys and 4 mouse keys - 0xFFFF0000 means no skill
         for(int i = 0; i < 16; i++)
-            writeInt(0xFFFF0000);
+            writeInt(0x0000FFFF);
         skip(16);
 
         // Character appearance - for now, just set it so nothing is equipped
@@ -232,7 +232,7 @@ public class D2sWriter {
     }
 
     /**
-     * Helper method to write four bytes to the stream
+     * Helper method to write four bytes to the stream, in little endian order.
      * @param i the integer to write
      */
 	private void writeInt(int i) {
@@ -343,7 +343,6 @@ public class D2sWriter {
         return r;
     }
 
-    // TODO: Ensure that the casting does not truncate data. Unsigned bytes should be able to be written
     private void writeBits(long vec, int num) {
         if(num > 64)
             throw new IllegalArgumentException("Cannot write more than 64 bits");
