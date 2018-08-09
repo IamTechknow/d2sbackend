@@ -25,13 +25,19 @@ public class D2sWriter {
 	 * Write all the data needed for the save to be valid.
 	 */
     public void write(D2Save save) {
+        if(save == null)
+            throw new NullPointerException("Save cannot be null. Check that it is parsed correctly?");
+
         writeHeader(save);
         writeAttributes(save);
         writeSkills();
         writeItems();
         writeCorpse();
-        writeHireling();
-        writeGolem();
+
+        if(save.isExpansion()) {
+            writeHireling();
+            writeGolem();
+        }
     }
 
     public int size() {
