@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 
 /**
- * Primary class to create a byte chunk representing a Diablo 2 Save
+ * Primary class to create a byte chunk representing a Diablo 2 1.13c Save
  */
 public class D2sWriter {
     private static final int MAGIC_NUMBER = 0xaa55aa55, VERSION = 0x0060;
@@ -202,7 +202,7 @@ public class D2sWriter {
         // Write 0x01FF id, end of attributes
         writeBits(reverseBits(0x01FF, 9), 9);
 
-        // HACK: Not all bits are written for 0x01FF, write the rest manually (already reversed)
+        // Flush the rest of the bits, padded with 0 (already reversed)
         stream.write((int) currentByte);
     }
 

@@ -11,8 +11,12 @@
     <div class="container">
         <h3>Save file options</h3>
         <form action="#" th:action="@{/}" th:object="${save}" method="post">
-            <p class="alert alert-danger" th:if="*{invalid}">
-                Invalid save data, please fix and then try again.
+            <p class="alert alert-danger" th:if="*{invalidName}">
+                Character name is invalid. It must be 2 to 15 characters long, must begin with a letter, and have up to either one dash or underscore.
+            </p>
+
+            <p class="alert alert-danger" th:if="*{invalidForClassic}">
+                Invalid character class. The character may not be a Druid or Assassin in Diablo II classic.
             </p>
 
             <div class="form-row">

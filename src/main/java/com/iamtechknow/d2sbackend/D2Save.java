@@ -15,7 +15,9 @@ public class D2Save {
     private boolean expansion;
     private boolean hardcore;
     private int difficulty;
-    private boolean invalid;
+
+    // Invalid booleans for error messages
+    private boolean invalid, invalidForClassic, invalidName;
 
     public String getName() {
         return name;
@@ -85,13 +87,23 @@ public class D2Save {
         return invalid;
     }
 
+    public boolean isInvalidForClassic() {
+        return invalidForClassic;
+    }
+
+    public boolean isInvalidName() {
+        return invalidName;
+    }
+
     /**
      * Various checks to determine whether a save file could be made from this object, and caps gold amount.
      * @return whether the form data is valid
      */
     public boolean checkValid() {
         gold = Math.min(gold, level * GOLD_PER_LEVEL);
-        invalid = !(checkName() && checkClass() && classNum <= MAX_CLASS_NUM && difficulty <= MAX_DIFFICULTY);
+        invalidName = !checkName();
+        invalidForClassic = !checkClass();
+        invalid = invalidName || invalidForClassic || classNum > MAX_CLASS_NUM || difficulty > MAX_DIFFICULTY;
         return !invalid;
     }
 
