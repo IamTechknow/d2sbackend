@@ -137,7 +137,7 @@ public class D2sWriter {
         // Unknown bytes, seems to be padding
         skip(144);
 
-        writeQuests();
+        writeQuests(save.getDifficulty(), save.getStartingAct());
 
         writeWaypoints(save);
 
@@ -151,14 +151,85 @@ public class D2sWriter {
     }
 
     /**
-     * Write information for quests. For now, no quests have been finished nor started.
-     * TODO Quest info based on completed difficulty
+     * Write information for quests. What gets written here affects waypoint data,
+     * that is waypoints in a given act only appear if the character has traveled to the act.
      */
-    private void writeQuests() {
+    private void writeQuests(int saveDiff, int startingAct) {
         writeArray(QUEST_HEADER);
 
         // Quest information for Normal, Nightmare, Hell modes.
-        skip(96*3);
+        for(int i = 0; i < 3; i++)
+            writeQuestForDiff(i * 5, saveDiff, startingAct);
+    }
+
+    /**
+     * Write the quest information for the given difficulty. If the starting Act is greater
+     * than a given act, the quest data is written, otherwise zeros are written for
+     * that quest and all succeeding acts.
+     */
+    private void writeQuestForDiff(int currDiff, int saveDiff, int startingAct) {
+        if(currDiff < saveDiff) // Difficulty completed, Set Boss quests completed
+            startingAct = 5;
+
+        if(startingAct > 0) {
+            skip(12); // intro + first 5 quests
+
+            stream.write(0xFD); // Killed Andy
+            stream.write(0x9F);
+
+            stream.write(1); // Traveled to Act 2
+            stream.write(0);
+        } else
+            skip(16);
+
+        if(startingAct > 1) {
+            skip(12);
+
+            stream.write(0xE5); // Killed Duriel
+            stream.write(0x1F);
+
+            stream.write(1); // Traveled to Act 3
+            stream.write(0);
+        } else
+            skip(16);
+
+        if(startingAct > 2) {
+            skip(12);
+
+            stream.write(0xFD); // Killed Meph
+            stream.write(0x9F);
+
+            stream.write(1); // Traveled to Act 4
+            stream.write(0);
+        } else
+            skip(16);
+
+        if(startingAct > 3) {
+            skip(4); //skip intro + first quest
+
+            stream.write(0xFD); // Killed Diablo
+            stream.write(0x9F);
+
+            skip(2); // skip over Forge
+            stream.write(1); // Traveled to Act 5
+            stream.write(0);
+
+            skip(6); // skip over the 3 unused quests
+
+            stream.write(1); // Talk to Cain after killing Diablo
+            stream.write(0);
+        } else
+            skip(18);
+
+        if(startingAct > 4) {
+            skip(2+12); // quest padding + intro + first 5 quests
+
+            stream.write(0xFD); // Killed Baal
+            stream.write(0x9F);
+        } else
+            skip(16);
+
+        skip(14); // Quest Padding
     }
 
     /**
