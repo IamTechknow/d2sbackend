@@ -16,6 +16,7 @@ User Stories:
   * [X] Game Mode (Expansion / Hardcore)
   * [X] Current Act
   * [X] Gold
+  * [X] Quests
   * [ ] (Optional) Patch Version
 * [X] As a user, I can start the process of creating the save file and either get a download link or an error message
 * [ ] As a user, I should be able to view details about the save

@@ -13,9 +13,10 @@ public class D2Save {
     private int gold;
     private int stashGold;
     private int startingAct;
-    private boolean expansion;
+    private boolean expansion = true;
     private boolean hardcore;
     private int difficulty;
+    private D2QuestRewards rewards = new D2QuestRewards();
 
     // Invalid booleans for error messages
     private boolean invalid, invalidForClassic, invalidName, invalidAct;
@@ -106,6 +107,10 @@ public class D2Save {
 
     public boolean isInvalidAct() {
         return invalidAct;
+    }
+
+    public D2QuestRewards getRewards() {
+        return rewards;
     }
 
     /**

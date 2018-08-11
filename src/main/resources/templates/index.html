@@ -6,6 +6,15 @@
     <link href="webjars/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="webjars/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="webjars/jquery/3.0.0/jquery.min.js"></script>
+
+    <script language="JavaScript">
+        function checkQuest() {
+            var checkboxes = document.querySelector('#questCheckBoxes');
+            var quest = checkboxes.querySelectorAll('input[type="checkbox"]');
+            for (let box of quest)
+                box.checked = "checked";
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -137,6 +146,64 @@
                     <label class="form-check-label" for="act5">
                         Act 5
                     </label>
+                </div>
+            </div>
+            <br />
+
+            <h4>Quest Rewards</h4>
+            <a href="#" id="checkAll" onclick="checkQuest(); return false;">Check All</a>
+            <div id="questCheckBoxes">
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="den" th:field="*{rewards.den}">
+                        <label class="form-check-label" for="den">
+                            Completed Den of Evil for Skill Point and Stats reset
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="imbue" th:field="*{rewards.imbue}">
+                        <label class="form-check-label" for="imbue">
+                            Returned Hordaric Malus
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="skillBook" th:field="*{rewards.skillBook}">
+                        <label class="form-check-label" for="skillBook">
+                            Defeated Radamant for Skill Point
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="goldenbird" th:field="*{rewards.potion}">
+                        <label class="form-check-label" for="goldenbird">
+                            Drank the Potion of Life
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="lamEsen" th:field="*{rewards.lamEsen}">
+                        <label class="form-check-label" for="lamEsen">
+                            Completed Lam Esen's Tome for five attribute points
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="izual" th:field="*{rewards.izual}">
+                        <label class="form-check-label" for="izual">
+                            Defeated Izual for two skill points
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="socket" th:field="*{rewards.socket}">
+                        <label class="form-check-label" for="socket">
+                            Socket Reward from Larzuk
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="scroll" th:field="*{rewards.scroll}">
+                        <label class="form-check-label" for="scroll">
+                            Read the Scroll of Resistance
+                        </label>
+                    </div>
                 </div>
             </div>
             <br />
