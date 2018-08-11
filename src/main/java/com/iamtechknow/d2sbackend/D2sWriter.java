@@ -10,6 +10,8 @@ public class D2sWriter {
     private static final int MAGIC_NUMBER = 0xaa55aa55, VERSION = 0x0060;
     private static final byte[] QUEST_HEADER = new byte[]{0x57, 0x6F, 0x6F, 0x21, 0x6, 0, 0, 0, 0x2A, 0x1},
                                 WAYPOINT_HEADER = new byte[]{0x57, 0x53, 0x1, 0, 0, 0, 0x50, 0};
+    private static final byte COMPLETED_BYTE_1 = (byte) 0xFD, COMPLETED_BYTE_2 = (byte) 0x9F,
+                            JUST_COMPLETED_BYTE_1 = (byte) 0xFE, JUST_COMPLETED_BYTE_2 = (byte) 0xFF;
 
     private ByteArrayOutputStream stream;
 
@@ -137,7 +139,7 @@ public class D2sWriter {
         // Unknown bytes, seems to be padding
         skip(144);
 
-        writeQuests(save.getDifficulty(), save.getStartingAct());
+        writeQuests(save.getDifficulty(), save.getStartingAct(), save.getRewards());
 
         writeWaypoints(save);
 
@@ -154,78 +156,139 @@ public class D2sWriter {
      * Write information for quests. What gets written here affects waypoint data,
      * that is waypoints in a given act only appear if the character has traveled to the act.
      */
-    private void writeQuests(int saveDiff, int startingAct) {
+    private void writeQuests(int saveDiff, int startingAct, D2QuestRewards quest) {
         writeArray(QUEST_HEADER);
 
         // Quest information for Normal, Nightmare, Hell modes.
         for(int i = 0; i < 3; i++)
-            writeQuestForDiff(i * 5, saveDiff, startingAct);
+            writeQuestForDiff(i * 5, saveDiff, startingAct, quest);
     }
 
     /**
      * Write the quest information for the given difficulty. If the starting Act is greater
      * than a given act, the quest data is written, otherwise zeros are written for
      * that quest and all succeeding acts.
+     *
+     * Most acts may be described with a 16 byte chunk, the first two are for introduction, the next 12 bytes
+     * are for each quest, then last two indicate the character has traveled to the next act.
+     * For act 5, the first 4 bytes are just padding and then rest are for the quests.
+     * For act 4, the chunk is 18 bytes long, where after the first 3 quests at byte 8, the next two bytes indicate
+     * the user went to act 5. The next 6 bytes are unused quests and are always 0. The last two bytes are set to
+     * one when the player has talked to Cain after killing Diablo.
+     *
+     * FIXME: If the player has finished the act, the quest award doesn't get applied.
      */
-    private void writeQuestForDiff(int currDiff, int saveDiff, int startingAct) {
+    private void writeQuestForDiff(int currDiff, int saveDiff, int startingAct, D2QuestRewards quest) {
         if(currDiff < saveDiff) // Difficulty completed, Set Boss quests completed
             startingAct = 5;
 
         if(startingAct > 0) {
-            skip(12); // intro + first 5 quests
+            byte[] arr = new byte[16]; // intro + 6 quests + traveled
 
-            stream.write(0xFD); // Killed Andy
-            stream.write(0x9F);
+            if(quest.isDen()) {
+                arr[2] = JUST_COMPLETED_BYTE_1;
+                arr[3] = JUST_COMPLETED_BYTE_2;
+            }
+            if(quest.isImbue()) {
+                arr[6] = (byte) 0xFE;
+                arr[7] = (byte) 0x9F;
+            }
+            arr[12] = COMPLETED_BYTE_1; // Killed Andy
+            arr[13] = COMPLETED_BYTE_2;
+            arr[14] = 1; // Traveled to Act 2
+            arr[15] = 0;
 
-            stream.write(1); // Traveled to Act 2
-            stream.write(0);
+            writeArray(arr);
         } else
             skip(16);
 
+        // Most quests are done here because it takes the longest during rushes
         if(startingAct > 1) {
-            skip(12);
+            byte[] arr = new byte[16];
 
-            stream.write(0xE5); // Killed Duriel
-            stream.write(0x1F);
+            if(quest.isSkillBook()) {
+                arr[2] = JUST_COMPLETED_BYTE_1;
+                arr[3] = JUST_COMPLETED_BYTE_2;
+            }
 
-            stream.write(1); // Traveled to Act 3
-            stream.write(0);
+            arr[4] = (byte) 0x79; // Quest 2
+            arr[5] = (byte) 0x1C;
+            arr[6] = COMPLETED_BYTE_1; // Quest 3
+            arr[7] = COMPLETED_BYTE_2;
+            arr[8] = COMPLETED_BYTE_1; // Quest 4
+            arr[9] = COMPLETED_BYTE_2;
+            arr[10] = COMPLETED_BYTE_1; // Killed Summoner
+            arr[11] = COMPLETED_BYTE_2;
+            arr[12] = (byte) 0xE5; // Killed Duriel
+            arr[13] = (byte) 0x1F;
+            arr[14] = 1; // Traveled to Act 3
+            arr[15] = 0;
+
+            writeArray(arr);
         } else
             skip(16);
 
         if(startingAct > 2) {
-            skip(12);
+            byte[] arr = new byte[16];
 
-            stream.write(0xFD); // Killed Meph
-            stream.write(0x9F);
+            if(quest.isLamEsen()) { // FIXME: Quest does not show as completed
+                arr[2] = JUST_COMPLETED_BYTE_1;
+                arr[3] = JUST_COMPLETED_BYTE_2;
+            }
+            if(quest.isPotion()) {
+                arr[8] = JUST_COMPLETED_BYTE_1;
+                arr[9] = JUST_COMPLETED_BYTE_2;
+            }
 
-            stream.write(1); // Traveled to Act 4
-            stream.write(0);
+            arr[4] = COMPLETED_BYTE_1; // Smashed the orb
+            arr[5] = COMPLETED_BYTE_2;
+            arr[10] = COMPLETED_BYTE_1; // Killed Council, which must be done before Meph
+            arr[11] = COMPLETED_BYTE_2;
+            arr[12] = COMPLETED_BYTE_1; // Killed Meph
+            arr[13] = COMPLETED_BYTE_2;
+            arr[14] = 1; // Traveled to Act 4
+            arr[15] = 0;
+
+            writeArray(arr);
         } else
             skip(16);
 
         if(startingAct > 3) {
-            skip(4); //skip intro + first quest
+            byte[] arr = new byte[18];
 
-            stream.write(0xFD); // Killed Diablo
-            stream.write(0x9F);
+            if(quest.isIzual()) {
+                arr[2] = JUST_COMPLETED_BYTE_1;
+                arr[3] = JUST_COMPLETED_BYTE_2;
+            }
 
-            skip(2); // skip over Forge
-            stream.write(1); // Traveled to Act 5
-            stream.write(0);
+            arr[4] = COMPLETED_BYTE_1; // Killed Diablo
+            arr[5] = COMPLETED_BYTE_2;
 
-            skip(6); // skip over the 3 unused quests
+            arr[8] = 1; // Traveled to Act 5
+            arr[9] = 0;
 
-            stream.write(1); // Talk to Cain after killing Diablo
-            stream.write(0);
+            arr[16] = 1; // Talk to Cain after killing Diablo
+            arr[17] = 0;
+
+            writeArray(arr);
         } else
             skip(18);
 
         if(startingAct > 4) {
-            skip(2+12); // quest padding + intro + first 5 quests
+            byte[] arr = new byte[16];
 
-            stream.write(0xFD); // Killed Baal
-            stream.write(0x9F);
+            if(quest.isSocket()) {
+                arr[4] = JUST_COMPLETED_BYTE_1;
+                arr[5] = JUST_COMPLETED_BYTE_2;
+            }
+            if(quest.isScroll()) { // FIXME: Scroll is read but quest does not say complete after taking to Malah
+                arr[8] = JUST_COMPLETED_BYTE_1;
+                arr[9] = JUST_COMPLETED_BYTE_2;
+            }
+            arr[14] = COMPLETED_BYTE_1; // Killed Baal. Since one can get credit in town, Ancients need not be done
+            arr[15] = COMPLETED_BYTE_2;
+
+            writeArray(arr);
         } else
             skip(16);
 

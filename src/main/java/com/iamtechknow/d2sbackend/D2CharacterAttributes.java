@@ -5,7 +5,8 @@ package com.iamtechknow.d2sbackend;
  */
 public class D2CharacterAttributes {
     // Classes that correspond to their save code
-    private static final int AMAZON = 0, SORCERESS = 1, NECRO = 2, PALADIN = 3, BARB = 4, DRUID = 5, ASSASSIN = 6;
+    private static final int AMAZON = 0, SORCERESS = 1, NECRO = 2, PALADIN = 3, BARB = 4, DRUID = 5, ASSASSIN = 6,
+                            ACT2 = 1, ACT3 = 2, MAX_QUEST_TIMES = 3;
 
     private final int str;
     private final int dex;
@@ -27,8 +28,6 @@ public class D2CharacterAttributes {
     public D2CharacterAttributes(D2Save save) {
         int[] vals = getDefaultAttributes(save);
         str = vals[0]; dex = vals[1]; vit = vals[2]; nrg = vals[3];
-        attrPoints = 5 * (save.getLevel() - 1);
-        skillPoints = (save.getLevel() - 1);
         gold = save.getGold();
         stashGold = save.getStashGold();
         level = save.getLevel();
@@ -37,6 +36,24 @@ public class D2CharacterAttributes {
         life = calcLife(save, vals[4]);
         stamina = calcStamina(save, vals[5]);
         mana = calcMana(save, vals[6]);
+
+        // Attributes from quests, calculate how many times the quest has been done. Capped at 3
+        // Note that most quest rewards need to be received in the game and thus not accounted for here.
+        int timesBeatGame = save.getDifficulty() / 5;
+
+        int timesCompletedLamEsen = timesBeatGame * (save.getRewards().isLamEsen() ? 1 : 0);
+        if(save.getStartingAct() >= ACT3 && save.getRewards().isLamEsen())
+            timesCompletedLamEsen++;
+        timesCompletedLamEsen = Math.min(MAX_QUEST_TIMES, timesCompletedLamEsen);
+
+        attrPoints = 5 * (save.getLevel() - 1 + timesCompletedLamEsen);
+
+        int timesKilledRadamant = timesBeatGame * (save.getRewards().isSkillBook() ? 1 : 0);
+        if(save.getStartingAct() >= ACT2 && save.getRewards().isSkillBook())
+            timesKilledRadamant++;
+        timesKilledRadamant = Math.min(MAX_QUEST_TIMES, timesKilledRadamant);
+
+        skillPoints = (save.getLevel() - 1) + timesKilledRadamant;
     }
 
     public int getStr() {
