@@ -39,6 +39,8 @@ public class D2sController {
     public String d2sSubmit(@ModelAttribute D2Save save, Model model) {
         model.addAttribute("save", save);
         if(save.checkValid()) {
+            if(!save.isExpansion())
+                save.fixProgression();
             cache.put(save.getName(), save);
             model.addAttribute("name", save.getName());
             return "result";

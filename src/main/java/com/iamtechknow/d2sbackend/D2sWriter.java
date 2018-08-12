@@ -140,7 +140,7 @@ public class D2sWriter {
         // Unknown bytes, seems to be padding
         skip(144);
 
-        writeQuests(save.getDifficulty(), save.getStartingAct(), save.getRewards());
+        writeQuests(save.getDifficulty(), save.getStartingAct(), save.getRewards(), save.isExpansion());
 
         writeWaypoints(save);
 
@@ -157,12 +157,12 @@ public class D2sWriter {
      * Write information for quests. What gets written here affects waypoint data,
      * that is waypoints in a given act only appear if the character has traveled to the act.
      */
-    private void writeQuests(int saveDiff, int startingAct, D2QuestRewards quest) {
+    private void writeQuests(int saveDiff, int startingAct, D2QuestRewards quest, boolean isExpansion) {
         writeArray(QUEST_HEADER);
 
         // Quest information for Normal, Nightmare, Hell modes.
         for(int i = 0; i < 3; i++)
-            writeQuestForDiff(i * 5, saveDiff, startingAct, quest);
+            writeQuestForDiff(i * 5, saveDiff, startingAct, quest, isExpansion);
     }
 
     /**
@@ -175,7 +175,7 @@ public class D2sWriter {
      * the user went to act 5. The next 6 bytes are unused quests and are always 0. The last two bytes are set to
      * one when the player has talked to Cain after killing Diablo.
      */
-    private void writeQuestForDiff(int currDiff, int saveDiff, int startingAct, D2QuestRewards quest) {
+    private void writeQuestForDiff(int currDiff, int saveDiff, int startingAct, D2QuestRewards quest, boolean isExpansion) {
         if(currDiff > saveDiff) {
             skip(96);
             return;
@@ -244,22 +244,24 @@ public class D2sWriter {
 
         if(startingAct > ACT4) {
             writeQuestCompleted(arr, 4, 5, false); // Killed Diablo
-            arr[8] = 1; // Traveled to Act 5
-            arr[9] = 0;
-            arr[16] = 1; // Talk to Cain after killing Diablo
-            arr[17] = 0;
+            if(isExpansion) {
+                arr[8] = 1; // Traveled to Act 5
+                arr[9] = 0;
+                arr[16] = 1; // Talk to Cain after killing Diablo
+                arr[17] = 0;
+            }
         }
 
         writeArray(arr);
 
         arr = new byte[16];
 
-        if(quest.isSocket() && startingAct >= ACT5)
+        if(isExpansion && quest.isSocket() && startingAct >= ACT5)
             writeQuestCompleted(arr, 4, 5, true);
-        if(quest.isScroll() && startingAct >= ACT5) // FIXME: Scroll is read but quest does not say complete after taking to Malah
+        if(isExpansion && quest.isScroll() && startingAct >= ACT5) // FIXME: Scroll is read but quest does not say complete after taking to Malah
             writeQuestCompleted(arr, 8, 9, true);
 
-        if(startingAct > ACT5)
+        if(isExpansion && startingAct > ACT5)
             writeQuestCompleted(arr, 14, 15, false); // Killed Baal. Since one can get credit in town, Ancients need not be done
 
         writeArray(arr);

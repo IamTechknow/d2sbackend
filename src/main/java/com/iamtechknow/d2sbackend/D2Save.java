@@ -126,6 +126,13 @@ public class D2Save {
         return !invalid;
     }
 
+    /**
+     * Fix character progression/difficulty value if the character is a classic character.
+     */
+    public void fixProgression() {
+        difficulty -= (difficulty / 5);
+    }
+
     // Called in result.html via Thymeleaf
     public String getClassName() {
         String[] classes = {"Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin"};
