@@ -7,7 +7,8 @@ import java.time.Instant;
  * Primary class to create a byte chunk representing a Diablo 2 1.13c Save
  */
 public class D2sWriter {
-    private static final int MAGIC_NUMBER = 0xaa55aa55, VERSION = 0x0060;
+    private static final int MAGIC_NUMBER = 0xaa55aa55, VERSION = 0x0060,
+                        ACT1 = 0, ACT2 = 1, ACT3 = 2, ACT4 = 3, ACT5 = 4;
     private static final byte[] QUEST_HEADER = new byte[]{0x57, 0x6F, 0x6F, 0x21, 0x6, 0, 0, 0, 0x2A, 0x1},
                                 WAYPOINT_HEADER = new byte[]{0x57, 0x53, 0x1, 0, 0, 0, 0x50, 0};
     private static final byte COMPLETED_BYTE_1 = (byte) 0xFD, COMPLETED_BYTE_2 = (byte) 0x9F,
@@ -165,9 +166,7 @@ public class D2sWriter {
     }
 
     /**
-     * Write the quest information for the given difficulty. If the starting Act is greater
-     * than a given act, the quest data is written, otherwise zeros are written for
-     * that quest and all succeeding acts.
+     * Write the quest information for the given difficulty. All byte chunks start out as not started.
      *
      * Most acts may be described with a 16 byte chunk, the first two are for introduction, the next 12 bytes
      * are for each quest, then last two indicate the character has traveled to the next act.
@@ -175,122 +174,95 @@ public class D2sWriter {
      * For act 4, the chunk is 18 bytes long, where after the first 3 quests at byte 8, the next two bytes indicate
      * the user went to act 5. The next 6 bytes are unused quests and are always 0. The last two bytes are set to
      * one when the player has talked to Cain after killing Diablo.
-     *
-     * FIXME: If the player has finished the act, the quest award doesn't get applied.
      */
     private void writeQuestForDiff(int currDiff, int saveDiff, int startingAct, D2QuestRewards quest) {
+        if(currDiff > saveDiff) {
+            skip(96);
+            return;
+        }
+
         if(currDiff < saveDiff) // Difficulty completed, Set Boss quests completed
             startingAct = 5;
 
-        if(startingAct > 0) {
-            byte[] arr = new byte[16]; // intro + 6 quests + traveled
+        byte[] arr = new byte[16]; // intro + 6 quests + traveled
 
-            if(quest.isDen()) {
-                arr[2] = JUST_COMPLETED_BYTE_1;
-                arr[3] = JUST_COMPLETED_BYTE_2;
-            }
-            if(quest.isImbue()) {
-                arr[6] = (byte) 0xFE;
-                arr[7] = (byte) 0x9F;
-            }
-            arr[12] = COMPLETED_BYTE_1; // Killed Andy
-            arr[13] = COMPLETED_BYTE_2;
+        if(quest.isDen())
+            writeQuestCompleted(arr, 2, 3, true);
+        if(quest.isImbue()) {
+            arr[6] = (byte) 0xFE;
+            arr[7] = (byte) 0x9F;
+        }
+        if(startingAct > ACT1) {
+            writeQuestCompleted(arr, 12, 13, false); // Killed Andy
             arr[14] = 1; // Traveled to Act 2
             arr[15] = 0;
+        }
 
-            writeArray(arr);
-        } else
-            skip(16);
+        writeArray(arr);
 
         // Most quests are done here because it takes the longest during rushes
-        if(startingAct > 1) {
-            byte[] arr = new byte[16];
+        arr = new byte[16];
 
-            if(quest.isSkillBook()) {
-                arr[2] = JUST_COMPLETED_BYTE_1;
-                arr[3] = JUST_COMPLETED_BYTE_2;
-            }
+        if(quest.isSkillBook() && startingAct >= ACT2)
+            writeQuestCompleted(arr, 2, 3, true);
 
+        if(startingAct > ACT2) {
             arr[4] = (byte) 0x79; // Quest 2
             arr[5] = (byte) 0x1C;
-            arr[6] = COMPLETED_BYTE_1; // Quest 3
-            arr[7] = COMPLETED_BYTE_2;
-            arr[8] = COMPLETED_BYTE_1; // Quest 4
-            arr[9] = COMPLETED_BYTE_2;
-            arr[10] = COMPLETED_BYTE_1; // Killed Summoner
-            arr[11] = COMPLETED_BYTE_2;
+            writeQuestCompleted(arr, 6, 7, false); // Quest 3
+            writeQuestCompleted(arr, 8, 9, false); // Quest 4
+            writeQuestCompleted(arr, 10, 11, false); // Killed Summoner
             arr[12] = (byte) 0xE5; // Killed Duriel
             arr[13] = (byte) 0x1F;
             arr[14] = 1; // Traveled to Act 3
             arr[15] = 0;
+        }
 
-            writeArray(arr);
-        } else
-            skip(16);
+        writeArray(arr);
 
-        if(startingAct > 2) {
-            byte[] arr = new byte[16];
+        arr = new byte[16];
 
-            if(quest.isLamEsen()) { // FIXME: Quest does not show as completed
-                arr[2] = JUST_COMPLETED_BYTE_1;
-                arr[3] = JUST_COMPLETED_BYTE_2;
-            }
-            if(quest.isPotion()) {
-                arr[8] = JUST_COMPLETED_BYTE_1;
-                arr[9] = JUST_COMPLETED_BYTE_2;
-            }
+        if(quest.isLamEsen() && startingAct >= ACT3)
+            writeQuestCompleted(arr, 2, 3, false);
+        if(quest.isPotion() && startingAct >= ACT3)
+            writeQuestCompleted(arr, 8, 9, true);
 
-            arr[4] = COMPLETED_BYTE_1; // Smashed the orb
-            arr[5] = COMPLETED_BYTE_2;
-            arr[10] = COMPLETED_BYTE_1; // Killed Council, which must be done before Meph
-            arr[11] = COMPLETED_BYTE_2;
-            arr[12] = COMPLETED_BYTE_1; // Killed Meph
-            arr[13] = COMPLETED_BYTE_2;
+        if(startingAct > ACT3) {
+            writeQuestCompleted(arr, 4, 5, false); // Smashed the orb
+            writeQuestCompleted(arr, 10, 11, false); // Killed Council, which must be done before Meph
+            writeQuestCompleted(arr, 12, 13, false); // Killed Meph
             arr[14] = 1; // Traveled to Act 4
             arr[15] = 0;
+        }
 
-            writeArray(arr);
-        } else
-            skip(16);
+        writeArray(arr);
 
-        if(startingAct > 3) {
-            byte[] arr = new byte[18];
+        arr = new byte[18];
 
-            if(quest.isIzual()) {
-                arr[2] = JUST_COMPLETED_BYTE_1;
-                arr[3] = JUST_COMPLETED_BYTE_2;
-            }
+        if(quest.isIzual() && startingAct >= ACT4)
+            writeQuestCompleted(arr, 2, 3, true);
 
-            arr[4] = COMPLETED_BYTE_1; // Killed Diablo
-            arr[5] = COMPLETED_BYTE_2;
-
+        if(startingAct > ACT4) {
+            writeQuestCompleted(arr, 4, 5, false); // Killed Diablo
             arr[8] = 1; // Traveled to Act 5
             arr[9] = 0;
-
             arr[16] = 1; // Talk to Cain after killing Diablo
             arr[17] = 0;
+        }
 
-            writeArray(arr);
-        } else
-            skip(18);
+        writeArray(arr);
 
-        if(startingAct > 4) {
-            byte[] arr = new byte[16];
+        arr = new byte[16];
 
-            if(quest.isSocket()) {
-                arr[4] = JUST_COMPLETED_BYTE_1;
-                arr[5] = JUST_COMPLETED_BYTE_2;
-            }
-            if(quest.isScroll()) { // FIXME: Scroll is read but quest does not say complete after taking to Malah
-                arr[8] = JUST_COMPLETED_BYTE_1;
-                arr[9] = JUST_COMPLETED_BYTE_2;
-            }
-            arr[14] = COMPLETED_BYTE_1; // Killed Baal. Since one can get credit in town, Ancients need not be done
-            arr[15] = COMPLETED_BYTE_2;
+        if(quest.isSocket() && startingAct >= ACT5)
+            writeQuestCompleted(arr, 4, 5, true);
+        if(quest.isScroll() && startingAct >= ACT5) // FIXME: Scroll is read but quest does not say complete after taking to Malah
+            writeQuestCompleted(arr, 8, 9, true);
 
-            writeArray(arr);
-        } else
-            skip(16);
+        if(startingAct > ACT5)
+            writeQuestCompleted(arr, 14, 15, false); // Killed Baal. Since one can get credit in town, Ancients need not be done
+
+        writeArray(arr);
 
         skip(14); // Quest Padding
     }
@@ -419,6 +391,14 @@ public class D2sWriter {
     }
 
     /**
+     * Given two indices, write bits to indicate the quest has just been finished.
+     */
+    private void writeQuestCompleted(byte[] arr, int first, int sec, boolean just) {
+        arr[first] = just ? JUST_COMPLETED_BYTE_1 : COMPLETED_BYTE_1;
+        arr[sec] = just ? JUST_COMPLETED_BYTE_2 : COMPLETED_BYTE_2;
+    }
+
+    /**
      * Forms the byte array representing unlocked waypoints based on the completed difficulty and starting act.
      * The bit fields are in LSB, so the 0th bit is Act 1 Town, and the 9th bit is Act 2 Town.
      * @return Waypoint data for the specified difficulty
@@ -444,6 +424,10 @@ public class D2sWriter {
         return currData;
     }
 
+    /**
+     * Determine the character attribute IDs based on the save model.
+     * @return byte array containing IDs to be written to save file
+     */
     private byte[] getIds(D2CharacterAttributes attrs) {
 	    ByteArrayOutputStream arr = new ByteArrayOutputStream();
 	    for(int i : new int[] {0, 1, 2, 3})
@@ -467,6 +451,10 @@ public class D2sWriter {
         return arr.toByteArray();
     }
 
+    /**
+     * Determine the values to be written based on the character's attributes.
+     * @return array containing 10-32 bit vectors to be written to save file
+     */
     private long[] getValues(D2CharacterAttributes attrs, int size) {
 	    if(size > 16)
 	        throw new IllegalArgumentException("Invalid attribute size, max is 16");
