@@ -19,7 +19,7 @@ public class D2Save {
     private D2QuestRewards rewards = new D2QuestRewards();
 
     // Invalid booleans for error messages
-    private boolean invalid, invalidForClassic, invalidName, invalidAct;
+    private boolean invalid, invalidForClassic, invalidName, invalidAct, invalidAncients;
 
     public String getName() {
         return name;
@@ -109,6 +109,10 @@ public class D2Save {
         return invalidAct;
     }
 
+    public boolean isInvalidAncients() {
+        return invalidAncients;
+    }
+
     public D2QuestRewards getRewards() {
         return rewards;
     }
@@ -122,7 +126,9 @@ public class D2Save {
         invalidName = !checkName();
         invalidForClassic = !checkClass();
         invalidAct = !checkAct();
-        invalid = invalidName || invalidForClassic || invalidAct || classNum > MAX_CLASS_NUM || difficulty > MAX_DIFFICULTY;
+        invalidAncients = !checkAncients();
+        invalid = invalidName || invalidForClassic || invalidAct || invalidAncients ||
+                classNum > MAX_CLASS_NUM || difficulty > MAX_DIFFICULTY;
         return !invalid;
     }
 
@@ -174,5 +180,16 @@ public class D2Save {
      */
     private boolean checkAct() {
         return !(startingAct > 3 && !expansion);
+    }
+
+    /**
+     * Checks whether the character's level is high enough for the specified Ancients quest(s).
+     * @return whether the character may complete Ancients
+     */
+    private boolean checkAncients() {
+        if(!rewards.isnAncients() && !rewards.isNmAncients() && !rewards.ishAncients())
+            return true;
+
+        return !(rewards.isnAncients() && level < 20 || rewards.isNmAncients() && level < 40 || rewards.ishAncients() && level < 60);
     }
 }

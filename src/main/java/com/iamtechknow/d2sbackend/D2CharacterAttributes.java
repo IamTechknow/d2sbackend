@@ -6,7 +6,7 @@ package com.iamtechknow.d2sbackend;
 public class D2CharacterAttributes {
     // Classes that correspond to their save code
     private static final int AMAZON = 0, SORCERESS = 1, NECRO = 2, PALADIN = 3, BARB = 4, DRUID = 5, ASSASSIN = 6,
-                            ACT2 = 1, ACT3 = 2, MAX_QUEST_TIMES = 3;
+                            ACT2 = 1, ACT3 = 2, ACT5 = 4, MAX_QUEST_TIMES = 3;
 
     private final int str;
     private final int dex;
@@ -30,9 +30,6 @@ public class D2CharacterAttributes {
         str = vals[0]; dex = vals[1]; vit = vals[2]; nrg = vals[3];
         gold = save.getGold();
         stashGold = save.getStashGold();
-        level = save.getLevel();
-        experience = getExperience(level);
-
         life = calcLife(save, vals[4]);
         stamina = calcStamina(save, vals[5]);
         mana = calcMana(save, vals[6]);
@@ -54,6 +51,48 @@ public class D2CharacterAttributes {
         timesKilledRadamant = Math.min(MAX_QUEST_TIMES, timesKilledRadamant);
 
         skillPoints = (save.getLevel() - 1) + timesKilledRadamant;
+
+        // Calculate experience based on Ancients.
+        int xpFromAncients = 0, levelUps = 0;
+        boolean nAncientsDone = false, nmAncientsDone = false, hAncientsDone = false;
+
+        if(save.isExpansion() && save.getRewards().isnAncients() && (save.getStartingAct() >= ACT5 || save.getDifficulty() > 0))
+            nAncientsDone = true;
+        if(save.isExpansion() && save.getRewards().isNmAncients() &&
+                ( (save.getStartingAct() >= ACT5 && save.getDifficulty() >= 5) || save.getDifficulty() > 5))
+            nmAncientsDone = true;
+        if(save.isExpansion() && save.getRewards().ishAncients() &&
+                ( (save.getStartingAct() >= ACT5 && save.getDifficulty() >= 10) || save.getDifficulty() > 10))
+            hAncientsDone = true;
+
+        // If the a level up occurs, it is incremented and the XP for the difficulty is reset.
+        // Arreat Summit has a table that indicates how much XP is required per level
+        if(nAncientsDone) {
+            if(save.getLevel() < 37)
+                levelUps++;
+            else
+                xpFromAncients += 1400000;
+        }
+        if(nmAncientsDone) {
+            if(save.getLevel() < 67)
+                levelUps++;
+            else
+                xpFromAncients += 20000000;
+        }
+        if(hAncientsDone) {
+            if(save.getLevel() < 75)
+                levelUps++;
+            else
+                xpFromAncients += 40000000;
+        }
+
+        if(save.getLevel() == 99) //Can't gain extra XP after reaching level 99
+            xpFromAncients = 0;
+
+        experience = getExperience(save.getLevel()) + xpFromAncients;
+        if(experience >= getExperience(save.getLevel() + 1)) //check if character should have leveled up
+            levelUps++;
+        level = save.getLevel() + levelUps;
     }
 
     public int getStr() {

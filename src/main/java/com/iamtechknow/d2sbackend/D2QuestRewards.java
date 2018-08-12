@@ -5,6 +5,7 @@ package com.iamtechknow.d2sbackend;
  */
 public class D2QuestRewards {
     private boolean den, imbue, skillBook, potion, lamEsen, izual, socket, scroll;
+    private boolean nAncients, nmAncients, hAncients;
 
     public boolean isDen() {
         return den;
@@ -68,5 +69,29 @@ public class D2QuestRewards {
 
     public void setScroll(boolean scroll) {
         this.scroll = scroll;
+    }
+
+    public boolean isnAncients() {
+        return nAncients;
+    }
+
+    public void setnAncients(boolean nAncients) {
+        this.nAncients = nAncients;
+    }
+
+    public boolean isNmAncients() {
+        return nmAncients;
+    }
+
+    public void setNmAncients(boolean nmAncients) {
+        this.nmAncients = nmAncients;
+    }
+
+    public boolean ishAncients() {
+        return hAncients;
+    }
+
+    public void sethAncients(boolean hAncients) {
+        this.hAncients = hAncients;
     }
 }

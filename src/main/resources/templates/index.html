@@ -32,6 +32,10 @@
                 Invalid starting act. Act 5 does not exist in Diablo II classic.
             </p>
 
+            <p class="alert alert-danger" th:if="*{invalidAncients}">
+                Character level is too low to have completed Ancients for the specified difficulties.
+            </p>
+
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="charName">Character Name</label>
@@ -202,6 +206,26 @@
                         <input class="form-check-input" type="checkbox" id="scroll" th:field="*{rewards.scroll}">
                         <label class="form-check-label" for="scroll">
                             Read the Scroll of Resistance
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="nAncients" th:field="*{rewards.nAncients}">
+                        <label class="form-check-label" for="nAncients">
+                            Normal Ancients
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="nmAncients" th:field="*{rewards.nmAncients}">
+                        <label class="form-check-label" for="nmAncients">
+                            Nightmare Ancients
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="hAncients" th:field="*{rewards.hAncients}">
+                        <label class="form-check-label" for="hAncients">
+                            Hell Ancients
                         </label>
                     </div>
                 </div>

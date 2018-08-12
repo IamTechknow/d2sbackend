@@ -260,7 +260,8 @@ public class D2sWriter {
             writeQuestCompleted(arr, 4, 5, true);
         if(isExpansion && quest.isScroll() && startingAct >= ACT5) // FIXME: Scroll is read but quest does not say complete after taking to Malah
             writeQuestCompleted(arr, 8, 9, true);
-
+        if(isExpansion && didFinishAncientsForDiff(currDiff, quest) && startingAct >= ACT5)
+            writeQuestCompleted(arr, 12, 13, false);
         if(isExpansion && startingAct > ACT5)
             writeQuestCompleted(arr, 14, 15, false); // Killed Baal. Since one can get credit in town, Ancients need not be done
 
@@ -398,6 +399,20 @@ public class D2sWriter {
     private void writeQuestCompleted(byte[] arr, int first, int sec, boolean just) {
         arr[first] = just ? JUST_COMPLETED_BYTE_1 : COMPLETED_BYTE_1;
         arr[sec] = just ? JUST_COMPLETED_BYTE_2 : COMPLETED_BYTE_2;
+    }
+
+    /**
+     * Return whether Ancients quest was completed for the given difficulty.
+     */
+    private boolean didFinishAncientsForDiff(int currDiff, D2QuestRewards quest) {
+        switch(currDiff) {
+            case 0:
+                return quest.isnAncients();
+            case 5:
+                return quest.isNmAncients();
+            default:
+                return quest.ishAncients();
+        }
     }
 
     /**
