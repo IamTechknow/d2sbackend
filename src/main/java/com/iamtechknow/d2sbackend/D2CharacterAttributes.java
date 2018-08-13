@@ -30,9 +30,6 @@ public class D2CharacterAttributes {
         str = vals[0]; dex = vals[1]; vit = vals[2]; nrg = vals[3];
         gold = save.getGold();
         stashGold = save.getStashGold();
-        life = calcLife(save, vals[4]);
-        stamina = calcStamina(save, vals[5]);
-        mana = calcMana(save, vals[6]);
 
         // Attributes from quests, calculate how many times the quest has been done. Capped at 3
         // Note that most quest rewards need to be received in the game and thus not accounted for here.
@@ -43,14 +40,10 @@ public class D2CharacterAttributes {
             timesCompletedLamEsen++;
         timesCompletedLamEsen = Math.min(MAX_QUEST_TIMES, timesCompletedLamEsen);
 
-        attrPoints = 5 * (save.getLevel() - 1 + timesCompletedLamEsen);
-
         int timesKilledRadamant = timesBeatGame * (save.getRewards().isSkillBook() ? 1 : 0);
         if(save.getStartingAct() >= ACT2 && save.getRewards().isSkillBook())
             timesKilledRadamant++;
         timesKilledRadamant = Math.min(MAX_QUEST_TIMES, timesKilledRadamant);
-
-        skillPoints = (save.getLevel() - 1) + timesKilledRadamant;
 
         // Calculate experience based on Ancients.
         int xpFromAncients = 0, levelUps = 0;
@@ -93,6 +86,12 @@ public class D2CharacterAttributes {
         if(experience >= getExperience(save.getLevel() + 1)) //check if character should have leveled up
             levelUps++;
         level = save.getLevel() + levelUps;
+		
+		attrPoints = 5 * (level - 1 + timesCompletedLamEsen);
+        skillPoints = (level - 1) + timesKilledRadamant;
+        life = calcLife(save, level, vals[4]);
+        stamina = calcStamina(save, level, vals[5]);
+        mana = calcMana(save, level, vals[6]);
     }
 
     public int getStr() {
@@ -197,39 +196,39 @@ public class D2CharacterAttributes {
         return arr;
     }
 
-    private double calcLife(D2Save save, double life) {
+    private double calcLife(D2Save save, int level, double life) {
         switch(save.getClassNum()) {
             case SORCERESS: // +2 life per level
             case DRUID:
             case NECRO:
-                return life + 2 * (save.getLevel() - 1);
+                return life + 2 * (level - 1);
             case BARB: // +4 life
-                return life + 4 * (save.getLevel() - 1);
+                return life + 4 * (level - 1);
             default: // +3 life for Pal, Sin, Amazon
-                return life + 3 * (save.getLevel() - 1);
+                return life + 3 * (level - 1);
         }
     }
 
-    private double calcStamina(D2Save save, double stamina) {
+    private double calcStamina(D2Save save, int level, double stamina) {
         switch(save.getClassNum()) {
             case ASSASSIN:
-                return stamina + 1.25 * (save.getLevel() - 1);
+                return stamina + 1.25 * (level - 1);
             default:
-                return stamina + (save.getLevel() - 1);
+                return stamina + (level - 1);
         }
     }
 
-    private double calcMana(D2Save save, double mana) {
+    private double calcMana(D2Save save, int level, double mana) {
         switch(save.getClassNum()) {
             case BARB:
-                return mana + (save.getLevel() - 1);
+                return mana + (level - 1);
             case PALADIN:
             case AMAZON:
-                return mana + 1.5 * (save.getLevel() - 1);
+                return mana + 1.5 * (level - 1);
             case ASSASSIN:
-                return mana + 1.75 * (save.getLevel() - 1);
+                return mana + 1.75 * (level - 1);
             default: // +2 mana for Sorc, Necro, Druid
-                return mana + 2 * (save.getLevel() - 1);
+                return mana + 2 * (level - 1);
         }
     }
 
