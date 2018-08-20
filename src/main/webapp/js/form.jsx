@@ -2,44 +2,20 @@ import React, {Component} from 'react';
 
 // Implementation of the Form HTML
 export default class Form extends Component {
-
-    rewards = {
-        den: false,
-        imbue: false,
-        skillBook: false,
-        potion: false,
-        lamEsen: false,
-        izual: false,
-        socket: false,
-        scroll: false,
-        nAncients: false,
-        nmAncients: false,
-        hAncients: false
-    };
-
     state = {
-        fromForm: false,
-        name: "",
-        level: 1,
-        classNum: 0,
-        gold: 0,
-        stashGold: 0,
-        startingAct: 0,
-        exp: true,
-        hc: false,
-        difficulty: 0,
         invalid: false,
         invalidForClassic: false,
         invalidName: false,
         invalidAct: false,
         invalidAncients: false,
-        questRewards: this.rewards
     };
 
     constructor(props) {
         super(props);
 
+        this.pattern = new RegExp(/^[a-zA-Z][a-zA-Z_-]*$/);
         this.checkQuestBoxes = this.checkQuestBoxes.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
@@ -54,13 +30,39 @@ export default class Form extends Component {
             box.checked = "checked";
     }
 
+    handleSubmit(event) {
+        event.preventDefault();
+
+        //Validate name, class, act, Anicents quest
+        const data = new FormData(event.target);
+        var level = parseInt(data.get("level"));
+        var expansion = data.get("exp") === "on";
+        var nAncients = data.get("nAncients") === "on", nmAncients = data.get("nmAncients") === "on", hAncients = data.get("hAncients") === "on";
+
+        var invalidName = !this.pattern.test(data.get("name")),
+            invalidForClassic = parseInt(data.get("charClass")) >= 5 && !expansion,
+            invalidAct = parseInt(data.get("act")) > 3 && !expansion,
+            invalidAncients = (nAncients && level < 20) || (nmAncients && level < 40) || (hAncients && level < 60);
+
+        this.setState({
+            invalid: invalidName || invalidForClassic || invalidAct || invalidAncients,
+            invalidName: invalidName,
+            invalidForClassic: invalidForClassic,
+            invalidAct: invalidAct,
+            invalidAncients: invalidAncients
+        });
+
+        //when done, use fetch API here
+        if(!this.state.invalid) {
+
+        }
+    }
+
     //FIXME: Modularize all this, also enable hot-swapping
-    //FIXME: Re-enable form POSTing
     render() {
         return (
             <div className="container">
-                <h3>Save file options</h3>
-                <form action="/" method="post">
+                <form onSubmit={this.handleSubmit} noValidate>
                     {this.state.invalidName &&
                         <p className="alert alert-danger">Character name is invalid. It must be 2 to 15 characters long, must begin with a letter, and have up to either one dash or underscore.</p>
                     }
@@ -73,6 +75,7 @@ export default class Form extends Component {
                     {this.state.invalidAncients &&
                         <p className="alert alert-danger">Character level is too low to have completed Ancients for the specified difficulties.</p>
                     }
+                    <h3>Save file options</h3>
                     <div className="form-row">
                         <div className="form-group col-md-6">
                             <label htmlFor="charName">Character Name</label>
@@ -87,7 +90,7 @@ export default class Form extends Component {
 
                     <div className="form-group">
                         <label htmlFor="charClass">Character Class</label>
-                        <select className="form-control" id="charClass" defaultValue="0">
+                        <select className="form-control" id="charClass" name="charClass" defaultValue="0">
                             <option value="0">Amazon</option>
                             <option value="6">Assassin</option>
                             <option value="4">Barbarian</option>
@@ -126,19 +129,19 @@ export default class Form extends Component {
                     <h4>Difficulty</h4>
                     <div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="diffRadio" id="normalDifficulty" value="0" defaultChecked></input>
+                            <input className="form-check-input" type="radio" name="diff" id="normalDifficulty" value="0" defaultChecked></input>
                             <label className="form-check-label" htmlFor="normalDifficulty">Normal</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="diffRadio" id="nightmareDifficulty" value="5"></input>
+                            <input className="form-check-input" type="radio" name="diff" id="nightmareDifficulty" value="5"></input>
                             <label className="form-check-label" htmlFor="nightmareDifficulty">Nightmare</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="diffRadio" id="hellDifficulty" value="10"></input>
+                            <input className="form-check-input" type="radio" name="diff" id="hellDifficulty" value="10"></input>
                             <label className="form-check-label" htmlFor="hellDifficulty">Hell</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="diffRadio" id="finishedHell" value="15"></input>
+                            <input className="form-check-input" type="radio" name="diff" id="finishedHell" value="15"></input>
                             <label className="form-check-label" htmlFor="finishedHell">Completed Hell</label>
                         </div>
                     </div>
@@ -147,23 +150,23 @@ export default class Form extends Component {
                     <h4>Starting Act</h4>
                     <div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="actRadio" id="act1" value="0" defaultChecked></input>
+                            <input className="form-check-input" type="radio" name="act" id="act1" value="0" defaultChecked></input>
                             <label className="form-check-label" htmlFor="act1">Act 1</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="actRadio" id="act2" value="1"></input>
+                            <input className="form-check-input" type="radio" name="act" id="act2" value="1"></input>
                             <label className="form-check-label" htmlFor="act2">Act 2</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="actRadio" id="act3" value="2"></input>
+                            <input className="form-check-input" type="radio" name="act" id="act3" value="2"></input>
                             <label className="form-check-label" htmlFor="act3">Act 3</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="actRadio" id="act4" value="3"></input>
+                            <input className="form-check-input" type="radio" name="act" id="act4" value="3"></input>
                             <label className="form-check-label" htmlFor="act4">Act 4</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="actRadio" id="act5" value="4"></input>
+                            <input className="form-check-input" type="radio" name="act" id="act5" value="4"></input>
                             <label className="form-check-label" htmlFor="act5">Act 5</label>
                         </div>
                     </div>
