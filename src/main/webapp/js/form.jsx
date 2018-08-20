@@ -25,8 +25,8 @@ export default class Form extends Component {
         gold: 0,
         stashGold: 0,
         startingAct: 0,
-        expansion: true,
-        hardcore: false,
+        exp: true,
+        hc: false,
         difficulty: 0,
         invalid: false,
         invalidForClassic: false,
@@ -39,22 +39,11 @@ export default class Form extends Component {
     constructor(props) {
         super(props);
 
-        //FIXME: Find a way to data bind the state variables instead of creating boilerplate functions
-        this.setDifficulty = this.setDifficulty.bind(this);
-        this.setAct = this.setAct.bind(this);
         this.checkQuestBoxes = this.checkQuestBoxes.bind(this);
     }
 
     componentDidMount() {
         // If the state is updated, React will call render() to update the DOM
-    }
-
-    setDifficulty(event) {
-        this.setState({difficulty: event.target.value});
-    }
-
-    setAct(event) {
-        this.setState({startingAct: event.target.value});
     }
 
     checkQuestBoxes(event) {
@@ -87,18 +76,18 @@ export default class Form extends Component {
                     <div className="form-row">
                         <div className="form-group col-md-6">
                             <label htmlFor="charName">Character Name</label>
-                            <input type="text" className="form-control" id="charName" aria-describedby="charHelp" placeholder="Up to 15 characters, no numbers" maxLength="15" value={this.state.name}></input>
+                            <input type="text" className="form-control" id="charName" name="name" placeholder="Up to 15 characters, no numbers" maxLength="15"></input>
                         </div>
 
                         <div className="form-group col-md-6">
-                            <label htmlFor="charName">Character Level</label>
-                            <input type="number" className="form-control" id="charLevel" aria-describedby="charHelp" min="1" max="99" value={this.state.level}></input>
+                            <label htmlFor="charLevel">Character Level</label>
+                            <input type="number" className="form-control" id="charLevel" name="level" min="1" max="99" defaultValue="1"></input>
                         </div>
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="charClass">Character Class</label>
-                        <select className="form-control" id="charClass" value={this.state.classNum}>
+                        <select className="form-control" id="charClass" defaultValue="0">
                             <option value="0">Amazon</option>
                             <option value="6">Assassin</option>
                             <option value="4">Barbarian</option>
@@ -112,32 +101,32 @@ export default class Form extends Component {
                     <div className="form-row">
                         <div className="form-group col-md-6">
                             <label htmlFor="gold">Gold</label>
-                            <input type="number" className="form-control" id="gold" aria-describedby="charHelp" placeholder="Up to 10000 times character level" min="0" value={this.state.gold}></input>
+                            <input type="number" className="form-control" name="gold" id="gold" min="0" defaultValue="0"></input>
                         </div>
 
                         <div className="form-group col-md-6">
                             <label htmlFor="stashedGold">Stashed Gold</label>
-                            <input type="number" className="form-control" id="stashedGold" aria-describedby="charHelp" placeholder="Up to 2500000" min="0" max="2500000" value={this.state.stashGold}></input>
+                            <input type="number" className="form-control" name="stashedGold" id="stashedGold" min="0" max="2500000" defaultValue="0"></input>
                         </div>
                     </div>
 
                     <h4>Options</h4>
                     <div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="checkbox" id="expansion" checked={this.state.expansion}></input>
-                            <label className="form-check-label" htmlFor="expansion">Expansion</label>
+                            <input className="form-check-input" type="checkbox" name="exp" id="exp" defaultChecked></input>
+                            <label className="form-check-label" htmlFor="exp">Expansion</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="checkbox" id="hardcore" checked={this.state.hardcore}></input>
-                            <label className="form-check-label" htmlFor="hardcore">Hardcore</label>
+                            <input className="form-check-input" type="checkbox" name="hc" id="hc"></input>
+                            <label className="form-check-label" htmlFor="hc">Hardcore</label>
                         </div>
                     </div>
                     <br />
 
                     <h4>Difficulty</h4>
-                    <div onChange={this.setDifficulty}>
+                    <div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="diffRadio" id="normalDifficulty" value="0" checked={true}></input>
+                            <input className="form-check-input" type="radio" name="diffRadio" id="normalDifficulty" value="0" defaultChecked></input>
                             <label className="form-check-label" htmlFor="normalDifficulty">Normal</label>
                         </div>
                         <div className="form-check form-check-inline">
@@ -156,9 +145,9 @@ export default class Form extends Component {
                     <br />
 
                     <h4>Starting Act</h4>
-                    <div onChange={this.setAct}>
+                    <div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="actRadio" id="act1" value="0" checked={true}></input>
+                            <input className="form-check-input" type="radio" name="actRadio" id="act1" value="0" defaultChecked></input>
                             <label className="form-check-label" htmlFor="act1">Act 1</label>
                         </div>
                         <div className="form-check form-check-inline">
@@ -185,51 +174,51 @@ export default class Form extends Component {
                     <div id="questCheckBoxes">
                         <div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="den" checked={this.state.questRewards.den}></input>
+                                <input className="form-check-input" type="checkbox" name="den" id="den"></input>
                                 <label className="form-check-label" htmlFor="den">Completed Den of Evil for Skill Point and Stats reset</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="imbue" checked={this.state.questRewards.imbue}></input>
+                                <input className="form-check-input" type="checkbox" name="imbue" id="imbue"></input>
                                 <label className="form-check-label" htmlFor="imbue">Returned Hordaric Malus</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="skillBook" checked={this.state.questRewards.skillBook}></input>
+                                <input className="form-check-input" type="checkbox" name="skillBook" id="skillBook"></input>
                                 <label className="form-check-label" htmlFor="skillBook">Defeated Radamant for Skill Point</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="goldenbird" checked={this.state.questRewards.goldenbird}></input>
+                                <input className="form-check-input" type="checkbox" name="goldenbird" id="goldenbird"></input>
                                 <label className="form-check-label" htmlFor="goldenbird">Drank the Potion of Life</label>
                             </div>
                         </div>
                         <div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="lamEsen" checked={this.state.questRewards.lamEsen}></input>
+                                <input className="form-check-input" type="checkbox" name="lamEsen" id="lamEsen"></input>
                                 <label className="form-check-label" htmlFor="lamEsen">Completed Lam Esen's Tome for five attribute points</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="izual" checked={this.state.questRewards.izual}></input>
+                                <input className="form-check-input" type="checkbox" name="izual" id="izual"></input>
                                 <label className="form-check-label" htmlFor="izual">Defeated Izual for two skill points</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="socket" checked={this.state.questRewards.socket}></input>
+                                <input className="form-check-input" type="checkbox" name="socket" id="socket"></input>
                                 <label className="form-check-label" htmlFor="socket">Socket Reward from Larzuk</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="scroll" checked={this.state.questRewards.scroll}></input>
+                                <input className="form-check-input" type="checkbox" name="scroll" id="scroll"></input>
                                 <label className="form-check-label" htmlFor="scroll">Read the Scroll of Resistance</label>
                             </div>
                         </div>
                         <div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="nAncients" checked={this.state.questRewards.nAncients}></input>
+                                <input className="form-check-input" type="checkbox" name="nAncients" id="nAncients"></input>
                                 <label className="form-check-label" htmlFor="nAncients">Normal Ancients</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="nmAncients" checked={this.state.questRewards.nmAncients}></input>
+                                <input className="form-check-input" type="checkbox" name="nmAncients" id="nmAncients"></input>
                                 <label className="form-check-label" htmlFor="nmAncients">Nightmare Ancients</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" id="hAncients" checked={this.state.questRewards.hAncients}></input>
+                                <input className="form-check-input" type="checkbox" name="hAncients" id="hAncients"></input>
                                 <label className="form-check-label" htmlFor="hAncients">Hell Ancients</label>
                             </div>
                         </div>
