@@ -190,6 +190,6 @@ public class D2Save {
         if(!rewards.isnAncients() && !rewards.isNmAncients() && !rewards.ishAncients())
             return true;
 
-        return !(rewards.isnAncients() && level < 20 || rewards.isNmAncients() && level < 40 || rewards.ishAncients() && level < 60);
+        return !( (rewards.isnAncients() && level < 20) || (rewards.isNmAncients() && level < 40) || (rewards.ishAncients() && level < 60) );
     }
 }

@@ -79,11 +79,11 @@ public class D2CharacterAttributes {
                 xpFromAncients += 40000000;
         }
 
-        if(save.getLevel() == 99) //Can't gain extra XP after reaching level 99
+        if(save.getLevel() == 99) // Can't gain extra XP after reaching level 99
             xpFromAncients = 0;
 
         experience = getExperience(save.getLevel()) + xpFromAncients;
-        if(experience >= getExperience(save.getLevel() + 1)) //check if character should have leveled up
+        if(experience >= getExperience(save.getLevel() + 1)) // check if character should have leveled up
             levelUps++;
         level = save.getLevel() + levelUps;
 		
