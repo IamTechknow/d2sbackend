@@ -25,3 +25,6 @@ hs_err_pid*
 build/
 out/
 .gradle
+
+node_modules/
+src/main/webapp/dist/
