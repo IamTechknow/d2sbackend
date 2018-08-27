@@ -1,5 +1,7 @@
 package com.iamtechknow.d2sbackend;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
@@ -31,21 +34,20 @@ public class D2sController {
 
     @GetMapping("/")
     public String d2sForm(Model model) {
-        model.addAttribute("save", new D2Save());
         return "index";
     }
 
-    @PostMapping("/")
+    // Check the save model (automagically parsed from POST data), then return JSON representing the validation status.
+    @PostMapping(value = "/", produces = "application/json")
+    @ResponseBody
     public String d2sSubmit(@ModelAttribute D2Save save, Model model) {
-        model.addAttribute("save", save);
+        JsonObject result = new JsonObject();
         if(save.checkValid()) {
-            if(!save.isExpansion())
-                save.fixProgression();
             cache.put(save.getName(), save);
-            model.addAttribute("name", save.getName());
-            return "result";
-        } else
-            return "index";
+            result.add("link", new JsonPrimitive(String.format("/download/%s.d2s", save.getName())));
+        }
+        result.add("valid", new JsonPrimitive(!save.isInvalid()));
+        return result.toString();
     }
 
     /**

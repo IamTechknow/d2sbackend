@@ -30,19 +30,36 @@ export default class Form extends Component {
             box.checked = "checked";
     }
 
+    // Post form data then change the state
+    postData(data) {
+        return fetch("/", {
+            method: "POST",
+            mode: "cors",
+            cache: "no-cache",
+            referrer: "no-referrer",
+            body: data
+        }).then(response => response.json());
+    }
+
     handleSubmit(event) {
         event.preventDefault();
 
-        //Validate name, class, act, Anicents quest
+        // Validate name, class, act, Ancients quest
         const data = new FormData(event.target);
-        var level = parseInt(data.get("level"));
+        var name = data.get("name"), level = parseInt(data.get("level"));
         var expansion = data.get("exp") === "on";
         var nAncients = data.get("nAncients") === "on", nmAncients = data.get("nmAncients") === "on", hAncients = data.get("hAncients") === "on";
 
-        var invalidName = !this.pattern.test(data.get("name")),
+        var invalidName = name.length < 2 || name.length > 15 || !this.pattern.test(name),
             invalidForClassic = parseInt(data.get("charClass")) >= 5 && !expansion,
             invalidAct = parseInt(data.get("act")) > 3 && !expansion,
             invalidAncients = (nAncients && level < 20) || (nmAncients && level < 40) || (hAncients && level < 60);
+
+        // Fix progression for Classic mode
+        if(!expansion) {
+            var difficulty = data.get("diff");
+            data.set("diff", difficulty - (difficulty / 5));
+        }
 
         this.setState({
             invalid: invalidName || invalidForClassic || invalidAct || invalidAncients,
@@ -52,14 +69,31 @@ export default class Form extends Component {
             invalidAncients: invalidAncients
         });
 
-        //when done, use fetch API here
+        // when done, use fetch API here, and then change the state to re-render/re-direct the page
         if(!this.state.invalid) {
-
+            this.postData(data)
+            .then(response => {
+                this.setState({
+                    valid: response.valid,
+                    link: response.link || ""
+                });
+            })
+            .catch(error => console.error(error));
         }
     }
 
     //FIXME: Modularize all this, also enable hot-swapping
     render() {
+        if(this.state.valid) {
+            return (
+                <div className="container">
+                    <h1>Save created!</h1>
+                    <a href={this.state.link}>Download this save</a> <br />
+                    <a href="/">Create another save</a>
+                </div>
+            );
+        }
+
         return (
             <div className="container">
                 <form onSubmit={this.handleSubmit} noValidate>
