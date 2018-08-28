@@ -133,19 +133,6 @@ public class D2Save {
     }
 
     /**
-     * Fix character progression/difficulty value if the character is a classic character.
-     */
-    public void fixProgression() {
-        difficulty -= (difficulty / 5);
-    }
-
-    // Called in result.html via Thymeleaf
-    public String getClassName() {
-        String[] classes = {"Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin"};
-        return classes[classNum];
-    }
-
-    /**
      * Checks that the name is valid, that is, it is between 2-15 characters, it starts with a letter,
      * and contains no more than one occurrence of a dash or underscore.
      * @return whether the name is valid or not
@@ -190,6 +177,6 @@ public class D2Save {
         if(!rewards.isnAncients() && !rewards.isNmAncients() && !rewards.ishAncients())
             return true;
 
-        return !(rewards.isnAncients() && level < 20 || rewards.isNmAncients() && level < 40 || rewards.ishAncients() && level < 60);
+        return !( (rewards.isnAncients() && level < 20) || (rewards.isNmAncients() && level < 40) || (rewards.ishAncients() && level < 60) );
     }
 }
