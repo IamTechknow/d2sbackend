@@ -47,18 +47,18 @@ export default class Form extends Component {
         // Validate name, class, act, Ancients quest
         const data = new FormData(event.target);
         var name = data.get("name"), level = parseInt(data.get("level"));
-        var expansion = data.get("exp") === "on";
+        var expansion = data.get("expansion") === "on";
         var nAncients = data.get("nAncients") === "on", nmAncients = data.get("nmAncients") === "on", hAncients = data.get("hAncients") === "on";
 
         var invalidName = name.length < 2 || name.length > 15 || !this.pattern.test(name),
-            invalidForClassic = parseInt(data.get("charClass")) >= 5 && !expansion,
-            invalidAct = parseInt(data.get("act")) > 3 && !expansion,
+            invalidForClassic = parseInt(data.get("classNum")) >= 5 && !expansion,
+            invalidAct = parseInt(data.get("startingAct")) > 3 && !expansion,
             invalidAncients = (nAncients && level < 20) || (nmAncients && level < 40) || (hAncients && level < 60);
 
         // Fix progression for Classic mode
         if(!expansion) {
-            var difficulty = data.get("diff");
-            data.set("diff", difficulty - (difficulty / 5));
+            var difficulty = data.get("difficulty");
+            data.set("difficulty", difficulty - (difficulty / 5));
         }
 
         this.setState({
@@ -123,8 +123,8 @@ export default class Form extends Component {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="charClass">Character Class</label>
-                        <select className="form-control" id="charClass" name="charClass" defaultValue="0">
+                        <label htmlFor="classNum">Character Class</label>
+                        <select className="form-control" id="classNum" name="classNum" defaultValue="0">
                             <option value="0">Amazon</option>
                             <option value="6">Assassin</option>
                             <option value="4">Barbarian</option>
@@ -143,18 +143,18 @@ export default class Form extends Component {
 
                         <div className="form-group col-md-6">
                             <label htmlFor="stashedGold">Stashed Gold</label>
-                            <input type="number" className="form-control" name="stashedGold" id="stashedGold" min="0" max="2500000" defaultValue="0"></input>
+                            <input type="number" className="form-control" name="stashGold" id="stashedGold" min="0" max="2500000" defaultValue="0"></input>
                         </div>
                     </div>
 
                     <h4>Options</h4>
                     <div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="checkbox" name="exp" id="exp" defaultChecked></input>
+                            <input className="form-check-input" type="checkbox" name="expansion" id="exp" defaultChecked></input>
                             <label className="form-check-label" htmlFor="exp">Expansion</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="checkbox" name="hc" id="hc"></input>
+                            <input className="form-check-input" type="checkbox" name="hardcore" id="hc"></input>
                             <label className="form-check-label" htmlFor="hc">Hardcore</label>
                         </div>
                     </div>
@@ -163,19 +163,19 @@ export default class Form extends Component {
                     <h4>Difficulty</h4>
                     <div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="diff" id="normalDifficulty" value="0" defaultChecked></input>
+                            <input className="form-check-input" type="radio" name="difficulty" id="normalDifficulty" value="0" defaultChecked></input>
                             <label className="form-check-label" htmlFor="normalDifficulty">Normal</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="diff" id="nightmareDifficulty" value="5"></input>
+                            <input className="form-check-input" type="radio" name="difficulty" id="nightmareDifficulty" value="5"></input>
                             <label className="form-check-label" htmlFor="nightmareDifficulty">Nightmare</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="diff" id="hellDifficulty" value="10"></input>
+                            <input className="form-check-input" type="radio" name="difficulty" id="hellDifficulty" value="10"></input>
                             <label className="form-check-label" htmlFor="hellDifficulty">Hell</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="diff" id="finishedHell" value="15"></input>
+                            <input className="form-check-input" type="radio" name="difficulty" id="finishedHell" value="15"></input>
                             <label className="form-check-label" htmlFor="finishedHell">Completed Hell</label>
                         </div>
                     </div>
@@ -184,23 +184,23 @@ export default class Form extends Component {
                     <h4>Starting Act</h4>
                     <div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="act" id="act1" value="0" defaultChecked></input>
+                            <input className="form-check-input" type="radio" name="startingAct" id="act1" value="0" defaultChecked></input>
                             <label className="form-check-label" htmlFor="act1">Act 1</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="act" id="act2" value="1"></input>
+                            <input className="form-check-input" type="radio" name="startingAct" id="act2" value="1"></input>
                             <label className="form-check-label" htmlFor="act2">Act 2</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="act" id="act3" value="2"></input>
+                            <input className="form-check-input" type="radio" name="startingAct" id="act3" value="2"></input>
                             <label className="form-check-label" htmlFor="act3">Act 3</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="act" id="act4" value="3"></input>
+                            <input className="form-check-input" type="radio" name="startingAct" id="act4" value="3"></input>
                             <label className="form-check-label" htmlFor="act4">Act 4</label>
                         </div>
                         <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="act" id="act5" value="4"></input>
+                            <input className="form-check-input" type="radio" name="startingAct" id="act5" value="4"></input>
                             <label className="form-check-label" htmlFor="act5">Act 5</label>
                         </div>
                     </div>
@@ -211,51 +211,51 @@ export default class Form extends Component {
                     <div id="questCheckBoxes">
                         <div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="den" id="den"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.den" id="den"></input>
                                 <label className="form-check-label" htmlFor="den">Completed Den of Evil for Skill Point and Stats reset</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="imbue" id="imbue"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.imbue" id="imbue"></input>
                                 <label className="form-check-label" htmlFor="imbue">Returned Hordaric Malus</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="skillBook" id="skillBook"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.skillBook" id="skillBook"></input>
                                 <label className="form-check-label" htmlFor="skillBook">Defeated Radamant for Skill Point</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="goldenbird" id="goldenbird"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.potion" id="goldenbird"></input>
                                 <label className="form-check-label" htmlFor="goldenbird">Drank the Potion of Life</label>
                             </div>
                         </div>
                         <div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="lamEsen" id="lamEsen"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.lamEsen" id="lamEsen"></input>
                                 <label className="form-check-label" htmlFor="lamEsen">Completed Lam Esen's Tome for five attribute points</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="izual" id="izual"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.izual" id="izual"></input>
                                 <label className="form-check-label" htmlFor="izual">Defeated Izual for two skill points</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="socket" id="socket"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.socket" id="socket"></input>
                                 <label className="form-check-label" htmlFor="socket">Socket Reward from Larzuk</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="scroll" id="scroll"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.scroll" id="scroll"></input>
                                 <label className="form-check-label" htmlFor="scroll">Read the Scroll of Resistance</label>
                             </div>
                         </div>
                         <div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="nAncients" id="nAncients"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.nAncients" id="nAncients"></input>
                                 <label className="form-check-label" htmlFor="nAncients">Normal Ancients</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="nmAncients" id="nmAncients"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.nmAncients" id="nmAncients"></input>
                                 <label className="form-check-label" htmlFor="nmAncients">Nightmare Ancients</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="checkbox" name="hAncients" id="hAncients"></input>
+                                <input className="form-check-input" type="checkbox" name="rewards.hAncients" id="hAncients"></input>
                                 <label className="form-check-label" htmlFor="hAncients">Hell Ancients</label>
                             </div>
                         </div>
