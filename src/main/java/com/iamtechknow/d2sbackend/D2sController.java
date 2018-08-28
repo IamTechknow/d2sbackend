@@ -37,7 +37,7 @@ public class D2sController {
         return "index";
     }
 
-    // Check the save model (automagically parsed from POST data), then return JSON representing the validation status.
+    // Check the save model (parsed from POST data by data binding), then return JSON representing the validation status.
     @PostMapping(value = "/", produces = "application/json")
     @ResponseBody
     public String d2sSubmit(@ModelAttribute D2Save save, Model model) {
