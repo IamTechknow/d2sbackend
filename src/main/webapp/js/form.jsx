@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 
+// Components
+import Warnings from './warning.jsx';
+
 // Implementation of the Form HTML
 export default class Form extends Component {
     state = {
@@ -48,7 +51,7 @@ export default class Form extends Component {
         const data = new FormData(event.target);
         var name = data.get("name"), level = parseInt(data.get("level"));
         var expansion = data.get("expansion") === "on";
-        var nAncients = data.get("nAncients") === "on", nmAncients = data.get("nmAncients") === "on", hAncients = data.get("hAncients") === "on";
+        var nAncients = data.get("rewards.nAncients") === "on", nmAncients = data.get("rewards.nmAncients") === "on", hAncients = data.get("rewards.hAncients") === "on";
 
         var invalidName = name.length < 2 || name.length > 15 || !this.pattern.test(name),
             invalidForClassic = parseInt(data.get("classNum")) >= 5 && !expansion,
@@ -83,6 +86,7 @@ export default class Form extends Component {
     }
 
     //FIXME: Modularize all this, also enable hot-swapping
+    //TODO: Add tabs, make it possible to add skills
     render() {
         if(this.state.valid) {
             return (
@@ -97,18 +101,7 @@ export default class Form extends Component {
         return (
             <div className="container">
                 <form onSubmit={this.handleSubmit} noValidate>
-                    {this.state.invalidName &&
-                        <p className="alert alert-danger">Character name is invalid. It must be 2 to 15 characters long, must begin with a letter, and have up to either one dash or underscore.</p>
-                    }
-                    {this.state.invalidForClassic &&
-                        <p className="alert alert-danger">Invalid character class. The character may not be a Druid or Assassin in Diablo II classic.</p>
-                    }
-                    {this.state.invalidAct &&
-                        <p className="alert alert-danger">Invalid starting act. Act 5 does not exist in Diablo II classic.</p>
-                    }
-                    {this.state.invalidAncients &&
-                        <p className="alert alert-danger">Character level is too low to have completed Ancients for the specified difficulties.</p>
-                    }
+                    <Warnings data={this.state} />
                     <h3>Save file options</h3>
                     <div className="form-row">
                         <div className="form-group col-md-6">
