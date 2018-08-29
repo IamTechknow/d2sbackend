@@ -16,6 +16,7 @@ export default class Options extends Component {
                 <input className="form-check-input" type="checkbox" name="hardcore" id="hc"></input>
                 <label className="form-check-label" htmlFor="hc">Hardcore</label>
             </div>
+            <br /> <br />
         </div>
     );
   }

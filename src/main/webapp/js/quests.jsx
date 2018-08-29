@@ -59,6 +59,7 @@ export default class Quests extends Component {
                     <label className="form-check-label" htmlFor="hAncients">Hell Ancients</label>
                 </div>
             </div>
+            <br />
         </div>
     );
   }

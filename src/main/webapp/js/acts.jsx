@@ -28,6 +28,7 @@ export default class Acts extends Component {
                 <input className="form-check-input" type="radio" name="startingAct" id="act5" value="4"></input>
                 <label className="form-check-label" htmlFor="act5">Act 5</label>
             </div>
+            <br /> <br />
         </div>
     );
   }

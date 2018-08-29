@@ -24,6 +24,7 @@ export default class Difficulties extends Component {
                 <input className="form-check-input" type="radio" name="difficulty" id="finishedHell" value="15"></input>
                 <label className="form-check-label" htmlFor="finishedHell">Completed Hell</label>
             </div>
+            <br /> <br />
         </div>
     );
   }
