@@ -193,6 +193,7 @@ public class D2sWriter {
             arr[7] = (byte) 0x9F;
         }
         if(startingAct > ACT1) {
+            writeQuestCompleted(arr, 8, 9, false); // Rescued Cain
             writeQuestCompleted(arr, 12, 13, false); // Killed Andy
             arr[14] = 1; // Traveled to Act 2
             arr[15] = 0;
