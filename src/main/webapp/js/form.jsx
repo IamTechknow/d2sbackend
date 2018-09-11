@@ -58,12 +58,18 @@ export default class Form extends Component {
         // If the state is updated, React will call render() to update the DOM
     }
 
+    // Check each box and populate a rewards object that indicates all boxes are set
     checkQuestBoxes(event) {
         event.preventDefault();
         var checkboxes = document.querySelector('#questCheckBoxes');
         var quest = checkboxes.querySelectorAll('input[type="checkbox"]');
-        for (let box of quest)
+        var rewards = {};
+
+        for (let box of quest) {
             box.checked = "checked";
+            rewards[box.name] = true;
+        }
+        this.setState({"rewards" : rewards});
     }
 
     // Post form data then change the state
@@ -180,7 +186,7 @@ export default class Form extends Component {
 
                                 <h4>Quest Rewards (most rewards need to be redeemed manually)</h4>
                                 <a href="#" id="checkAll" onClick={this.checkQuestBoxes}>Check All</a>
-                                <Quests data={this.rewards} formHandler={this.onFormChange.bind(this)} />
+                                <Quests data={this.state.rewards} formHandler={this.onFormChange.bind(this)} />
                             </React.Fragment>
                         }
 
