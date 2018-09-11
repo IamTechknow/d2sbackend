@@ -12,21 +12,25 @@ import Options from './options.jsx';
 import Acts from './acts.jsx';
 import Difficulties from './difficulties.jsx';
 import Quests from './quests.jsx';
+import Skills from './skills.jsx';
 
 // Padding style for paper components
 const paperPadding = {
   padding: '16px',
 };
 
+const MAIN = 0, SKILLS = 1, ITEMS = 2;
+
 // Implementation of the Form HTML
 export default class Form extends Component {
     state = {
-        currTab: 0,
+        currTab: MAIN,
         invalid: false,
         invalidForClassic: false,
         invalidName: false,
         invalidAct: false,
         invalidAncients: false,
+        skillPoints: 0,
     };
 
     constructor(props) {
@@ -131,22 +135,29 @@ export default class Form extends Component {
 
                 <Paper style={paperPadding}>
                     <form onSubmit={this.handleSubmit} noValidate>
-                        <Warnings data={this.state} />
-                        <h3>Save file options</h3>
-                        <MainData />
+                        //TODO: Pass state onto these components so they have correct data upon tab change
+                        {this.state.currTab === MAIN &&
+                            <React.Fragment>
+                                <Warnings data={this.state} />
+                                <h3>Save file options</h3>
+                                <MainData />
 
-                        <h4>Options</h4>
-                        <Options />
+                                <h4>Options</h4>
+                                <Options />
 
-                        <h4>Difficulty</h4>
-                        <Difficulties />
+                                <h4>Difficulty</h4>
+                                <Difficulties />
 
-                        <h4>Starting Act</h4>
-                        <Acts />
+                                <h4>Starting Act</h4>
+                                <Acts />
 
-                        <h4>Quest Rewards (most rewards need to be redeemed manually)</h4>
-                        <a href="#" id="checkAll" onClick={this.checkQuestBoxes}>Check All</a>
-                        <Quests />
+                                <h4>Quest Rewards (most rewards need to be redeemed manually)</h4>
+                                <a href="#" id="checkAll" onClick={this.checkQuestBoxes}>Check All</a>
+                                <Quests />
+                            </React.Fragment>
+                        }
+
+                        {this.state.currTab === SKILLS && <Skills data={this.state} />}
 
                         <button id="submitButton" type="submit" className="btn btn-primary">Submit</button>
                     </form>
