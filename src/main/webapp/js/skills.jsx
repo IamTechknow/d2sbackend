@@ -5,7 +5,7 @@ export default class Skills extends Component {
     super(props);
 
     this.state = {
-      classNum: props.data.classNum,
+      classNum: Number.parseInt(props.data.classNum),
       skillPoints: props.data.skillPoints,
     };
   }

@@ -9,11 +9,11 @@ export default class Options extends Component {
     return (
         <div>
             <div className="form-check form-check-inline">
-                <input className="form-check-input" type="checkbox" name="expansion" id="exp" defaultChecked></input>
+                <input className="opts form-check-input" type="checkbox" name="expansion" id="exp" checked={this.props.data.expansion} onChange={this.props.formHandler}></input>
                 <label className="form-check-label" htmlFor="exp">Expansion</label>
             </div>
             <div className="form-check form-check-inline">
-                <input className="form-check-input" type="checkbox" name="hardcore" id="hc"></input>
+                <input className="opts form-check-input" type="checkbox" name="hardcore" id="hc" checked={this.props.data.hardcore} onChange={this.props.formHandler}></input>
                 <label className="form-check-label" htmlFor="hc">Hardcore</label>
             </div>
             <br /> <br />

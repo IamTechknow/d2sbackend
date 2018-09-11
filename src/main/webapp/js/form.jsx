@@ -23,6 +23,7 @@ const MAIN = 0, SKILLS = 1, ITEMS = 2;
 
 // Implementation of the Form HTML
 export default class Form extends Component {
+    // Default form values
     state = {
         currTab: MAIN,
         invalid: false,
@@ -30,7 +31,17 @@ export default class Form extends Component {
         invalidName: false,
         invalidAct: false,
         invalidAncients: false,
+        name: '',
+        level: 1,
+        gold: 0,
+        stashGold: 0,
+        classNum: "0",
+        expansion: true,
+        hardcore: false,
+        difficulty: "0",
+        startingAct: "0",
         skillPoints: 0,
+        rewards : {},
     };
 
     constructor(props) {
@@ -40,6 +51,7 @@ export default class Form extends Component {
         this.checkQuestBoxes = this.checkQuestBoxes.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.onTabChange = this.onTabChange.bind(this);
+        this.onFormChange = this.onFormChange.bind(this);
     }
 
     componentDidMount() {
@@ -66,7 +78,21 @@ export default class Form extends Component {
     }
 
     onTabChange(event, value) {
-        this.setState({currTab: value});
+        //On Tab change, update data that can be passed onto other tabs, such as skillpoints
+        this.setState({currTab: value, skillPoints: this.state.level - 1});
+    }
+
+    //Generic form handler that saves data to the overall form state. Handles quest data by copying the current object
+    onFormChange(event) {
+        if(event.target.classList[0] === "rewards") {
+            let rewards = Object.assign({}, this.state.rewards);
+            rewards[event.target.name] = event.target.checked;
+            this.setState({"rewards" : rewards});
+        } else if(event.target.classList[0] === "opts") {
+            this.setState({ [event.target.name] : event.target.checked });
+        } else {
+            this.setState({ [event.target.name]: event.target.value }); // Parse Integer when needed, not now
+        }
     }
 
     handleSubmit(event) {
@@ -76,7 +102,7 @@ export default class Form extends Component {
         const data = new FormData(event.target);
         var name = data.get("name"), level = parseInt(data.get("level"));
         var expansion = data.get("expansion") === "on";
-        var nAncients = data.get("rewards.nAncients") === "on", nmAncients = data.get("rewards.nmAncients") === "on", hAncients = data.get("rewards.hAncients") === "on";
+        var nAncients = data.get("nAncients") === "on", nmAncients = data.get("nmAncients") === "on", hAncients = data.get("hAncients") === "on";
 
         var invalidName = name.length < 2 || name.length > 15 || !this.pattern.test(name),
             invalidForClassic = parseInt(data.get("classNum")) >= 5 && !expansion,
@@ -122,6 +148,8 @@ export default class Form extends Component {
             );
         }
 
+        // Pass the state of the form to the main components and the on change handler to change state
+        // The Paper component accepts an object to apply CSS styling
         return (
             <div className="container">
                 <Paper square>
@@ -135,29 +163,28 @@ export default class Form extends Component {
 
                 <Paper style={paperPadding}>
                     <form onSubmit={this.handleSubmit} noValidate>
-                        //TODO: Pass state onto these components so they have correct data upon tab change
                         {this.state.currTab === MAIN &&
                             <React.Fragment>
                                 <Warnings data={this.state} />
                                 <h3>Save file options</h3>
-                                <MainData />
+                                <MainData data={this.state} formHandler={this.onFormChange.bind(this)} />
 
                                 <h4>Options</h4>
-                                <Options />
+                                <Options data={this.state} formHandler={this.onFormChange.bind(this)} />
 
                                 <h4>Difficulty</h4>
-                                <Difficulties />
+                                <Difficulties data={this.state} formHandler={this.onFormChange.bind(this)} />
 
                                 <h4>Starting Act</h4>
-                                <Acts />
+                                <Acts data={this.state} formHandler={this.onFormChange.bind(this)} />
 
                                 <h4>Quest Rewards (most rewards need to be redeemed manually)</h4>
                                 <a href="#" id="checkAll" onClick={this.checkQuestBoxes}>Check All</a>
-                                <Quests />
+                                <Quests data={this.rewards} formHandler={this.onFormChange.bind(this)} />
                             </React.Fragment>
                         }
 
-                        {this.state.currTab === SKILLS && <Skills data={this.state} />}
+                        {this.state.currTab === SKILLS && <Skills data={this.state} formHandler={this.onFormChange.bind(this)} />}
 
                         <button id="submitButton" type="submit" className="btn btn-primary">Submit</button>
                     </form>
