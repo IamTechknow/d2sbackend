@@ -1,5 +1,11 @@
 import React, {Component} from 'react';
 
+import Skill from './skill.jsx';
+import * as ClassData from './class-data.jsx';
+
+const ZON = 0, SORC = 1, NECRO = 2, PAL = 3, BARB = 4, DRUID = 5;
+
+// Defines a list of skill options to allocate skill points for the character
 export default class Skills extends Component {
   constructor(props) {
     super(props);
@@ -12,17 +18,17 @@ export default class Skills extends Component {
 
   getClass(classNum) {
     switch(classNum) {
-        case 0:
+        case ZON:
           return "Amazon";
-        case 1:
+        case SORC:
           return "Sorceress";
-        case 2:
+        case NECRO:
           return "Necromancer";
-        case 3:
+        case PAL:
           return "Paladin";
-        case 4:
+        case BARB:
           return "Barbarian";
-        case 5:
+        case DRUID:
           return "Druid";
         default:
           return "Assassin";
@@ -34,6 +40,24 @@ export default class Skills extends Component {
         <div>
             <p>Class: {this.getClass(this.state.classNum)}</p>
             <p>Skill points: {this.state.skillPoints}</p>
+
+            <div className="row">
+                <div className="col-md-4">
+                    { ClassData[this.state.classNum].skills.slice(0, 10).map((skill, i) =>
+                        <Skill key={skill.id} formName={`skill-${i}`} skillName={skill.name}  skillId={skill.id} skillLevel={skill.level} skillDeps={skill.deps} handler={this.props.formHandler} />
+                    )}
+                </div>
+                <div className="col-md-4">
+                    { ClassData[this.state.classNum].skills.slice(10, 20).map((skill, i) =>
+                        <Skill key={skill.id} formName={`skill-${10 + i}`} skillName={skill.name}  skillId={skill.id} skillLevel={skill.level} skillDeps={skill.deps} handler={this.props.formHandler} />
+                    )}
+                </div>
+                <div className="col-md-4">
+                    { ClassData[this.state.classNum].skills.slice(20, 30).map((skill, i) =>
+                        <Skill key={skill.id} formName={`skill-${20 + i}`} skillName={skill.name}  skillId={skill.id} skillLevel={skill.level} skillDeps={skill.deps} handler={this.props.formHandler} />
+                    )}
+                </div>
+            </div>
         </div>
     );
   }
