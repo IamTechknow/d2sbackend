@@ -5,14 +5,12 @@ import React, {Component} from 'react';
 export default class Skill extends Component {
   constructor(props) {
     super(props);
-    this.skillId = props.skillId;
-    this.skillDependencies = props.skillDeps;
   }
 
   render() {
     return (
       <label>{this.props.skillName + ` (Level ${this.props.skillLevel}+)`}
-        <input type="number" className="form-control" name={this.props.formName} min="0" max="20" defaultValue="0" onChange={this.props.handler} />
+        <input type="number" className="skill form-control" name={this.props.formName} min="0" max="20" value={this.props.value} onChange={this.props.handler} />
       </label>
     );
   }

@@ -13,6 +13,7 @@ import Acts from './acts.jsx';
 import Difficulties from './difficulties.jsx';
 import Quests from './quests.jsx';
 import Skills from './skills.jsx';
+import * as ClassData from './class-data.jsx';
 
 // Padding style for paper components
 const paperPadding = {
@@ -31,6 +32,7 @@ export default class Form extends Component {
         invalidName: false,
         invalidAct: false,
         invalidAncients: false,
+        invalidSkills: false,
         name: '',
         level: 1,
         gold: 0,
@@ -40,8 +42,8 @@ export default class Form extends Component {
         hardcore: false,
         difficulty: "0",
         startingAct: "0",
-        skillPoints: 0,
         rewards : {},
+        allocated: new Array(30).fill(0, 0, 30),
     };
 
     constructor(props) {
@@ -52,10 +54,6 @@ export default class Form extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.onTabChange = this.onTabChange.bind(this);
         this.onFormChange = this.onFormChange.bind(this);
-    }
-
-    componentDidMount() {
-        // If the state is updated, React will call render() to update the DOM
     }
 
     // Check each box and populate a rewards object that indicates all boxes are set
@@ -83,9 +81,30 @@ export default class Form extends Component {
         }).then(response => response.json());
     }
 
+    checkSkills() {
+        //Check skill point allocation
+
+
+        //Check skill dependencies are being met
+
+
+        return false;
+    }
+
+    calcSP() {
+        let ACT2 = 1;
+        let timesBeatGame = Number.parseInt(this.state.difficulty) / 5;
+        var timesKilledRadamant = timesBeatGame * (this.state.rewards.skillBook ? 1 : 0);
+        if(Number.parseInt(this.state.startingAct) >= ACT2 && this.state.rewards.skillBook)
+            timesKilledRadamant++;
+        timesKilledRadamant = Math.min(3, timesKilledRadamant);
+
+        return this.state.level - 1 + timesKilledRadamant;
+    }
+
     onTabChange(event, value) {
-        //On Tab change, update data that can be passed onto other tabs, such as skillpoints
-        this.setState({currTab: value, skillPoints: this.state.level - 1});
+        //On Tab change, update data that can be passed onto other tabs, such as skill points
+        this.setState({currTab: value, skillPoints: this.calcSP()});
     }
 
     //Generic form handler that saves data to the overall form state. Handles quest data by copying the current object
@@ -96,6 +115,11 @@ export default class Form extends Component {
             this.setState({"rewards" : rewards});
         } else if(event.target.classList[0] === "opts") {
             this.setState({ [event.target.name] : event.target.checked });
+        } else if(event.target.classList[0] === "skill") {
+            let arr = this.state.allocated.slice();
+            let idx = Number.parseInt(event.target.name.substring(6));
+            arr[idx] = Number.parseInt(event.target.value);
+            this.setState({ "allocated" : arr });
         } else {
             this.setState({ [event.target.name]: event.target.value }); // Parse Integer when needed, not now
         }
@@ -114,6 +138,7 @@ export default class Form extends Component {
             invalidForClassic = parseInt(data.get("classNum")) >= 5 && !expansion,
             invalidAct = parseInt(data.get("startingAct")) > 3 && !expansion,
             invalidAncients = (nAncients && level < 20) || (nmAncients && level < 40) || (hAncients && level < 60);
+            invalidSkills = checkSkills();
 
         // Fix progression for Classic mode
         if(!expansion) {
@@ -122,11 +147,12 @@ export default class Form extends Component {
         }
 
         this.setState({
-            invalid: invalidName || invalidForClassic || invalidAct || invalidAncients,
+            invalid: invalidName || invalidForClassic || invalidAct || invalidAncients || invalidSkills,
             invalidName: invalidName,
             invalidForClassic: invalidForClassic,
             invalidAct: invalidAct,
-            invalidAncients: invalidAncients
+            invalidAncients: invalidAncients,
+            invalidSkills: invalidSkills
         });
 
         // when done, use fetch API here, and then change the state to re-render/re-direct the page
@@ -142,7 +168,6 @@ export default class Form extends Component {
         }
     }
 
-    //TODO: Add tabs, make it possible to add skills
     render() {
         if(this.state.valid) {
             return (
