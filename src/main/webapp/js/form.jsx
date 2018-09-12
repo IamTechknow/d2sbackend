@@ -20,7 +20,7 @@ const paperPadding = {
   padding: '16px',
 };
 
-const MAIN = 0, SKILLS = 1, ITEMS = 2, VALID_SKILLS = 0;
+const MAIN = 0, SKILLS = 1, ITEMS = 2, VALID_SKILLS = 0, MAX_LVL = 99, MAX_SKILL_LVL = 20;
 
 // Implementation of the Form HTML
 export default class Form extends Component {
@@ -132,10 +132,12 @@ export default class Form extends Component {
         } else if(event.target.classList[0] === "skill") {
             let arr = this.state.allocated.slice();
             let idx = Number.parseInt(event.target.name.substring(6));
-            arr[idx] = Number.parseInt(event.target.value);
+            arr[idx] = Math.min(MAX_SKILL_LVL, Number.parseInt(event.target.value));
             this.setState({ "allocated" : arr });
+        } else if(event.target.name === "level") {
+            this.setState({ [event.target.name] : Math.min(MAX_LVL, Number.parseInt(event.target.value)).toString() });
         } else {
-            this.setState({ [event.target.name]: event.target.value }); // Parse Integer when needed, not now
+            this.setState({ [event.target.name] : event.target.value }); // Parse Integer when needed, not now
         }
     }
 
@@ -160,8 +162,9 @@ export default class Form extends Component {
             data.set("difficulty", difficulty - (difficulty / 5));
         }
 
+        var invalid = invalidName || invalidForClassic || invalidAct || invalidAncients || invalidSkills > 0;
         this.setState({
-            invalid: invalidName || invalidForClassic || invalidAct || invalidAncients || invalidSkills,
+            invalid: invalid,
             invalidName: invalidName,
             invalidForClassic: invalidForClassic,
             invalidAct: invalidAct,
@@ -169,8 +172,18 @@ export default class Form extends Component {
             invalidSkills: invalidSkills
         });
 
-        // when done, use fetch API here, and then change the state to re-render/re-direct the page
-        if(!this.state.invalid) {
+        // Modify the form data to be compatible with Spring's form serialization
+        data.delete("nAncients"); data.delete("nmAncients"); data.delete("hAncients");
+        for(var key in this.state.rewards)
+            data.set(`rewards.${key}`, this.state.rewards[key]);
+
+        for(var i = 0; i < this.state.allocated.length; i++) {
+            data.set(`skills.allocated[${i}].id`, ClassData[this.state.classNum].skills[i].id);
+            data.set(`skills.allocated[${i}].skillPoints`, this.state.allocated[i]);
+        }
+
+        // Use fetch API here, and then change the state to re-render/re-direct the page
+        if(!invalid) {
             this.postData(data)
             .then(response => {
                 this.setState({
@@ -188,6 +201,13 @@ export default class Form extends Component {
                 <div className="container">
                     <h1>Save created!</h1>
                     <a href={this.state.link}>Download this save</a> <br />
+                    <a href="/">Create another save</a>
+                </div>
+            );
+        } else if(this.state.link = "" && !this.state.valid) {
+            return (
+                <div className="container">
+                    <h1>Save not created - something went wrong!</h1>
                     <a href="/">Create another save</a>
                 </div>
             );

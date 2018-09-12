@@ -17,6 +17,7 @@ public class D2Save {
     private boolean hardcore;
     private int difficulty;
     private D2QuestRewards rewards = new D2QuestRewards();
+    private D2Skills skills = new D2Skills();
 
     // Invalid booleans for error messages
     private boolean invalid, invalidForClassic, invalidName, invalidAct, invalidAncients;
@@ -115,6 +116,10 @@ public class D2Save {
 
     public D2QuestRewards getRewards() {
         return rewards;
+    }
+
+    public D2Skills getSkills() {
+        return skills;
     }
 
     /**
