@@ -41,7 +41,7 @@ export default class Skills extends Component {
             <p>Class: {this.getClass(this.state.classNum)}</p>
             <p>Skill points: {this.state.skillPoints}</p>
 
-            <div className="row">
+            <div className="form-row">
                 <div className="col-md-4">
                     { ClassData[this.state.classNum].skills.slice(0, 10).map((skill, i) =>
                         <Skill key={skill.id} formName={`skill-${i}`} skillName={skill.name}  skillId={skill.id} skillLevel={skill.level} skillDeps={skill.deps} handler={this.props.formHandler} />
