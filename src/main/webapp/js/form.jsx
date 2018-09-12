@@ -20,7 +20,7 @@ const paperPadding = {
   padding: '16px',
 };
 
-const MAIN = 0, SKILLS = 1, ITEMS = 2;
+const MAIN = 0, SKILLS = 1, ITEMS = 2, VALID_SKILLS = 0;
 
 // Implementation of the Form HTML
 export default class Form extends Component {
@@ -32,7 +32,7 @@ export default class Form extends Component {
         invalidName: false,
         invalidAct: false,
         invalidAncients: false,
-        invalidSkills: false,
+        invalidSkills: VALID_SKILLS,
         name: '',
         level: 1,
         gold: 0,
@@ -81,14 +81,28 @@ export default class Form extends Component {
         }).then(response => response.json());
     }
 
+    //Check skill point allocation, and dependencies are being met
     checkSkills() {
-        //Check skill point allocation
+        let INVALID_NO_SP = 1, INVALID_LEVEL_LOW = 2, INVALID_DEPS = 3;
+        let spLeft = this.calcSP() - this.state.allocated.reduce( ( accum, curr) => accum + curr );
+        if(spLeft < 0)
+            return INVALID_NO_SP;
 
+        let skills = ClassData[this.state.classNum].skills,
+        offset = [6, 36, 66, 96, 126, 221, 251][this.state.classNum];
 
-        //Check skill dependencies are being met
+        for(var i = 0; i < this.state.allocated.length; i++) {
+            if(this.state.allocated[i] > 0) {
+                if(skills[i].level + this.state.allocated[i] > this.state.level) // Level too low for skill level
+                    return INVALID_LEVEL_LOW;
 
-
-        return false;
+                var deps = skills[i].deps;
+                for(var j = 0; j < deps.length; j++)
+                    if(this.state.allocated[deps[j] - offset] < 1)
+                        return INVALID_DEPS;
+            }
+        }
+        return VALID_SKILLS;
     }
 
     calcSP() {
@@ -137,8 +151,8 @@ export default class Form extends Component {
         var invalidName = name.length < 2 || name.length > 15 || !this.pattern.test(name),
             invalidForClassic = parseInt(data.get("classNum")) >= 5 && !expansion,
             invalidAct = parseInt(data.get("startingAct")) > 3 && !expansion,
-            invalidAncients = (nAncients && level < 20) || (nmAncients && level < 40) || (hAncients && level < 60);
-            invalidSkills = checkSkills();
+            invalidAncients = (nAncients && level < 20) || (nmAncients && level < 40) || (hAncients && level < 60),
+            invalidSkills = this.checkSkills();
 
         // Fix progression for Classic mode
         if(!expansion) {

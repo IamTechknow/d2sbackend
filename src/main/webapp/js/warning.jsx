@@ -6,6 +6,18 @@ export default class Warnings extends Component {
     super(props);
   }
 
+  getSkillsMessage(errno) {
+    let INVALID_NO_SP = 1, INVALID_LEVEL_LOW = 2, INVALID_DEPS = 3;
+    switch(errno) {
+        case INVALID_NO_SP:
+            return "Character does not have enough skill points for this build!";
+        case INVALID_LEVEL_LOW:
+            return "Character level is too low for at least one skill.";
+        default:
+            return "Skill dependencies are not met for at least one skill.";
+    }
+  }
+
   render() {
     return (
         <div>
@@ -20,6 +32,9 @@ export default class Warnings extends Component {
             }
             {this.props.data.invalidAncients &&
                 <p className="alert alert-danger">Character level is too low to have completed Ancients for the specified difficulties.</p>
+            }
+            {this.props.data.invalidSkills > 0 &&
+                <p className="alert alert-danger">{"Skill point allocation invalid. " + this.getSkillsMessage(this.props.data.invalidSkills)}</p>
             }
         </div>
     );
