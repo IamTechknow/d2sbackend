@@ -60,6 +60,7 @@ export default class Form extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.onTabChange = this.onTabChange.bind(this);
         this.onFormChange = this.onFormChange.bind(this);
+        this.onStatClick = this.onStatClick.bind(this);
     }
 
     // Check each box and populate a rewards object that indicates all boxes are set
@@ -145,9 +146,24 @@ export default class Form extends Component {
         return this.state.level - 1 + timesReadSkillBook;
     }
 
+
+    // On Tab change, update data that can be passed onto other tabs, such as skill points
     onTabChange(event, value) {
-        // On Tab change, update data that can be passed onto other tabs, such as skill points
         this.setState({currTab: value, skillPoints: this.calcSP()});
+    }
+
+    // Handle the two buttons that can increase stats
+    onStatClick(event) {
+        let arr = this.state.attr.slice();
+
+        if(event.target.dataset.mode === "1") {
+            let attr_left = this.calcStats() - arr.reduce( ( accum, curr) => accum + curr );
+            if(attr_left > 0)
+                arr[event.target.dataset.idx] += attr_left;
+        } else {
+            arr[event.target.dataset.idx] += 5;
+        }
+        this.setState({ "attr" : arr});
     }
 
     // Generic form handler that saves data to the overall form state.
@@ -275,7 +291,7 @@ export default class Form extends Component {
                             <React.Fragment>
                                 <Warnings data={this.state} />
                                 <h3>Save file options</h3>
-                                <MainData data={this.state} stats={this.calcStats()} handler={this.onFormChange.bind(this)} />
+                                <MainData data={this.state} stats={this.calcStats()} handler={this.onFormChange.bind(this)} btnHandler={this.onStatClick.bind(this)} />
 
                                 <h4>Options</h4>
                                 <Options data={this.state} handler={this.onFormChange.bind(this)} />

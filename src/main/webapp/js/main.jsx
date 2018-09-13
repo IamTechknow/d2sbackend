@@ -55,18 +55,26 @@ export default class MainData extends Component {
                 <div className="form-group col-md-3">
                     <label htmlFor="str">Strength</label>
                     <input type="number" className="attr form-control" name="str" id="str" min="0" value={this.props.data.attr[0] + baseAttr[0]} onChange={this.props.handler}></input>
+                    <button type="button" className="btn btn-primary" style={{"marginTop": 10 + "px"}} data-idx="0" data-mode="0" onClick={this.props.btnHandler}>+5</button>
+                    <button type="button" className="btn btn-primary" style={{"marginTop": 10 + "px", "marginLeft": 10 + "px"}} data-idx="0" data-mode="1" onClick={this.props.btnHandler}>+All</button>
                 </div>
                 <div className="form-group col-md-3">
                     <label htmlFor="dex">Dexterity</label>
                     <input type="number" className="attr form-control" name="dex" id="dex" min="0" value={this.props.data.attr[1] + baseAttr[1]} onChange={this.props.handler}></input>
+                    <button type="button" className="btn btn-primary" style={{"marginTop": 10 + "px"}} data-idx="1" data-mode="0" onClick={this.props.btnHandler}>+5</button>
+                    <button type="button" className="btn btn-primary" style={{"marginTop": 10 + "px", "marginLeft": 10 + "px"}} data-idx="1" data-mode="1" onClick={this.props.btnHandler}>+All</button>
                 </div>
                 <div className="form-group col-md-3">
                     <label htmlFor="vit">Vitality</label>
                     <input type="number" className="attr form-control" name="vit" id="vit" min="0" value={this.props.data.attr[2] + baseAttr[2]} onChange={this.props.handler}></input>
+                    <button type="button" className="btn btn-primary" style={{"marginTop": 10 + "px"}} data-idx="2" data-mode="0" onClick={this.props.btnHandler}>+5</button>
+                    <button type="button" className="btn btn-primary" style={{"marginTop": 10 + "px", "marginLeft": 10 + "px"}} data-idx="2" data-mode="1" onClick={this.props.btnHandler}>+All</button>
                 </div>
                 <div className="form-group col-md-3">
                     <label htmlFor="nrg">Energy</label>
                     <input type="number" className="attr form-control" name="nrg" id="nrg" min="0" value={this.props.data.attr[3] + baseAttr[3]} onChange={this.props.handler}></input>
+                    <button type="button" className="btn btn-primary" style={{"marginTop": 10 + "px"}} data-idx="3" data-mode="0" onClick={this.props.btnHandler}>+5</button>
+                    <button type="button" className="btn btn-primary" style={{"marginTop": 10 + "px", "marginLeft": 10 + "px"}} data-idx="3" data-mode="1" onClick={this.props.btnHandler}>+All</button>
                 </div>
             </div>
         </div>
