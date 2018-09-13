@@ -138,10 +138,10 @@ module.exports = [
                 id: 48, name: "Nova", level: 12, deps: [42]
             },
             {
-                id: 49, name: "Lightning", level: 12, deps: [40, 45]
+                id: 49, name: "Lightning", level: 12, deps: [38]
             },
             {
-                id: 50, name: "Shiver Armor", level: 12, deps: [15]
+                id: 50, name: "Shiver Armor", level: 12, deps: [40, 45]
             },
             {
                 id: 51, name: "Fire Wall", level: 18, deps: [46]
