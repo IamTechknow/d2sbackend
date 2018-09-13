@@ -18,6 +18,22 @@ export default class Warnings extends Component {
     }
   }
 
+  getStatsMessage(errno) {
+    let INVALID_NEG_ATTR = 1, STR_BELOW_BASE = 2, DEX_BELOW_BASE = 3, VIT_BELOW_BASE = 4, NRG_BELOW_BASE = 5;
+    switch(errno) {
+        case STR_BELOW_BASE:
+            return "Strength points are below character's base value.";
+        case DEX_BELOW_BASE:
+            return "Dexterity points are below character's base value.";
+        case VIT_BELOW_BASE:
+            return "Vitality points are below character's base value.";
+        case NRG_BELOW_BASE:
+            return "Energy points are below character's base value.";
+        default:
+            return "Too many points allocated, please subtract excess stats!";
+    }
+  }
+
   render() {
     return (
         <div>
@@ -35,6 +51,9 @@ export default class Warnings extends Component {
             }
             {this.props.data.invalidSkills > 0 &&
                 <p className="alert alert-danger">{"Skill point allocation invalid. " + this.getSkillsMessage(this.props.data.invalidSkills)}</p>
+            }
+            {this.props.data.invalidStats > 0 &&
+                <p className="alert alert-danger">{"Stat point allocation invalid. " + this.getStatsMessage(this.props.data.invalidStats)}</p>
             }
         </div>
     );

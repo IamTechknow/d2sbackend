@@ -36,6 +36,7 @@ export default class Skills extends Component {
   }
 
   render() {
+    var allocated = this.props.data.allocated;
     return (
         <div>
             <p>Class: {this.getClass(this.state.classNum)}</p>
@@ -44,17 +45,17 @@ export default class Skills extends Component {
             <div className="form-row">
                 <div className="col-md-4">
                     { ClassData[this.state.classNum].skills.slice(0, 10).map((skill, i) =>
-                        <Skill key={skill.id} formName={`skill-${i}`} skillName={skill.name}  skillId={skill.id} skillLevel={skill.level} skillDeps={skill.deps} value={this.props.data.allocated[i]} handler={this.props.formHandler} />
+                        <Skill key={skill.id} formName={`skill-${i}`} skillName={skill.name}  skillId={skill.id} skillLevel={skill.level} skillDeps={skill.deps} value={allocated[i]} handler={this.props.handler} />
                     )}
                 </div>
                 <div className="col-md-4">
                     { ClassData[this.state.classNum].skills.slice(10, 20).map((skill, i) =>
-                        <Skill key={skill.id} formName={`skill-${10 + i}`} skillName={skill.name}  skillId={skill.id} skillLevel={skill.level} skillDeps={skill.deps} value={this.props.data.allocated[10 + i]} handler={this.props.formHandler} />
+                        <Skill key={skill.id} formName={`skill-${10 + i}`} skillName={skill.name}  skillId={skill.id} skillLevel={skill.level} skillDeps={skill.deps} value={allocated[10 + i]} handler={this.props.handler} />
                     )}
                 </div>
                 <div className="col-md-4">
                     { ClassData[this.state.classNum].skills.slice(20, 30).map((skill, i) =>
-                        <Skill key={skill.id} formName={`skill-${20 + i}`} skillName={skill.name}  skillId={skill.id} skillLevel={skill.level} skillDeps={skill.deps} value={this.props.data.allocated[20 + i]} handler={this.props.formHandler} />
+                        <Skill key={skill.id} formName={`skill-${20 + i}`} skillName={skill.name}  skillId={skill.id} skillLevel={skill.level} skillDeps={skill.deps} value={allocated[20 + i]} handler={this.props.handler} />
                     )}
                 </div>
             </div>

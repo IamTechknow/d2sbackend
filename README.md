@@ -10,8 +10,8 @@ User Stories:
   * [X] Character Name
   * [X] Character Level
   * [X] Character Class
-  * [ ] Character Attributes
-  * [ ] Character Skills
+  * [X] Character Attributes
+  * [X] Character Skills
   * [X] Game Difficulty
   * [X] Game Mode (Expansion / Hardcore)
   * [X] Current Act

@@ -1,6 +1,7 @@
-// Skill data for each class
+// Skill and attribute data for each class
 module.exports = [
     { // Amazon
+        "attributes": [20, 25, 20, 15],
         "skills": [
             {
                 id: 6, name: "Magic Arrow", level: 1, deps: []
@@ -95,6 +96,7 @@ module.exports = [
         ]
     },
     { // Sorceress
+        "attributes": [10, 25, 10, 35],
         "skills": [
             {
                 id: 36, name: "Fire Bolt", level: 1, deps: []
@@ -189,6 +191,7 @@ module.exports = [
         ]
     },
     { // Necromancer
+        "attributes": [15, 25, 15, 25],
         "skills": [
             {
                 id: 66, name: "Amplify Damage", level: 1, deps: []
@@ -283,6 +286,7 @@ module.exports = [
         ]
     },
     { // Paladin
+        "attributes": [25, 20, 25, 15],
         "skills": [
             {
                 id: 96, name: "Sacrifice", level: 1, deps: []
@@ -377,6 +381,7 @@ module.exports = [
         ]
     },
     { // Barbarian
+        "attributes": [30, 20, 25, 10],
         "skills": [
             {
                 id: 126, name: "Bash", level: 1, deps: []
@@ -471,6 +476,7 @@ module.exports = [
         ]
     },
     { // Druid
+        "attributes": [15, 20, 25, 20],
         "skills": [
             {
                 id: 221, name: "Raven", level: 1, deps: []
@@ -565,6 +571,7 @@ module.exports = [
         ]
     },
     { // Assassin
+        "attributes": [20, 20, 20, 25],
         "skills": [
             {
                 id: 251, name: "Fire Blast", level: 1, deps: []

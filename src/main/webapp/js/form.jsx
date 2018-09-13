@@ -20,7 +20,7 @@ const paperPadding = {
   padding: '16px',
 };
 
-const MAIN = 0, SKILLS = 1, ITEMS = 2, VALID_SKILLS = 0, MAX_LVL = 99, MAX_SKILL_LVL = 20;
+const MAIN = 0, SKILLS = 1, ITEMS = 2, MERC = 3, VALID = 0, MAX_LVL = 99, MAX_SKILL_LVL = 20;
 
 // Implementation of the Form HTML
 export default class Form extends Component {
@@ -32,7 +32,8 @@ export default class Form extends Component {
         invalidName: false,
         invalidAct: false,
         invalidAncients: false,
-        invalidSkills: VALID_SKILLS,
+        invalidSkills: VALID,
+        invalidStats: VALID,
         name: '',
         level: 1,
         gold: 0,
@@ -43,6 +44,7 @@ export default class Form extends Component {
         difficulty: "0",
         startingAct: "0",
         allocated: new Array(30).fill(0, 0, 30),
+        attr: [0, 0, 0, 0],
     };
 
     constructor(props) {
@@ -85,7 +87,17 @@ export default class Form extends Component {
         }).then(response => response.json());
     }
 
-    //Check skill point allocation, and dependencies are being met
+    // Calculate the amount of times the character has completed a given quest
+    getTimesCompleted(diff, quest, startingAct, act) {
+        let timesBeatGame = Number.parseInt(diff) / 5;
+        var timesCompleted = timesBeatGame * (quest ? 1 : 0);
+        if(Number.parseInt(startingAct) >= act && quest)
+            timesCompleted++;
+
+        return Math.min(3, timesCompleted);
+    }
+
+    // Check skill point allocation, and dependencies are being met
     checkSkills() {
         let INVALID_NO_SP = 1, INVALID_LEVEL_LOW = 2, INVALID_DEPS = 3;
         let spLeft = this.calcSP() - this.state.allocated.reduce( ( accum, curr) => accum + curr );
@@ -106,42 +118,62 @@ export default class Form extends Component {
                         return INVALID_DEPS;
             }
         }
-        return VALID_SKILLS;
+        return VALID;
+    }
+
+    // Check stat point allocation. Error numbers exist for going below base value of each stat
+    checkStats() {
+        let INVALID_NEG_ATTR = 1, STAT_BELOW_BASE = 2;
+        let attr_left = this.calcStats() - this.state.attr.reduce( ( accum, curr) => accum + curr );
+        if(attr_left < 0)
+            return INVALID_NEG_ATTR;
+
+        for(var i = 0; i < this.state.attr.length; i++)
+            if(this.state.attr[i] < 0) // stat points user allocated, so don't compare with base
+                return STAT_BELOW_BASE + i;
+
+        return VALID;
+    }
+
+    calcStats() { // Total number of stat points to spend
+        let ACT3 = 2, lamEsen = this.getTimesCompleted(this.state.difficulty, this.state.rewards.lamEsen, this.state.startingAct, ACT3);
+        return 5 * (this.state.level - 1 + lamEsen);
     }
 
     calcSP() {
-        let ACT2 = 1;
-        let timesBeatGame = Number.parseInt(this.state.difficulty) / 5;
-        var timesKilledRadamant = timesBeatGame * (this.state.rewards.skillBook ? 1 : 0);
-        if(Number.parseInt(this.state.startingAct) >= ACT2 && this.state.rewards.skillBook)
-            timesKilledRadamant++;
-        timesKilledRadamant = Math.min(3, timesKilledRadamant);
-
-        return this.state.level - 1 + timesKilledRadamant;
+        let ACT2 = 1, timesReadSkillBook = this.getTimesCompleted(this.state.difficulty, this.state.rewards.skillBook, this.state.startingAct, ACT2);
+        return this.state.level - 1 + timesReadSkillBook;
     }
 
     onTabChange(event, value) {
-        //On Tab change, update data that can be passed onto other tabs, such as skill points
+        // On Tab change, update data that can be passed onto other tabs, such as skill points
         this.setState({currTab: value, skillPoints: this.calcSP()});
     }
 
-    //Generic form handler that saves data to the overall form state. Handles quest data by copying the current object
+    // Generic form handler that saves data to the overall form state.
+    // Handles checkboxes, skill, and attribute values differently
     onFormChange(event) {
+        let name = event.target.name;
         if(event.target.classList[0] === "rewards") {
             let rewards = Object.assign({}, this.state.rewards);
-            rewards[event.target.name] = event.target.checked;
+            rewards[name] = event.target.checked;
             this.setState({"rewards" : rewards});
         } else if(event.target.classList[0] === "opts") {
-            this.setState({ [event.target.name] : event.target.checked });
+            this.setState({ [name] : event.target.checked });
         } else if(event.target.classList[0] === "skill") {
             let arr = this.state.allocated.slice();
-            let idx = Number.parseInt(event.target.name.substring(6));
+            let idx = Number.parseInt(name.substring(6));
             arr[idx] = Math.min(MAX_SKILL_LVL, Number.parseInt(event.target.value));
             this.setState({ "allocated" : arr });
-        } else if(event.target.name === "level") {
-            this.setState({ [event.target.name] : Math.min(MAX_LVL, Number.parseInt(event.target.value)).toString() });
+        } else if(name === "level") {
+            this.setState({ [name] : Math.min( MAX_LVL, Number.parseInt(event.target.value) ).toString()});
+        } else if(event.target.classList[0] === "attr") {
+            let arr = this.state.attr.slice();
+            let map = {"str": 0, "dex": 1, "vit": 2, "nrg": 3}, idx = map[name];
+            arr[idx] = Number.parseInt(event.target.value) - ClassData[this.state.classNum].attributes[idx];
+            this.setState({ "attr" : arr});
         } else {
-            this.setState({ [event.target.name] : event.target.value }); // Parse Integer when needed, not now
+            this.setState({ [name] : event.target.value }); // Parse Integer when needed, not now
         }
     }
 
@@ -158,7 +190,8 @@ export default class Form extends Component {
             invalidForClassic = parseInt(data.get("classNum")) >= 5 && !expansion,
             invalidAct = parseInt(data.get("startingAct")) > 3 && !expansion,
             invalidAncients = (nAncients && level < 20) || (nmAncients && level < 40) || (hAncients && level < 60),
-            invalidSkills = this.checkSkills();
+            invalidSkills = this.checkSkills(),
+            invalidStats = this.checkStats();
 
         // Fix progression for Classic mode
         if(!expansion) {
@@ -166,18 +199,25 @@ export default class Form extends Component {
             data.set("difficulty", difficulty - (difficulty / 5));
         }
 
-        var invalid = invalidName || invalidForClassic || invalidAct || invalidAncients || invalidSkills > 0;
+        var invalid = invalidName || invalidForClassic || invalidAct || invalidAncients || invalidSkills > 0 || invalidStats > 0;
         this.setState({
             invalid: invalid,
             invalidName: invalidName,
             invalidForClassic: invalidForClassic,
             invalidAct: invalidAct,
             invalidAncients: invalidAncients,
-            invalidSkills: invalidSkills
+            invalidSkills: invalidSkills,
+            invalidStats: invalidStats
         });
 
         // Modify the form data to be compatible with Spring's form serialization
         data.delete("nAncients"); data.delete("nmAncients"); data.delete("hAncients");
+
+        for(var i = 0, key = ["str", "dex", "vit", "nrg"]; i < this.state.attr.length; i++) {
+            data.delete(key[i]);
+            data.set(key[i], this.state.attr[i]);
+        }
+
         for(var key in this.state.rewards)
             data.set(`rewards.${key}`, this.state.rewards[key]);
 
@@ -224,6 +264,7 @@ export default class Form extends Component {
                         <Tab label="Main" />
                         <Tab label="Skills"  />
                         <Tab label="Items" />
+                        <Tab label="Mercenary" />
                     </Tabs>
                 </Paper>
                 <br />
@@ -234,24 +275,24 @@ export default class Form extends Component {
                             <React.Fragment>
                                 <Warnings data={this.state} />
                                 <h3>Save file options</h3>
-                                <MainData data={this.state} formHandler={this.onFormChange.bind(this)} />
+                                <MainData data={this.state} stats={this.calcStats()} handler={this.onFormChange.bind(this)} />
 
                                 <h4>Options</h4>
-                                <Options data={this.state} formHandler={this.onFormChange.bind(this)} />
+                                <Options data={this.state} handler={this.onFormChange.bind(this)} />
 
                                 <h4>Difficulty</h4>
-                                <Difficulties data={this.state} formHandler={this.onFormChange.bind(this)} />
+                                <Difficulties data={this.state} handler={this.onFormChange.bind(this)} />
 
                                 <h4>Starting Act</h4>
-                                <Acts data={this.state} formHandler={this.onFormChange.bind(this)} />
+                                <Acts data={this.state} handler={this.onFormChange.bind(this)} />
 
                                 <h4>Quest Rewards (most rewards need to be redeemed manually)</h4>
                                 <a href="#" id="checkAll" onClick={this.checkQuestBoxes}>Check All</a>
-                                <Quests data={this.state.rewards} formHandler={this.onFormChange.bind(this)} />
+                                <Quests data={this.state.rewards} handler={this.onFormChange.bind(this)} />
                             </React.Fragment>
                         }
 
-                        {this.state.currTab === SKILLS && <Skills data={this.state} formHandler={this.onFormChange.bind(this)} />}
+                        {this.state.currTab === SKILLS && <Skills data={this.state} handler={this.onFormChange.bind(this)} />}
 
                         <button id="submitButton" type="submit" className="btn btn-primary">Submit</button>
                     </form>

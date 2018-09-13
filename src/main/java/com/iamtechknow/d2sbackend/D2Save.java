@@ -13,6 +13,7 @@ public class D2Save {
     private int gold;
     private int stashGold;
     private int startingAct;
+    private int str, dex, vit, nrg;
     private boolean expansion = true;
     private boolean hardcore;
     private int difficulty;
@@ -94,6 +95,42 @@ public class D2Save {
         this.startingAct = startingAct;
     }
 
+    public int[] getSkills() {
+        return skills;
+    }
+
+    public int getStr() {
+        return str;
+    }
+
+    public void setStr(int str) {
+        this.str = str;
+    }
+
+    public int getDex() {
+        return dex;
+    }
+
+    public void setDex(int dex) {
+        this.dex = dex;
+    }
+
+    public int getVit() {
+        return vit;
+    }
+
+    public void setVit(int vit) {
+        this.vit = vit;
+    }
+
+    public int getNrg() {
+        return nrg;
+    }
+
+    public void setNrg(int nrg) {
+        this.nrg = nrg;
+    }
+
     public boolean isInvalid() {
         return invalid;
     }
@@ -116,10 +153,6 @@ public class D2Save {
 
     public D2QuestRewards getRewards() {
         return rewards;
-    }
-
-    public int[] getSkills() {
-        return skills;
     }
 
     /**

@@ -6,27 +6,27 @@ export default class Difficulties extends Component {
   }
 
   render() {
+    var diff = this.props.data.difficulty;
     return (
-        <div>
-            <div className="form-check form-check-inline">
-                <input className="form-check-input" type="radio" name="difficulty" id="normalDifficulty" checked={this.props.data.difficulty === "0"} onChange={this.props.formHandler} value="0"></input>
-                <label className="form-check-label" htmlFor="normalDifficulty">Normal</label>
-            </div>
-            <div className="form-check form-check-inline">
-                <input className="form-check-input" type="radio" name="difficulty" id="nightmareDifficulty" checked={this.props.data.difficulty === "5"} onChange={this.props.formHandler} value="5"></input>
-                <label className="form-check-label" htmlFor="nightmareDifficulty">Nightmare</label>
-            </div>
-            <div className="form-check form-check-inline">
-                <input className="form-check-input" type="radio" name="difficulty" id="hellDifficulty" checked={this.props.data.difficulty === "10"} onChange={this.props.formHandler} value="10"></input>
-                <label className="form-check-label" htmlFor="hellDifficulty">Hell</label>
-            </div>
-            <div className="form-check form-check-inline">
-                <input className="form-check-input" type="radio" name="difficulty" id="finishedHell" checked={this.props.data.difficulty === "15"} onChange={this.props.formHandler} value="15"></input>
-                <label className="form-check-label" htmlFor="finishedHell">Completed Hell</label>
-            </div>
-            <br /> <br />
+      <div>
+        <div className="form-check form-check-inline">
+          <input className="form-check-input" type="radio" name="difficulty" id="norm" checked={diff === "0"} onChange={this.props.handler} value="0"></input>
+          <label className="form-check-label" htmlFor="norm">Normal</label>
         </div>
+        <div className="form-check form-check-inline">
+          <input className="form-check-input" type="radio" name="difficulty" id="nm" checked={diff === "5"} onChange={this.props.handler} value="5"></input>
+          <label className="form-check-label" htmlFor="nm">Nightmare</label>
+        </div>
+        <div className="form-check form-check-inline">
+          <input className="form-check-input" type="radio" name="difficulty" id="h" checked={diff === "10"} onChange={this.props.handler} value="10"></input>
+          <label className="form-check-label" htmlFor="h">Hell</label>
+        </div>
+        <div className="form-check form-check-inline">
+          <input className="form-check-input" type="radio" name="difficulty" id="beatH" checked={diff === "15"} onChange={this.props.handler} value="15"></input>
+          <label className="form-check-label" htmlFor="beatH">Completed Hell</label>
+        </div>
+        <br /> <br />
+      </div>
     );
   }
 }
-

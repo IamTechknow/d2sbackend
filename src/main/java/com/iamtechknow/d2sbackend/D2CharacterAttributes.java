@@ -29,7 +29,7 @@ public class D2CharacterAttributes {
      */
     public D2CharacterAttributes(D2Save save) {
         int[] vals = getDefaultAttributes(save);
-        str = vals[0]; dex = vals[1]; vit = vals[2]; nrg = vals[3];
+        str = vals[0] + save.getStr(); dex = vals[1] + save.getDex(); vit = vals[2] + save.getVit(); nrg = vals[3] + save.getNrg();
         gold = save.getGold();
         stashGold = save.getStashGold();
 
@@ -89,7 +89,7 @@ public class D2CharacterAttributes {
             levelUps++;
         level = save.getLevel() + levelUps;
 
-		attrPoints = 5 * (level - 1 + timesCompletedLamEsen);
+		attrPoints = 5 * (level - 1 + timesCompletedLamEsen) - save.getStr() - save.getDex() - save.getVit() - save.getNrg();
         skillPoints = (level - 1) + timesKilledRadamant - Arrays.stream(save.getSkills()).sum();
         life = calcLife(save, level, vals[4]);
         stamina = calcStamina(save, level, vals[5]);
