@@ -1,5 +1,7 @@
 package com.iamtechknow.d2sbackend;
 
+import java.util.Arrays;
+
 /**
  * Contains attribute information that may be written into a Diablo II save file.
  */
@@ -86,9 +88,9 @@ public class D2CharacterAttributes {
         if(experience >= getExperience(save.getLevel() + 1)) // check if character should have leveled up
             levelUps++;
         level = save.getLevel() + levelUps;
-		
+
 		attrPoints = 5 * (level - 1 + timesCompletedLamEsen);
-        skillPoints = (level - 1) + timesKilledRadamant;
+        skillPoints = (level - 1) + timesKilledRadamant - Arrays.stream(save.getSkills()).sum();
         life = calcLife(save, level, vals[4]);
         stamina = calcStamina(save, level, vals[5]);
         mana = calcMana(save, level, vals[6]);

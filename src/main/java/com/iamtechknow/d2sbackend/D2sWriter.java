@@ -33,7 +33,7 @@ public class D2sWriter {
 
         writeHeader(save);
         writeAttributes(save);
-        writeSkills();
+        writeSkills(save);
         writeItems();
         writeCorpse();
 
@@ -320,11 +320,12 @@ public class D2sWriter {
         stream.write((int) currentByte);
     }
 
-    // No skill points allocated
-    private void writeSkills() {
+    // Write the amount of skill points allocated for each skill
+    private void writeSkills(D2Save save) {
         stream.write(0x69); // "if"
         stream.write(0x66);
-        skip(30);
+        for(int i : save.getSkills())
+            stream.write(i);
     }
 
 	// start with JM header then insert 0 items

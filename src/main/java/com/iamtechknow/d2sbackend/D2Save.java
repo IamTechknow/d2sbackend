@@ -5,7 +5,7 @@ package com.iamtechknow.d2sbackend;
  */
 public class D2Save {
     private static final int STARTING_LEVEL = 1, MAX_CLASS_NUM = 6, MAX_DIFFICULTY = 15,
-                            GOLD_PER_LEVEL = 10000, MIN_LEN = 2, MAX_LENGTH = 15;
+                            GOLD_PER_LEVEL = 10000, MIN_LEN = 2, MAX_LENGTH = 15, NUM_SKILLS = 30;
 
     private String name;
     private int level = STARTING_LEVEL;
@@ -17,7 +17,7 @@ public class D2Save {
     private boolean hardcore;
     private int difficulty;
     private D2QuestRewards rewards = new D2QuestRewards();
-    private D2Skills skills = new D2Skills();
+    private int[] skills = new int[NUM_SKILLS];
 
     // Invalid booleans for error messages
     private boolean invalid, invalidForClassic, invalidName, invalidAct, invalidAncients;
@@ -118,7 +118,7 @@ public class D2Save {
         return rewards;
     }
 
-    public D2Skills getSkills() {
+    public int[] getSkills() {
         return skills;
     }
 

@@ -177,10 +177,8 @@ export default class Form extends Component {
         for(var key in this.state.rewards)
             data.set(`rewards.${key}`, this.state.rewards[key]);
 
-        for(var i = 0; i < this.state.allocated.length; i++) {
-            data.set(`skills.allocated[${i}].id`, ClassData[this.state.classNum].skills[i].id);
-            data.set(`skills.allocated[${i}].skillPoints`, this.state.allocated[i]);
-        }
+        for(var i = 0; i < this.state.allocated.length; i++)
+            data.set(`skills[${i}]`, this.state.allocated[i]);
 
         // Use fetch API here, and then change the state to re-render/re-direct the page
         if(!invalid) {
