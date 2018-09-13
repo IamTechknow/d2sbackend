@@ -46,18 +46,19 @@ export default class Quests extends Component {
                 </div>
             </div>
             <div className="form-row">
-                <div className="col-3 form-check form-check-inline">
+                <div className="col form-check form-check-inline">
                     <input className="rewards form-check-input" type="checkbox" name="nAncients" id="nAncients" checked={this.props.data.nAncients} onChange={this.props.formHandler}></input>
                     <label className="form-check-label" htmlFor="nAncients">Normal Ancients</label>
                 </div>
-                <div className="col-3 form-check form-check-inline">
+                <div className="col form-check form-check-inline">
                     <input className="rewards form-check-input" type="checkbox" name="nmAncients" id="nmAncients" checked={this.props.data.nmAncients} onChange={this.props.formHandler}></input>
                     <label className="form-check-label" htmlFor="nmAncients">Nightmare Ancients</label>
                 </div>
-                <div className="col-3 form-check form-check-inline">
+                <div className="col form-check form-check-inline">
                     <input className="rewards form-check-input" type="checkbox" name="hAncients" id="hAncients" checked={this.props.data.hAncients} onChange={this.props.formHandler}></input>
                     <label className="form-check-label" htmlFor="hAncients">Hell Ancients</label>
                 </div>
+                <div className="col form-check form-check-inline"></div> {/* Invisible input for grid*/}
             </div>
             <br />
         </div>

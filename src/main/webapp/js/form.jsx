@@ -42,12 +42,16 @@ export default class Form extends Component {
         hardcore: false,
         difficulty: "0",
         startingAct: "0",
-        rewards : {},
         allocated: new Array(30).fill(0, 0, 30),
     };
 
     constructor(props) {
         super(props);
+
+        var rewards = {};
+        for(var key of ["den", "imbue", "skillBook", "potion", "lamEsen", "izual", "socket", "scroll", "nAncients", "nmAncients", "hAncients"])
+            rewards[key] = false;
+        this.state.rewards = rewards;
 
         this.pattern = new RegExp(/^[a-zA-Z][a-zA-Z_-]*$/);
         this.checkQuestBoxes = this.checkQuestBoxes.bind(this);
@@ -216,7 +220,7 @@ export default class Form extends Component {
         return (
             <div className="container">
                 <Paper square>
-                    <Tabs value={this.state.currTab} indicatorColor="primary" textColor="primary" onChange={this.onTabChange}>
+                    <Tabs value={this.state.currTab} indicatorColor="primary" textColor="primary" onChange={this.onTabChange} centered>
                         <Tab label="Main" />
                         <Tab label="Skills"  />
                         <Tab label="Items" />
