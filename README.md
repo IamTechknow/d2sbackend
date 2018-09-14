@@ -17,6 +17,8 @@ User Stories:
   * [X] Current Act
   * [X] Gold
   * [X] Quests
+  * [ ] Items
+  * [ ] Mercenary
   * [ ] (Optional) Patch Version
 * [X] As a user, I can start the process of creating the save file and either get a download link or an error message
 * [ ] As a user, I should be able to view details about the save
@@ -25,14 +27,18 @@ Developer Stories:
 * [X] As a developer, I should be able to receive the input data from the user
 * [X] As a developer, I should be able to validate the input from the page and a given save
 * [X] As a developer, I should be able to generate a save file and a link
-* [ ] As a developer, I should be able to unit test the save generation
+* [ ] As a developer, I should be able to create integration tests that can automate the process of creating a save file and using the d2s go library to verify certain save properties
 * [X] As a developer, I should be utilize CI to be able to push changes from Github into a staging or production cloud environment
 
 ## Instructions
 To run this web application locally, clone this repo, open Intellij IDEA, and open the repository root directory.
 Go to the Gradle section at the right, press the Gradle Icon, run the "bootRun" task. You may now load the web app at localhost:8080.
 
-## Notes
+For continuous building, open a terminal and run the "build --continuous" command (won't work inside IDEA), 
+then run the bootRun task inside IDEA. Gradle will automatically rebuild the project upon changes, and Spring will automatically reload
+the server.
+
+## Implementation Details
 During the bootRun task, the Webpack bundle script file gets generated based on the configurations in package.json and webpack.config.js. 
 The Spring controller will serve the index HTML which references the bundle script and contains a div element for the React application.
 When the form is submitted, data binding occurs in the Spring application to automatically parse the D2Save model object, 
