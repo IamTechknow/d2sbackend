@@ -43,6 +43,7 @@ configurations {
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
     compile("org.springframework.boot:spring-boot-devtools")
     compile("com.google.code.gson:gson")
     testCompile("org.springframework.boot:spring-boot-starter-test")
