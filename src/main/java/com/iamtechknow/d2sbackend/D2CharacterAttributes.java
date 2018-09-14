@@ -60,7 +60,7 @@ public class D2CharacterAttributes {
                 ( (save.getStartingAct() >= ACT5 && save.getDifficulty() >= 10) || save.getDifficulty() > 10))
             hAncientsDone = true;
 
-        // If the a level up occurs, it is incremented and the XP for the difficulty is reset.
+        // If a level up occurs, it is incremented and the XP for the difficulty is reset.
         // Arreat Summit has a table that indicates how much XP is required per level
         if(nAncientsDone) {
             if(save.getLevel() < 37)
@@ -84,8 +84,8 @@ public class D2CharacterAttributes {
         if(save.getLevel() == 99) // Can't gain extra XP after reaching level 99
             xpFromAncients = 0;
 
-        experience = getExperience(save.getLevel()) + xpFromAncients;
-        if(experience >= getExperience(save.getLevel() + 1)) // check if character should have leveled up
+        experience = getExperience(save.getLevel() + levelUps) + xpFromAncients;
+        if(experience >= getExperience(save.getLevel() + levelUps + 1)) // check if character should have leveled up
             levelUps++;
         level = save.getLevel() + levelUps;
 
@@ -200,37 +200,38 @@ public class D2CharacterAttributes {
 
     private double calcLife(D2Save save, int level, double life) {
         switch(save.getClassNum()) {
-            case SORCERESS: // +2 life per level
+            case SORCERESS:
+                return life + level - 1 + 2 * save.getVit();
             case DRUID:
             case NECRO:
-                return life + 2 * (level - 1);
-            case BARB: // +4 life
-                return life + 4 * (level - 1);
-            default: // +3 life for Pal, Sin, Amazon
-                return life + 3 * (level - 1);
+                return life + 1.5 * (level - 1) + 2 * save.getVit();
+            case BARB:
+                return life + 2 * (level - 1) + 4 * save.getVit();
+            default: // Pal, Sin, Amazon
+                return life + 2 * (level - 1) + 3 * save.getVit();
         }
     }
 
     private double calcStamina(D2Save save, int level, double stamina) {
         switch(save.getClassNum()) {
             case ASSASSIN:
-                return stamina + 1.25 * (level - 1);
+                return stamina + 1.25 * (level - 1) + 1.25 * save.getVit();
             default:
-                return stamina + (level - 1);
+                return stamina + (level - 1) + save.getVit();
         }
     }
 
     private double calcMana(D2Save save, int level, double mana) {
         switch(save.getClassNum()) {
             case BARB:
-                return mana + (level - 1);
+                return mana + (level - 1) + save.getNrg();
             case PALADIN:
             case AMAZON:
-                return mana + 1.5 * (level - 1);
+                return mana + 1.5 * (level - 1) + 1.5 * save.getNrg();
             case ASSASSIN:
-                return mana + 1.75 * (level - 1);
-            default: // +2 mana for Sorc, Necro, Druid
-                return mana + 2 * (level - 1);
+                return mana + 1.5 * (level - 1) + 1.75 * save.getNrg();
+            default: // Sorc, Necro, Druid
+                return mana + 2 * (level - 1) + 2 * save.getNrg();
         }
     }
 
