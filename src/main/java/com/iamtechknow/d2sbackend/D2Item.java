@@ -15,6 +15,9 @@ public class D2Item {
 
     // Inventory coordinates. If equipped, can be non-zero, but it is unused.
     private final int x, y;
+	
+	// Extended data for complex items
+	private final D2ExtendedItem extendedData;
 
     public static class Builder {
         private final String itemType;
@@ -22,6 +25,7 @@ public class D2Item {
         private int itemLocation, itemStore, equippedLoc;
         private int x, y;
         private int numSockets;
+		private D2ExtendedItem extendedData;
 
         public Builder(String type) {
             itemType = type;
@@ -106,6 +110,7 @@ public class D2Item {
         x = builder.x;
         y = builder.y;
         numSockets = builder.numSockets;
+		extendedData = builder.extendedData;
     }
 
     public boolean isIdentified() {
@@ -158,5 +163,9 @@ public class D2Item {
 
     public int getNumSockets() {
         return numSockets;
+    }
+
+    public D2ExtendedItem getExtendedData() {
+        return extendedData;
     }
 }
