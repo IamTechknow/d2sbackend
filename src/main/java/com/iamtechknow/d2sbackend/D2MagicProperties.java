@@ -1,6 +1,7 @@
 package com.iamtechknow.d2sbackend;
 
 // Magic property IDs mapped to variable bit vector sizes and bias values.
+// Doesn't include IDs that have multiple and non-identical vector sizes
 public class D2MagicProperties {
     private static int[] ids_map, bias;
 
