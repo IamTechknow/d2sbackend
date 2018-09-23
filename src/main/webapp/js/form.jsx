@@ -13,6 +13,7 @@ import Acts from './acts.jsx';
 import Difficulties from './difficulties.jsx';
 import Quests from './quests.jsx';
 import Skills from './skills.jsx';
+import Items from './items.jsx';
 import * as ClassData from './class-data.jsx';
 
 // Padding style for paper components
@@ -309,6 +310,7 @@ export default class Form extends Component {
                         }
 
                         {this.state.currTab === SKILLS && <Skills data={this.state} handler={this.onFormChange.bind(this)} />}
+                        {this.state.currTab === ITEMS && <Items data={this.state} handler={this.onFormChange.bind(this)} />}
 
                         <button id="submitButton" type="submit" className="btn btn-primary">Submit</button>
                     </form>

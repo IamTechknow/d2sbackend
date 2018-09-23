@@ -19,7 +19,13 @@ User Stories:
   * [X] Gold
   * [X] Quests
   * [ ] Items
-  * [ ] Mercenary
+    * [ ] As a user, I can view equipped items, inventory, belt, stash, and cube
+    * [ ] As a user, I can create certain items and delete them
+    * [ ] As a user, I can add magic properties to magic or rare items
+    * [ ] As a user, I can socket items, add socketables, and detect rune words
+    * [ ] As a user, I can view the properties of an item
+    * [ ] As a user, I can see all attribute stats gained from items
+    * [ ] As a user, I can set the items on my Mercenary and Iron Golem if the class is a Necromancer
   * [ ] (Optional) Patch Version
 * [X] As a user, I can start the process of creating the save file and either get a download link or an error message
 * [ ] As a user, I should be able to view details about the save
