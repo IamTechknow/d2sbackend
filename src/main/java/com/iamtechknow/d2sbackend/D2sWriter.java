@@ -467,6 +467,32 @@ public class D2sWriter {
                 writeBits(boolToInt(xItem.isIdTome()), 1);
 
                 // Item specific data
+                D2ItemData itemData = xItem.getData();
+
+                if(D2ItemTypes.isArmor(item.getItemType()) || D2ItemTypes.isShield(item.getItemType()))
+                    writeBits(itemData.getDefense(), 10);
+
+                // Account for indestructibility by checking for 0 max durability
+                if(D2ItemTypes.isNonMisc(item.getItemType())) {
+                    writeBits(itemData.getMaxDur(), 8);
+                    if(itemData.getMaxDur() > 0)
+                        writeBits(itemData.getCurDur(), 8);
+                }
+
+                if(item.isSocketed())
+                    writeBits(itemData.getSockets(), 4);
+
+                if(D2ItemTypes.isTome(item.getItemType()))
+                    writeBits(0, 5);
+
+                if(D2ItemTypes.hasQuantity(item.getItemType()))
+                    writeBits(itemData.getQuantity(), 9);
+
+                if(xItem.getQuality() == SET) {
+                    writeBits(itemData.getPropertyLists(), 5);
+                }
+
+                // TODO: Write the variable length fields for the item's magical properties
 
             }
 
