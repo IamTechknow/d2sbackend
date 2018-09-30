@@ -1,6 +1,8 @@
 package com.iamtechknow.d2sbackend;
 
 public class D2ExtendedItem {
+    private static final int UNUSED = 4;
+    public static final int SET = 5, RARE = 6, UNIQUE = 7, CRAFTED = 8;
 
     // Fields common to all items. Quality tells us the item type
     private final int identifier, iLvl, quality;
@@ -16,7 +18,7 @@ public class D2ExtendedItem {
     // Quality data for low or superior items
     private final int qualityData;
 
-    // Prefix and Suffix for magic items
+    // Prefix and Suffix for magic items. If 0, the item does not have a prefix/affix property
     private final int prefixId, suffixId;
 
     private final int setId, uniqueId, rwId;
@@ -42,7 +44,7 @@ public class D2ExtendedItem {
         private int expansionMagicProperty;
 
         // Optional values, 0 generally means none or is unused
-        private int qualityData;
+        private int qualityData = UNUSED;
         private int prefixId, suffixId;
         private int setId, uniqueId, rwId;
         private int firstWordId, secondWordId;
@@ -244,6 +246,10 @@ public class D2ExtendedItem {
 
     public boolean isIdTome() {
         return idTome;
+    }
+
+    public boolean isLowQuality() {
+        return qualityData < UNUSED;
     }
 
     public D2ItemData getData() {

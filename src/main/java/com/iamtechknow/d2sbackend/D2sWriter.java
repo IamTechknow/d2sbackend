@@ -3,6 +3,7 @@ package com.iamtechknow.d2sbackend;
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 
+import static com.iamtechknow.d2sbackend.D2ExtendedItem.*;
 /**
  * Primary class to create a byte chunk representing a Diablo 2 1.13c Save
  */
@@ -395,6 +396,77 @@ public class D2sWriter {
             writeBits(item.getNumSocketed(), 3);
 
             if(!item.isSimple()) {
+                D2ExtendedItem xItem = item.getExtendedData();
+
+                // Unique ID, iLvl, quality
+                writeBits(xItem.getIdentifier(), 32);
+                writeBits(xItem.getiLvl(), 7);
+                writeBits(xItem.getQuality(), 4);
+
+                // Image type for jewelery, jewels, charms
+                writeBits(boolToInt(xItem.isGenericMagicItem()), 1);
+                if(xItem.isGenericMagicItem()) {
+                    writeBits(xItem.getImgType(), 3);
+                }
+
+                // Expansion items
+                writeBits(boolToInt(xItem.isExpansionItem()), 1);
+                if(xItem.isExpansionItem()) {
+                    writeBits(xItem.getExpansionMagicProperty(), 11);
+                }
+
+                // Low quality
+                writeBits(boolToInt(xItem.isLowQuality()), 1);
+                if(xItem.isLowQuality()) {
+                    writeBits(xItem.getQualityData(), 11);
+                }
+
+                // Handle non-white items
+                switch(xItem.getQuality()) {
+                    case SET:
+                        writeBits(xItem.getSetId(), 12);
+                        break;
+                    case UNIQUE:
+                        writeBits(xItem.getUniqueId(), 12);
+                        break;
+                    case RARE:
+                    case CRAFTED:
+                        writeBits(xItem.getFirstWordId(), 8);
+                        writeBits(xItem.getSecondWordId(), 8);
+
+                        // Depending on the size of the prefix and suffix IDs,
+                        // write a 1 or 0 then the id
+                        for(int i = 0; i < 3; i++) {
+                            boolean hasIthPrefix = i < xItem.getPrefixIds().length,
+                                    hasIthSuffix = i < xItem.getSuffixIds().length;
+
+                            writeBits(boolToInt(hasIthPrefix), 1);
+                            if(hasIthPrefix)
+                                writeBits(xItem.getPrefixIds()[i], 11);
+
+                            writeBits(boolToInt(hasIthSuffix), 1);
+                            if(hasIthSuffix)
+                                writeBits(xItem.getSuffixIds()[i], 11);
+                        }
+                        break;
+                    default: // Magical
+                        writeBits(xItem.getPrefixId(), 11);
+                        writeBits(xItem.getSuffixId(), 11);
+                }
+
+                if(item.isHasRW()) // 12 bit ID and 5 in 4-bit vector
+                    writeBits( (xItem.getRwId() << 4) | 5, 16);
+
+                // Write the item's owner then add a zero
+                if(item.isPersonalized()) {
+                    for(char c : xItem.getOwner().toCharArray())
+                        writeBits(c, 7);
+                    writeBits(0, 7);
+                }
+
+                writeBits(boolToInt(xItem.isIdTome()), 1);
+
+                // Item specific data
 
             }
 
