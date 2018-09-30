@@ -6,29 +6,32 @@ package com.iamtechknow.d2sbackend;
  * Information on the item format may be found <a href=https://user.xmission.com/~trevin/DiabloIIv1.09_Item_Format.shtml>here</a>
  */
 public class D2Item {
+    // Item locations
+    public static final int STORED = 0, EQUIPPED = 1, BELT = 2, SOCKETED = 6, INVENTORY = 1, CUBE = 4, STASH = 5;
+
     private final boolean identified, socketed, simple, ethereal, personalized, hasRW;
     private final String itemType;
-    private final int numSockets;
+    private final int numSocketed;
 
     // Bits that determine where the item is.
     private final int itemLocation, itemStore, equippedLoc;
 
     // Inventory coordinates. If equipped, can be non-zero, but it is unused.
     private final int x, y;
-	
-	// Extended data for complex items
-	private final D2ExtendedItem extendedData;
+    
+    // Extended data for complex items
+    private final D2ExtendedItem extendedData;
 
     public static class Builder {
         private final String itemType;
-        private boolean identified, socketed, simple, ethereal, personalized, hasRW;
+        private boolean identified = true, socketed, simple, ethereal, personalized, hasRW;
         private int itemLocation, itemStore, equippedLoc;
         private int x, y;
-        private int numSockets;
-		private D2ExtendedItem extendedData;
+        private int numSocketed;
+        private D2ExtendedItem extendedData;
 
         public Builder(String type) {
-            itemType = type;
+            itemType = type + " "; // item types always have 3 chars and space
         }
 
         public Builder setIdentified(boolean identified) {
@@ -86,8 +89,8 @@ public class D2Item {
             return this;
         }
 
-        public Builder setNumSockets(int numSockets) {
-            this.numSockets = numSockets;
+        public Builder setNumSocketed(int numSocketed) {
+            this.numSocketed = numSocketed;
             return this;
         }
 
@@ -109,8 +112,8 @@ public class D2Item {
         equippedLoc = builder.equippedLoc;
         x = builder.x;
         y = builder.y;
-        numSockets = builder.numSockets;
-		extendedData = builder.extendedData;
+        numSocketed = builder.numSocketed;
+        extendedData = builder.extendedData;
     }
 
     public boolean isIdentified() {
@@ -161,8 +164,8 @@ public class D2Item {
         return y;
     }
 
-    public int getNumSockets() {
-        return numSockets;
+    public int getNumSocketed() {
+        return numSocketed;
     }
 
     public D2ExtendedItem getExtendedData() {

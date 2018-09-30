@@ -42,9 +42,10 @@ export default class Form extends Component {
         classNum: "0",
         expansion: true,
         hardcore: false,
+		rejuvs: false,
         difficulty: "0",
         startingAct: "0",
-        allocated: new Array(30).fill(0, 0, 30),
+        allocated: new Array(30).fill(0),
         attr: [0, 0, 0, 0],
     };
 
@@ -146,7 +147,6 @@ export default class Form extends Component {
         let ACT2 = 1, timesReadSkillBook = this.getTimesCompleted(this.state.difficulty, this.state.rewards.skillBook, this.state.startingAct, ACT2);
         return this.state.level - 1 + timesReadSkillBook;
     }
-
 
     // On Tab change, update data that can be passed onto other tabs, such as skill points
     onTabChange(event, value) {

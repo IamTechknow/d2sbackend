@@ -16,6 +16,7 @@ public class D2Save {
     private int str, dex, vit, nrg;
     private boolean expansion = true;
     private boolean hardcore;
+	private boolean rejuvs;
     private int difficulty;
     private D2QuestRewards rewards = new D2QuestRewards();
     private int[] skills = new int[NUM_SKILLS];
@@ -77,6 +78,14 @@ public class D2Save {
 
     public void setHardcore(boolean hardcore) {
         this.hardcore = hardcore;
+    }
+	
+	public boolean isRejuv() {
+        return rejuvs;
+    }
+
+    public void setRejuv(boolean rejuv) {
+        this.rejuvs = rejuv;
     }
 
     public int getDifficulty() {

@@ -16,6 +16,10 @@ export default class Options extends Component {
           <input className="opts form-check-input" type="checkbox" name="hardcore" id="hc" checked={this.props.data.hardcore} onChange={this.props.handler}></input>
           <label className="form-check-label" htmlFor="hc">Hardcore</label>
         </div>
+		<div className="form-check form-check-inline">
+          <input className="opts form-check-input" type="checkbox" name="rejuvs" id="rejuvs" checked={this.props.data.rejuvs} onChange={this.props.handler}></input>
+          <label className="form-check-label" htmlFor="rejuvs">Add Rejuvs to Belt</label>
+        </div>
         <br /> <br />
       </div>
     );
