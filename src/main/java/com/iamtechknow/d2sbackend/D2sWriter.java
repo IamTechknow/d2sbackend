@@ -132,14 +132,8 @@ public class D2sWriter {
         // Map ID. This may be safely set to 0 and the game can change it itself.
         writeInt(0);
 
-        // Unknown bytes
-        skip(2);
-
-        // Hireling Data - not supported yet, so all bytes set to 0
-        skip(14);
-
-        // Unknown bytes, seems to be padding
-        skip(144);
+        // Unknown bytes + Hireling Data + padding
+        skip(2 + 14 + 144);
 
         writeQuests(save.getDifficulty(), save.getStartingAct(), save.getRewards(), save.isExpansion());
 
@@ -299,23 +293,10 @@ public class D2sWriter {
 
         D2CharacterAttributes attrs = new D2CharacterAttributes(save);
         int[] lengths_map = new int[]{10, 10, 10, 10, 10, 8, 21, 21, 21, 21, 21, 21, 7, 32, 25, 25};
-
-        byte[] ids = getIds(attrs);
+        int[] ids = getIds(attrs);
         long[] values = getValues(attrs, ids.length);
 
-        // Put ID into integer, reverse the last 9 bits, write the 9 bits in reverse order.
-        // Repeat for the value itself
-        for(int i = 0; i < ids.length; i++) {
-            long id = ids[i], val = values[i];
-            id = reverseBits(id, 9);
-            writeBits(id, 9);
-
-            val = reverseBits(val, lengths_map[ids[i]]);
-            writeBits(val, lengths_map[ids[i]]);
-        }
-
-        // Write 0x01FF id, end of attributes
-        writeBits(reverseBits(0x01FF, 9), 9);
+        writeVariableData(ids, values, lengths_map, new int[16], 16);
 
         // Flush the rest of the bits, padded with 0 (already reversed)
         stream.write((int) currentByte);
@@ -488,15 +469,34 @@ public class D2sWriter {
                 if(D2ItemTypes.hasQuantity(item.getItemType()))
                     writeBits(itemData.getQuantity(), 9);
 
-                if(xItem.getQuality() == SET) {
+                if(xItem.getQuality() == SET)
                     writeBits(itemData.getPropertyLists(), 5);
+
+                // Write the variable length fields for the item's magical properties
+                // TODO: handle magical properties with more than 2 property values
+
+                // Runeword properties start with 0x1FF
+                if(item.isHasRW())
+                    writeBits(reverseBits(0x01FF, 9), 9);
+
+                if(xItem.getQuality() >= MAGICAL || item.isHasRW()) {
+                    int[] ids = itemData.getPropertyIds();
+                    long[] values = itemData.getPropertyValues();
+                    writeVariableData(ids, values, D2MagicProperties.getLengthMap(), D2MagicProperties.getBiasMap(), 254);
                 }
 
-                // TODO: Write the variable length fields for the item's magical properties
+                // TODO: Handle set items which have multiple lists
+                if(xItem.getQuality() == SET) {
 
+                }
             }
 
             stream.write((int) currentByte);
+
+            // TODO: Write the item structures for socketed items
+            if(item.getNumSocketed() >= 0) {
+
+            }
         }
     }
 
@@ -610,9 +610,9 @@ public class D2sWriter {
 
     /**
      * Determine the character attribute IDs based on the save model.
-     * @return byte array containing IDs to be written to save file
+     * @return int array containing IDs to be written to save file
      */
-    private byte[] getIds(D2CharacterAttributes attrs) {
+    private int[] getIds(D2CharacterAttributes attrs) {
         ByteArrayOutputStream arr = new ByteArrayOutputStream();
         for(int i : new int[] {0, 1, 2, 3})
             arr.write(i);
@@ -632,7 +632,12 @@ public class D2sWriter {
         if(attrs.getStashGold() != 0)
             arr.write(15);
 
-        return arr.toByteArray();
+        byte[] temp = arr.toByteArray();
+        int[] result = new int[temp.length];
+        for(int i = 0; i < temp.length; i++)
+            result[i] = temp[i];
+
+        return result;
     }
 
     /**
@@ -668,6 +673,26 @@ public class D2sWriter {
         return arr;
     }
 
+    private void writeVariableData(int[] ids, long[] values, int[] lengths_map, int[] bias, int maxId) {
+        for(int i = 0; i < ids.length; i++) {
+            if(ids[i] < 0 || ids[i] > maxId)
+                throw new IllegalArgumentException("Variable ID " + ids[i] + " does not exist");
+
+            // Put ID into integer, reverse the last 9 bits, write the 9 bits in reverse order.
+            // Repeat for the value itself
+            long id = ids[i], val = values[i] + bias[ids[i]];
+            id = reverseBits(id, 9);
+            writeBits(id, 9);
+
+            val = reverseBits(val, lengths_map[ids[i]]);
+            writeBits(val, lengths_map[ids[i]]);
+        }
+
+        // Write 0x01FF id, end of attributes
+        writeBits(reverseBits(0x01FF, 9), 9);
+    }
+
+    // Converts a boolean to its C equivalent
     private int boolToInt(boolean b) {
         return b ? 1 : 0;
     }

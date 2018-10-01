@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-// Utility class to determine whether an item is an armor, shield, or weapon.
-// Used to for parsing specific item data
+// Utility class to determine whether an item is an armor, shield, weapon, or has a quantity.
+// Used to parse specific item data
 public class D2ItemTypes {
     private static Set<String> armorCodes = new HashSet<>(256),
         shieldCodes = new HashSet<>(64),
@@ -70,7 +70,7 @@ public class D2ItemTypes {
         armorCodes.addAll(Arrays.asList(armor));
         shieldCodes.addAll(Arrays.asList(shields));
         weaponCodes.addAll(Arrays.asList(weapons));
-        quantityCodes.addAll(Arrays.asList(weapons));
+        quantityCodes.addAll(Arrays.asList(quantity));
     }
 
     public static boolean isArmor(String type) {
@@ -79,10 +79,6 @@ public class D2ItemTypes {
 
     public static boolean isShield(String type) {
         return shieldCodes.contains(type);
-    }
-
-    public static boolean isWeapon(String type) {
-        return weaponCodes.contains(type);
     }
 
     public static boolean isNonMisc(String type) {

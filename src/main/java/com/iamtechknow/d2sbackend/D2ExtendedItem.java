@@ -2,7 +2,7 @@ package com.iamtechknow.d2sbackend;
 
 public class D2ExtendedItem {
     private static final int UNUSED = 4;
-    public static final int SET = 5, RARE = 6, UNIQUE = 7, CRAFTED = 8;
+    public static final int MAGICAL = 4, SET = 5, RARE = 6, UNIQUE = 7, CRAFTED = 8;
 
     // Fields common to all items. Quality tells us the item type
     private final int identifier, iLvl, quality;

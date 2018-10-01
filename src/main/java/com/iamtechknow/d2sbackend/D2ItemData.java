@@ -14,7 +14,8 @@ public class D2ItemData {
 	private final int propertyLists;
 	
 	// Property IDs and corresponding values. The IDs are 9 bits and values are variable bits (up to 32)
-	private final int[] propertyIds, propertyValues;
+	private final int[] propertyIds;
+	private final long[] propertyValues;
 	
 	public static class Builder {
         private int defense;
@@ -22,7 +23,8 @@ public class D2ItemData {
         private int sockets;
         private int quantity;
         private int propertyLists;
-        private int[] propertyIds, propertyValues;
+        private int[] propertyIds;
+        private long[] propertyValues;
 
         public Builder setDefense(int defense) {
             this.defense = defense;
@@ -59,7 +61,7 @@ public class D2ItemData {
             return this;
         }
 
-        public Builder setPropertyValues(int[] propertyValues) {
+        public Builder setPropertyValues(long[] propertyValues) {
             this.propertyValues = propertyValues;
             return this;
         }
@@ -108,7 +110,7 @@ public class D2ItemData {
         return propertyIds;
     }
 
-    public int[] getPropertyValues() {
+    public long[] getPropertyValues() {
         return propertyValues;
     }
 }

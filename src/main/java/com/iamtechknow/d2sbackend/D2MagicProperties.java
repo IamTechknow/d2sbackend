@@ -7,7 +7,7 @@ public class D2MagicProperties {
 
     static {
         ids_map = new int[256];
-        bias = new int[128];
+        bias = new int[256];
 
         // Mapping for IDs 0 - 46, 73 - 160, 214 - 254
         int[][] tempIDs = {{8, 7, 7, 7, 0, 0, 0, 9, 0, 8, 0, 8,
@@ -41,17 +41,11 @@ public class D2MagicProperties {
         bias[93] = bias[96] = bias[99] = bias[102] = bias[105] = bias[110] = bias[111] = bias[154] = 20;
     }
 
-    public static int getLengthForId(int id) {
-        if(id < 0 || id > 254)
-            throw new IllegalArgumentException("Magic ID does not exist");
-
-        return ids_map[id];
+    public static int[] getLengthMap() {
+        return ids_map;
     }
 
-    public static int getBiasForId(int id) {
-        if(id < 0 || id > 124)
-            throw new IllegalArgumentException("Bias for magic ID does not exist");
-
-        return bias[id];
+    public static int[] getBiasMap() {
+        return bias;
     }
 }
