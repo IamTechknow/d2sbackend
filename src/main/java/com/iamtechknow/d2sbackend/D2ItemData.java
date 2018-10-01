@@ -16,6 +16,10 @@ public class D2ItemData {
 	// Property IDs and corresponding values. The IDs are 9 bits and values are variable bits (up to 32)
 	private final int[] propertyIds;
 	private final long[] propertyValues;
+
+	// Partial Set bonus properties. Each bonus belongs in its own properties list.
+	private final int[] setBonusIds;
+	private final long[] setBonusValues;
 	
 	public static class Builder {
         private int defense;
@@ -25,6 +29,8 @@ public class D2ItemData {
         private int propertyLists;
         private int[] propertyIds;
         private long[] propertyValues;
+        private int[] setBonusIds;
+        private long[] setBonusValues;
 
         public Builder setDefense(int defense) {
             this.defense = defense;
@@ -66,6 +72,16 @@ public class D2ItemData {
             return this;
         }
 
+        public Builder setSetBonusIds(int[] setBonusIds) {
+            this.setBonusIds = setBonusIds;
+            return this;
+        }
+
+        public Builder setSetBonusValues(long[] setBonusValues) {
+            this.setBonusValues = setBonusValues;
+            return this;
+        }
+
         public D2ItemData build() {
             return new D2ItemData(this);
         }
@@ -80,6 +96,8 @@ public class D2ItemData {
         propertyLists = builder.propertyLists;
         propertyIds = builder.propertyIds;
         propertyValues = builder.propertyValues;
+        setBonusIds = builder.setBonusIds;
+        setBonusValues = builder.setBonusValues;
     }
 
     public int getDefense() {
@@ -112,5 +130,13 @@ public class D2ItemData {
 
     public long[] getPropertyValues() {
         return propertyValues;
+    }
+
+    public int[] getSetBonusIds() {
+        return setBonusIds;
+    }
+
+    public long[] getSetBonusValues() {
+        return setBonusValues;
     }
 }

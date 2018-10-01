@@ -329,10 +329,10 @@ public class D2sWriter {
         // Create four full rejuvs, each that differ only in X position
         if(save.isRejuv()) {
             builder = new D2Item.Builder("rvl");
-            builder.setSimple(true);
+            builder.setSimple(true).setItemLocation(D2Item.BELT);
             
             for(int i = idx; i < idx + 4; i++) { // belts have no rows
-                builder.setItemLocation(D2Item.BELT).setX(i - idx);
+                builder.setX(i - idx);
                 items[idx + i] = builder.build();
             }
             idx += 4;
@@ -469,8 +469,12 @@ public class D2sWriter {
                 if(D2ItemTypes.hasQuantity(item.getItemType()))
                     writeBits(itemData.getQuantity(), 9);
 
-                if(xItem.getQuality() == SET)
-                    writeBits(itemData.getPropertyLists(), 5);
+                // Fill a bit vector that represents how many lists of properties
+                // exist for this item (bonuses for 2 or more set items equipped)
+                if(xItem.getQuality() == SET) {
+                    int[] listMap = {0, 1, 3, 7, 15, 31};
+                    writeBits(listMap[itemData.getPropertyLists()], 5);
+                }
 
                 // Write the variable length fields for the item's magical properties
                 // TODO: handle magical properties with more than 2 property values
@@ -485,9 +489,13 @@ public class D2sWriter {
                     writeVariableData(ids, values, D2MagicProperties.getLengthMap(), D2MagicProperties.getBiasMap(), 254);
                 }
 
-                // TODO: Handle set items which have multiple lists
+                // Write the partial set properties inherent to this item, each in their own list
+                // (No set item has 2 properties for wearing another item, even if possible)
                 if(xItem.getQuality() == SET) {
-
+                    int[] ids = itemData.getSetBonusIds();
+                    long[] vals = itemData.getSetBonusValues();
+                    for(int i = 0; i < itemData.getPropertyLists(); i++)
+                        writeVariableData(new int[]{ids[i]}, new long[]{vals[i]}, D2MagicProperties.getLengthMap(), D2MagicProperties.getBiasMap(), 254);
                 }
             }
 
