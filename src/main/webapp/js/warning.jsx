@@ -2,10 +2,6 @@ import React, {Component} from 'react';
 
 // Display warning messages based on the Form component state
 export default class Warnings extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   getSkillsMessage(errno) {
     let INVALID_NO_SP = 1, INVALID_LEVEL_LOW = 2;
     switch(errno) {

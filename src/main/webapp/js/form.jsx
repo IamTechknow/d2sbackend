@@ -298,7 +298,7 @@ export default class Form extends Component {
                                 <Options data={this.state} handler={this.onFormChange.bind(this)} />
 
                                 <h4>Difficulty</h4>
-                                <Difficulties data={this.state} handler={this.onFormChange.bind(this)} />
+                                <Difficulties diff={this.state.difficulty} handler={this.onFormChange.bind(this)} />
 
                                 <h4>Starting Act</h4>
                                 <Acts data={this.state} handler={this.onFormChange.bind(this)} />
