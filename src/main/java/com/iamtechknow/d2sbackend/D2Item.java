@@ -22,6 +22,9 @@ public class D2Item {
     // Extended data for complex items
     private final D2ExtendedItem extendedData;
 
+    // Socketed items, they immediately follow this item structure
+    private final D2Item[] socketedItems;
+
     public static class Builder {
         private final String itemType;
         private boolean identified = true, socketed, simple, ethereal, personalized, hasRW;
@@ -29,6 +32,7 @@ public class D2Item {
         private int x, y;
         private int numSocketed;
         private D2ExtendedItem extendedData;
+        private D2Item[] socketedItems;
 
         public Builder(String type) {
             itemType = type + " "; // item types always have 3 chars and space
@@ -94,6 +98,16 @@ public class D2Item {
             return this;
         }
 
+        public Builder setExtendedData(D2ExtendedItem extendedData) {
+            this.extendedData = extendedData;
+            return this;
+        }
+
+        public Builder setSocketedItems(D2Item[] socketedItems) {
+            this.socketedItems = socketedItems;
+            return this;
+        }
+
         public D2Item build() {
             return new D2Item(this);
         }
@@ -114,6 +128,7 @@ public class D2Item {
         y = builder.y;
         numSocketed = builder.numSocketed;
         extendedData = builder.extendedData;
+        socketedItems = builder.socketedItems;
     }
 
     public boolean isIdentified() {
@@ -170,5 +185,9 @@ public class D2Item {
 
     public D2ExtendedItem getExtendedData() {
         return extendedData;
+    }
+
+    public D2Item[] getSocketedItems() {
+        return socketedItems;
     }
 }

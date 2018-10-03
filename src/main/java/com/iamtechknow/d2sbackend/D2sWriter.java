@@ -3,7 +3,6 @@ package com.iamtechknow.d2sbackend;
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 
-import static com.iamtechknow.d2sbackend.D2ExtendedItem.*;
 /**
  * Primary class to create a byte chunk representing a Diablo 2 1.13c Save
  */
@@ -16,10 +15,6 @@ public class D2sWriter {
                             JUST_COMPLETED_BYTE_1 = (byte) 0xFE, JUST_COMPLETED_BYTE_2 = (byte) 0xFF;
 
     private ByteArrayOutputStream stream;
-
-    // Bit writing state for attributes and items
-    private long bitCount;
-    private long currentByte;
 
     public D2sWriter(ByteArrayOutputStream stream) {
         this.stream = stream;
@@ -297,9 +292,6 @@ public class D2sWriter {
         long[] values = getValues(attrs, ids.length);
 
         writeVariableData(ids, values, lengths_map, new int[16], 16);
-
-        // Flush the rest of the bits, padded with 0 (already reversed)
-        stream.write((int) currentByte);
     }
 
     // Write the amount of skill points allocated for each skill
@@ -335,177 +327,12 @@ public class D2sWriter {
                 builder.setX(i - idx);
                 items[idx + i] = builder.build();
             }
-            idx += 4;
         }
-        
+
         // Write the simple and extended item data
-        for(D2Item item : items) {
-            stream.write(0x4A);
-            stream.write(0x4D);
-
-            // Write the next 16 bits (16 - 32): Item is IDed (bit 4), socketed (bit 11)
-            short vec1 = 0;
-            vec1 |= boolToInt(item.isIdentified()) << 4;
-            vec1 |= boolToInt(item.isSocketed()) << 11;
-            writeBits(vec1, 16);
-
-            // Player ear to unknown 15 bits: Item is simple (bit 5), ethereal (bit 6), personalized (bit 8), RW (bit 10)
-            int vec2 = 0;
-            vec2 |= boolToInt(item.isSimple()) << 5;
-            vec2 |= boolToInt(item.isEthereal()) << 6;
-            vec2 |= 1 << 7; // always set to 1
-            vec2 |= boolToInt(item.isPersonalized()) << 8;
-            vec2 |= boolToInt(item.isHasRW()) << 10;
-            writeBits(vec2, 26);
-
-            // item location, equipped position, coordinates, item store (bits 58 - 76)
-            vec2 = 0;
-            vec2 |= item.getItemLocation();
-            vec2 |= item.getEquippedLoc() << 3;
-            vec2 |= item.getX() << 7;
-            vec2 |= item.getY() << 11;
-            vec2 |= item.getItemStore() << 15;
-            writeBits(vec2, 18);
-
-            // Write item type. Not byte aligned, so don't use stream directly
-            vec2 = 0;
-            for(int i = 0; i < item.getItemType().length(); i++)
-                vec2 |= item.getItemType().charAt(i) << (i * 8);
-            writeBits(vec2, 32);
-
-            // Number of socketed items, then write extended info if applicable, finally flush bits.
-            writeBits(item.getNumSocketed(), 3);
-
-            if(!item.isSimple()) {
-                D2ExtendedItem xItem = item.getExtendedData();
-
-                // Unique ID, iLvl, quality
-                writeBits(xItem.getIdentifier(), 32);
-                writeBits(xItem.getiLvl(), 7);
-                writeBits(xItem.getQuality(), 4);
-
-                // Image type for jewelery, jewels, charms
-                writeBits(boolToInt(xItem.isGenericMagicItem()), 1);
-                if(xItem.isGenericMagicItem()) {
-                    writeBits(xItem.getImgType(), 3);
-                }
-
-                // Expansion items
-                writeBits(boolToInt(xItem.isExpansionItem()), 1);
-                if(xItem.isExpansionItem()) {
-                    writeBits(xItem.getExpansionMagicProperty(), 11);
-                }
-
-                // Low quality
-                writeBits(boolToInt(xItem.isLowQuality()), 1);
-                if(xItem.isLowQuality()) {
-                    writeBits(xItem.getQualityData(), 11);
-                }
-
-                // Handle non-white items
-                switch(xItem.getQuality()) {
-                    case SET:
-                        writeBits(xItem.getSetId(), 12);
-                        break;
-                    case UNIQUE:
-                        writeBits(xItem.getUniqueId(), 12);
-                        break;
-                    case RARE:
-                    case CRAFTED:
-                        writeBits(xItem.getFirstWordId(), 8);
-                        writeBits(xItem.getSecondWordId(), 8);
-
-                        // Depending on the size of the prefix and suffix IDs,
-                        // write a 1 or 0 then the id
-                        for(int i = 0; i < 3; i++) {
-                            boolean hasIthPrefix = i < xItem.getPrefixIds().length,
-                                    hasIthSuffix = i < xItem.getSuffixIds().length;
-
-                            writeBits(boolToInt(hasIthPrefix), 1);
-                            if(hasIthPrefix)
-                                writeBits(xItem.getPrefixIds()[i], 11);
-
-                            writeBits(boolToInt(hasIthSuffix), 1);
-                            if(hasIthSuffix)
-                                writeBits(xItem.getSuffixIds()[i], 11);
-                        }
-                        break;
-                    default: // Magical
-                        writeBits(xItem.getPrefixId(), 11);
-                        writeBits(xItem.getSuffixId(), 11);
-                }
-
-                if(item.isHasRW()) // 12 bit ID and 5 in 4-bit vector
-                    writeBits( (xItem.getRwId() << 4) | 5, 16);
-
-                // Write the item's owner then add a zero
-                if(item.isPersonalized()) {
-                    for(char c : xItem.getOwner().toCharArray())
-                        writeBits(c, 7);
-                    writeBits(0, 7);
-                }
-
-                writeBits(boolToInt(xItem.isIdTome()), 1);
-
-                // Item specific data
-                D2ItemData itemData = xItem.getData();
-
-                if(D2ItemTypes.isArmor(item.getItemType()) || D2ItemTypes.isShield(item.getItemType()))
-                    writeBits(itemData.getDefense(), 10);
-
-                // Account for indestructibility by checking for 0 max durability
-                if(D2ItemTypes.isNonMisc(item.getItemType())) {
-                    writeBits(itemData.getMaxDur(), 8);
-                    if(itemData.getMaxDur() > 0)
-                        writeBits(itemData.getCurDur(), 8);
-                }
-
-                if(item.isSocketed())
-                    writeBits(itemData.getSockets(), 4);
-
-                if(D2ItemTypes.isTome(item.getItemType()))
-                    writeBits(0, 5);
-
-                if(D2ItemTypes.hasQuantity(item.getItemType()))
-                    writeBits(itemData.getQuantity(), 9);
-
-                // Fill a bit vector that represents how many lists of properties
-                // exist for this item (bonuses for 2 or more set items equipped)
-                if(xItem.getQuality() == SET) {
-                    int[] listMap = {0, 1, 3, 7, 15, 31};
-                    writeBits(listMap[itemData.getPropertyLists()], 5);
-                }
-
-                // Write the variable length fields for the item's magical properties
-                // TODO: handle magical properties with more than 2 property values
-
-                // Runeword properties start with 0x1FF
-                if(item.isHasRW())
-                    writeBits(reverseBits(0x01FF, 9), 9);
-
-                if(xItem.getQuality() >= MAGICAL || item.isHasRW()) {
-                    int[] ids = itemData.getPropertyIds();
-                    long[] values = itemData.getPropertyValues();
-                    writeVariableData(ids, values, D2MagicProperties.getLengthMap(), D2MagicProperties.getBiasMap(), 254);
-                }
-
-                // Write the partial set properties inherent to this item, each in their own list
-                // (No set item has 2 properties for wearing another item, even if possible)
-                if(xItem.getQuality() == SET) {
-                    int[] ids = itemData.getSetBonusIds();
-                    long[] vals = itemData.getSetBonusValues();
-                    for(int i = 0; i < itemData.getPropertyLists(); i++)
-                        writeVariableData(new int[]{ids[i]}, new long[]{vals[i]}, D2MagicProperties.getLengthMap(), D2MagicProperties.getBiasMap(), 254);
-                }
-            }
-
-            stream.write((int) currentByte);
-
-            // TODO: Write the item structures for socketed items
-            if(item.getNumSocketed() >= 0) {
-
-            }
-        }
+        D2sItemWriter itemWriter = new D2sItemWriter(stream, new BitWriter(stream));
+        for(D2Item item : items)
+            itemWriter.writeItem(item);
     }
 
     // save as first item header, number indicate how many items in corpse which shall be 0
@@ -682,6 +509,7 @@ public class D2sWriter {
     }
 
     private void writeVariableData(int[] ids, long[] values, int[] lengths_map, int[] bias, int maxId) {
+        BitWriter writer = new BitWriter(stream);
         for(int i = 0; i < ids.length; i++) {
             if(ids[i] < 0 || ids[i] > maxId)
                 throw new IllegalArgumentException("Variable ID " + ids[i] + " does not exist");
@@ -689,65 +517,16 @@ public class D2sWriter {
             // Put ID into integer, reverse the last 9 bits, write the 9 bits in reverse order.
             // Repeat for the value itself
             long id = ids[i], val = values[i] + bias[ids[i]];
-            id = reverseBits(id, 9);
-            writeBits(id, 9);
+            id = writer.reverseBits(id, 9);
+            writer.writeBits(id, 9);
 
-            val = reverseBits(val, lengths_map[ids[i]]);
-            writeBits(val, lengths_map[ids[i]]);
+            val = writer.reverseBits(val, lengths_map[ids[i]]);
+            writer.writeBits(val, lengths_map[ids[i]]);
         }
 
         // Write 0x01FF id, end of attributes
-        writeBits(reverseBits(0x01FF, 9), 9);
-    }
+        writer.writeBits(writer.reverseBits(0x01FF, 9), 9);
 
-    // Converts a boolean to its C equivalent
-    private int boolToInt(boolean b) {
-        return b ? 1 : 0;
-    }
-
-    // Takes an int in the range of [0, 255]
-    private int reverseByte(int b) {
-        int r = 0;
-        for (int i = 0; i < 8; i++) {
-            r <<= 1;
-            r |= b & 1;
-            b >>= 1;
-        }
-        return r;
-    }
-
-    private long reverseBits(long vec, int num) {
-        if(num > 64)
-            throw new IllegalArgumentException("Cannot reverse more than 64 bits");
-
-        long r = 0;
-        for (int i = 0; i < num; i++) {
-            r <<= 1;
-            r |= vec & 1;
-            vec >>= 1;
-        }
-        return r;
-    }
-
-    private void writeBits(long vec, int num) {
-        if(num > 64)
-            throw new IllegalArgumentException("Cannot write more than 64 bits");
-
-        while (num > 0) {
-            long cbit = Math.min (num, (8 - bitCount));
-
-            currentByte = (currentByte << cbit) | ((vec >>> (num - cbit)) & ((1 << cbit) - 1));
-
-            bitCount += cbit;
-            num -= cbit;
-
-            // Write the byte in reverse
-            if(bitCount == 8) {
-                int data = (int) currentByte;
-                stream.write(reverseByte(data));
-                currentByte = 0;
-                bitCount = 0;
-            }
-        }
+        stream.write((int) writer.flush());
     }
 }
