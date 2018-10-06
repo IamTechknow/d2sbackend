@@ -84,8 +84,8 @@ public class D2Save {
         return rejuvs;
     }
 
-    public void setRejuv(boolean rejuv) {
-        this.rejuvs = rejuv;
+    public void setRejuvs(boolean rejuvs) {
+        this.rejuvs = rejuvs;
     }
 
     public int getDifficulty() {

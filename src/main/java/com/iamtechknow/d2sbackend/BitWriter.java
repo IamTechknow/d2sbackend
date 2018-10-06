@@ -38,7 +38,7 @@ public class BitWriter {
         return r;
     }
 
-    public void writeBits(long vec, int num) {
+    public void writeBits(long vec, int num, boolean reverse) {
         if(num > 64)
             throw new IllegalArgumentException("Cannot write more than 64 bits");
 
@@ -53,11 +53,17 @@ public class BitWriter {
             // Write the byte in reverse
             if(bitCount == 8) {
                 int data = (int) currentByte;
-                stream.write(reverseByte(data));
+                if(reverse)
+                    data = reverseByte(data);
+                stream.write(data);
                 currentByte = 0;
                 bitCount = 0;
             }
         }
+    }
+
+    public void writeBits(long vec, int num) {
+        writeBits(vec, num, true);
     }
 
     // Flush the rest of the bits, padded with 0 (already reversed)

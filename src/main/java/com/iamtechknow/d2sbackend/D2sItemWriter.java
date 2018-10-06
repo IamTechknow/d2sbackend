@@ -16,15 +16,18 @@ public class D2sItemWriter {
 
     // Write the simple and if it exists, the extended item data
     // If an item has socketed items it will recursively write them
+    // A bit writer is used to keep track of intermediate bits.
+    // Bits are reversed twice and then written to the bit stream.
     public void writeItem(D2Item item) {
-        writerStream.write(0x4A);
-        writerStream.write(0x4D);
+        // Either use it or write 8 bits at a time and update the buffer
+        bitWriter.writeBits(0x4A, 8, false);
+        bitWriter.writeBits(0x4D, 8, false);
 
         // Write the next 16 bits (16 - 32): Item is IDed (bit 4), socketed (bit 11)
         short vec1 = 0;
         vec1 |= boolToInt(item.isIdentified()) << 4;
         vec1 |= boolToInt(item.isSocketed()) << 11;
-        bitWriter.writeBits(vec1, 16);
+        bitWriter.writeBits(bitWriter.reverseBits(vec1, 16), 16);
 
         // Player ear to unknown 15 bits: Item is simple (bit 5), ethereal (bit 6), personalized (bit 8), RW (bit 10)
         int vec2 = 0;
@@ -33,7 +36,7 @@ public class D2sItemWriter {
         vec2 |= 1 << 7; // always set to 1
         vec2 |= boolToInt(item.isPersonalized()) << 8;
         vec2 |= boolToInt(item.isHasRW()) << 10;
-        bitWriter.writeBits(vec2, 26);
+        bitWriter.writeBits(bitWriter.reverseBits(vec2, 26), 26);
 
         // item location, equipped position, coordinates, item store (bits 58 - 76)
         vec2 = 0;
@@ -41,17 +44,18 @@ public class D2sItemWriter {
         vec2 |= item.getEquippedLoc() << 3;
         vec2 |= item.getX() << 7;
         vec2 |= item.getY() << 11;
-        vec2 |= item.getItemStore() << 15;
-        bitWriter.writeBits(vec2, 18);
-
-        // Write item type. Not byte aligned, so don't use stream directly
+        vec2 |= item.getItemStore() << 15; // bit 16 is ignored
+        bitWriter.writeBits(bitWriter.reverseBits(vec2, 18), 18);
+        
+        // Write item type. Not byte aligned, but that's ok!
         vec2 = 0;
         for(int i = 0; i < item.getItemType().length(); i++)
             vec2 |= item.getItemType().charAt(i) << (i * 8);
-        bitWriter.writeBits(vec2, 32);
+        bitWriter.writeBits(bitWriter.reverseBits(vec2, 32), 32);
 
+        // FIXME: Not working up to this point
         // Number of socketed items, then write extended info if applicable, finally flush bits.
-        bitWriter.writeBits(item.getNumSocketed(), 3);
+        bitWriter.writeBits(bitWriter.reverseBits(item.getNumSocketed(), 3), 3);
 
         if(!item.isSimple()) {
             D2ExtendedItem xItem = item.getExtendedData();
@@ -179,7 +183,7 @@ public class D2sItemWriter {
         writerStream.write((int) bitWriter.flush());
 
         // Socketed items immediately follow their parent item
-        if(item.getNumSocketed() >= 0)
+        if(item.getNumSocketed() > 0)
             for(D2Item socket : item.getSocketedItems())
                 writeItem(socket);
     }
