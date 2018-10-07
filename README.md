@@ -35,12 +35,14 @@ Developer Stories:
 * [X] As a developer, I should be able to validate the input from the page and a given save
 * [X] As a developer, I should be able to generate a save file and a link
 * [ ] As a developer, I should be able to create integration tests that can automate the process of creating a save file and using the d2s go library to verify certain save properties
-* [X] As a developer, I should be utilize CI to be able to push changes from Github into a staging or production cloud environment
+* [X] As a developer, I should utilize CI to be able to push changes from Github into a staging or production cloud environment
+* [X] As a developer, I should be able to run a local version of the web app with hot swapping
 
 ## Instructions
-To just run the frontend, run the start task with `npm start`. Hot swapping is enabled to allow rebuilding of the bundle due to source changes.
+To just run the frontend, run the test task with `npm test`. Hot swapping is enabled to allow rebuilding of the bundle due to source changes.
 
 To run both the frontend and backend, run the `bootRun` command with the gradle wrapper (gradlew.) You may now load the web app at localhost:8080.
+You can also run the start task to automatically rebuild the bundle upon changes.
 
 For continuous building, open a terminal and run gradlew with the `build --continuous` command (won't work inside IDEA), 
 then run the `bootRun` task inside IDEA. Gradle will automatically rebuild the project upon changes, and Spring will automatically reload
