@@ -38,8 +38,9 @@ Developer Stories:
 * [X] As a developer, I should be utilize CI to be able to push changes from Github into a staging or production cloud environment
 
 ## Instructions
-To run this web application locally, clone this repo, open Intellij IDEA, and open the repository root directory.
-Go to the Gradle section at the right, press the Gradle Icon, run the `bootRun` task. You may now load the web app at localhost:8080.
+To just run the frontend, run the start task with `npm start`. Hot swapping is enabled to allow rebuilding of the bundle due to source changes.
+
+To run both the frontend and backend, run the `bootRun` command with the gradle wrapper (gradlew.) You may now load the web app at localhost:8080.
 
 For continuous building, open a terminal and run gradlew with the `build --continuous` command (won't work inside IDEA), 
 then run the `bootRun` task inside IDEA. Gradle will automatically rebuild the project upon changes, and Spring will automatically reload
