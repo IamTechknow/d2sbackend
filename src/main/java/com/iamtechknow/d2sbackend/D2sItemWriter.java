@@ -27,7 +27,7 @@ public class D2sItemWriter {
         short vec1 = 0;
         vec1 |= boolToInt(item.isIdentified()) << 4;
         vec1 |= boolToInt(item.isSocketed()) << 11;
-        bitWriter.writeBits(bitWriter.reverseBits(vec1, 16), 16);
+        writeReversed(vec1, 16);
 
         // Player ear to unknown 15 bits: Item is simple (bit 5), ethereal (bit 6), personalized (bit 8), RW (bit 10)
         int vec2 = 0;
@@ -36,7 +36,7 @@ public class D2sItemWriter {
         vec2 |= 1 << 7; // always set to 1
         vec2 |= boolToInt(item.isPersonalized()) << 8;
         vec2 |= boolToInt(item.isHasRW()) << 10;
-        bitWriter.writeBits(bitWriter.reverseBits(vec2, 26), 26);
+        writeReversed(vec2, 26);
 
         // item location, equipped position, coordinates, item store (bits 58 - 76)
         vec2 = 0;
@@ -45,56 +45,55 @@ public class D2sItemWriter {
         vec2 |= item.getX() << 7;
         vec2 |= item.getY() << 11;
         vec2 |= item.getItemStore() << 15; // bit 16 is ignored
-        bitWriter.writeBits(bitWriter.reverseBits(vec2, 18), 18);
+        writeReversed(vec2, 18);
         
         // Write item type. Not byte aligned, but that's ok!
         vec2 = 0;
         for(int i = 0; i < item.getItemType().length(); i++)
             vec2 |= item.getItemType().charAt(i) << (i * 8);
-        bitWriter.writeBits(bitWriter.reverseBits(vec2, 32), 32);
+        writeReversed(vec2, 32);
 
-        // FIXME: Not working up to this point
         // Number of socketed items, then write extended info if applicable, finally flush bits.
-        bitWriter.writeBits(bitWriter.reverseBits(item.getNumSocketed(), 3), 3);
+        writeReversed(item.getNumSocketed(), 3);
 
         if(!item.isSimple()) {
             D2ExtendedItem xItem = item.getExtendedData();
 
             // Unique ID, iLvl, quality
-            bitWriter.writeBits(xItem.getIdentifier(), 32);
-            bitWriter.writeBits(xItem.getiLvl(), 7);
-            bitWriter.writeBits(xItem.getQuality(), 4);
+            writeReversed(xItem.getIdentifier(), 32);
+            writeReversed(xItem.getiLvl(), 7);
+            writeReversed(xItem.getQuality(), 4);
 
             // Image type for jewelery, jewels, charms
-            bitWriter.writeBits(boolToInt(xItem.isGenericMagicItem()), 1);
+            writeReversed(boolToInt(xItem.isGenericMagicItem()), 1);
             if(xItem.isGenericMagicItem()) {
-                bitWriter.writeBits(xItem.getImgType(), 3);
+                writeReversed(xItem.getImgType(), 3);
             }
 
             // Expansion items
-            bitWriter.writeBits(boolToInt(xItem.isExpansionItem()), 1);
+            writeReversed(boolToInt(xItem.isExpansionItem()), 1);
             if(xItem.isExpansionItem()) {
-                bitWriter.writeBits(xItem.getExpansionMagicProperty(), 11);
+                writeReversed(xItem.getExpansionMagicProperty(), 11);
             }
 
             // Low quality
-            bitWriter.writeBits(boolToInt(xItem.isLowQuality()), 1);
+            writeReversed(boolToInt(xItem.isLowQuality()), 1);
             if(xItem.isLowQuality()) {
-                bitWriter.writeBits(xItem.getQualityData(), 11);
+                writeReversed(xItem.getQualityData(), 11);
             }
 
             // Handle non-white items
             switch(xItem.getQuality()) {
                 case SET:
-                    bitWriter.writeBits(xItem.getSetId(), 12);
+                    writeReversed(xItem.getSetId(), 12);
                     break;
                 case UNIQUE:
-                    bitWriter.writeBits(xItem.getUniqueId(), 12);
+                    writeReversed(xItem.getUniqueId(), 12);
                     break;
                 case RARE:
                 case CRAFTED:
-                    bitWriter.writeBits(xItem.getFirstWordId(), 8);
-                    bitWriter.writeBits(xItem.getSecondWordId(), 8);
+                    writeReversed(xItem.getFirstWordId(), 8);
+                    writeReversed(xItem.getSecondWordId(), 8);
 
                     // Depending on the size of the prefix and suffix IDs,
                     // write a 1 or 0 then the id
@@ -102,28 +101,28 @@ public class D2sItemWriter {
                         boolean hasIthPrefix = i < xItem.getPrefixIds().length,
                                 hasIthSuffix = i < xItem.getSuffixIds().length;
 
-                        bitWriter.writeBits(boolToInt(hasIthPrefix), 1);
+                        writeReversed(boolToInt(hasIthPrefix), 1);
                         if(hasIthPrefix)
-                            bitWriter.writeBits(xItem.getPrefixIds()[i], 11);
+                            writeReversed(xItem.getPrefixIds()[i], 11);
 
-                        bitWriter.writeBits(boolToInt(hasIthSuffix), 1);
+                        writeReversed(boolToInt(hasIthSuffix), 1);
                         if(hasIthSuffix)
-                            bitWriter.writeBits(xItem.getSuffixIds()[i], 11);
+                            writeReversed(xItem.getSuffixIds()[i], 11);
                     }
                     break;
                 default: // Magical
-                    bitWriter.writeBits(xItem.getPrefixId(), 11);
-                    bitWriter.writeBits(xItem.getSuffixId(), 11);
+                    writeReversed(xItem.getPrefixId(), 11);
+                    writeReversed(xItem.getSuffixId(), 11);
             }
 
             if(item.isHasRW()) // 12 bit ID and 5 in 4-bit vector
-                bitWriter.writeBits( (xItem.getRwId() << 4) | 5, 16);
+                writeReversed( (xItem.getRwId() << 4) | 5 , 16);
 
             // Write the item's owner then add a zero
             if(item.isPersonalized()) {
                 for(char c : xItem.getOwner().toCharArray())
-                    bitWriter.writeBits(c, 7);
-                bitWriter.writeBits(0, 7);
+                    writeReversed(c, 7);
+                bitWriter.writeBits(0, 7, false);
             }
 
             bitWriter.writeBits(boolToInt(xItem.isIdTome()), 1);
@@ -132,29 +131,29 @@ public class D2sItemWriter {
             D2ItemData itemData = xItem.getData();
 
             if(D2ItemTypes.isArmor(item.getItemType()) || D2ItemTypes.isShield(item.getItemType()))
-                bitWriter.writeBits(itemData.getDefense(), 10);
+                writeReversed(itemData.getDefense(), 10);
 
             // Account for indestructibility by checking for 0 max durability
             if(D2ItemTypes.isNonMisc(item.getItemType())) {
-                bitWriter.writeBits(itemData.getMaxDur(), 8);
+                writeReversed(itemData.getMaxDur(), 8);
                 if(itemData.getMaxDur() > 0)
-                    bitWriter.writeBits(itemData.getCurDur(), 8);
+                    writeReversed(itemData.getCurDur(), 8);
             }
 
             if(item.isSocketed())
-                bitWriter.writeBits(itemData.getSockets(), 4);
+                writeReversed(itemData.getSockets(), 4);
 
             if(D2ItemTypes.isTome(item.getItemType()))
-                bitWriter.writeBits(0, 5);
+                bitWriter.writeBits(0, 5, false);
 
             if(D2ItemTypes.hasQuantity(item.getItemType()))
-                bitWriter.writeBits(itemData.getQuantity(), 9);
+                writeReversed(itemData.getQuantity(), 9);
 
             // Fill a bit vector that represents how many lists of properties
             // exist for this item (bonuses for 2 or more set items equipped)
             if(xItem.getQuality() == SET) {
                 int[] listMap = {0, 1, 3, 7, 15, 31};
-                bitWriter.writeBits(listMap[itemData.getPropertyLists()], 5);
+                writeReversed(listMap[itemData.getPropertyLists()], 5);
             }
 
             // Write the variable length fields for the item's magical properties
@@ -162,7 +161,7 @@ public class D2sItemWriter {
 
             // Runeword properties start with 0x1FF
             if(item.isHasRW())
-                bitWriter.writeBits(bitWriter.reverseBits(0x01FF, 9), 9);
+                writeReversed(0x01FF, 9);
 
             if(xItem.getQuality() >= MAGICAL || item.isHasRW()) {
                 int[] ids = itemData.getPropertyIds();
@@ -188,6 +187,12 @@ public class D2sItemWriter {
                 writeItem(socket);
     }
 
+    // Write n bits to the byte stream, after reversing the entire bit vector
+    // and then reversing 8 bits at a time.
+    private void writeReversed(long vec, int n) {
+        bitWriter.writeBits(bitWriter.reverseBits(vec, n), n);
+    }
+
     // Converts a boolean to its C equivalent
     private int boolToInt(boolean b) {
         return b ? 1 : 0;
@@ -209,6 +214,6 @@ public class D2sItemWriter {
         }
 
         // Write 0x01FF id, end of attributes
-        bitWriter.writeBits(bitWriter.reverseBits(0x01FF, 9), 9);
+        writeReversed(0x01FF, 9);
     }
 }
