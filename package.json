@@ -14,34 +14,33 @@
   "author": "Edmond Lee",
   "license": "MIT",
   "dependencies": {
-    "react": "^16.5.0",
-    "react-dom": "^16.5.0",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
     "react-router-dom": "^4.3.1",
-    "@material-ui/core": "^3.0.2"
+    "@material-ui/core": "^3.1.2"
   },
   "scripts": {
-    "start": "webpack-dev-server --mode development --open",
+    "start": "webpack --debug --output-pathinfo --watch",
+    "test": "webpack-dev-server --mode development --hot --open",
     "build": "webpack --mode production"
   },
   "babel": {
     "presets": [
-      "env",
-      "react"
+      "@babel/preset-env",
+      "@babel/preset-react"
     ],
     "plugins": [
-      "transform-class-properties"
+      "@babel/plugin-proposal-class-properties"
     ]
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "css-loader": "^1.0.0",
-    "react-hot-loader": "^4.3.6",
-    "webpack": "^4.17.2",
-    "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.5"
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "babel-loader": "^8.0.4",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.9"
   }
 }

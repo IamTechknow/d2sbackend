@@ -2,12 +2,8 @@ import React, {Component} from 'react';
 
 // Display warning messages based on the Form component state
 export default class Warnings extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   getSkillsMessage(errno) {
-    let INVALID_NO_SP = 1, INVALID_LEVEL_LOW = 2, INVALID_DEPS = 3;
+    let INVALID_NO_SP = 1, INVALID_LEVEL_LOW = 2;
     switch(errno) {
         case INVALID_NO_SP:
             return "Character does not have enough skill points for this build!";
@@ -19,7 +15,7 @@ export default class Warnings extends Component {
   }
 
   getStatsMessage(errno) {
-    let INVALID_NEG_ATTR = 1, STR_BELOW_BASE = 2, DEX_BELOW_BASE = 3, VIT_BELOW_BASE = 4, NRG_BELOW_BASE = 5;
+    let STR_BELOW_BASE = 2, DEX_BELOW_BASE = 3, VIT_BELOW_BASE = 4, NRG_BELOW_BASE = 5;
     switch(errno) {
         case STR_BELOW_BASE:
             return "Strength points are below character's base value.";

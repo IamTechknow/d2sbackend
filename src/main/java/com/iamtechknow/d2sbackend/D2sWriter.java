@@ -16,17 +16,13 @@ public class D2sWriter {
 
     private ByteArrayOutputStream stream;
 
-    // Bit writing state for attributes
-    private long bitCount;
-    private long currentByte;
-
     public D2sWriter(ByteArrayOutputStream stream) {
         this.stream = stream;
     }
 
-	/**
-	 * Write all the data needed for the save to be valid.
-	 */
+    /**
+     * Write all the data needed for the save to be valid.
+     */
     public void write(D2Save save) {
         if(save == null)
             throw new NullPointerException("Save cannot be null. Check that it is parsed correctly?");
@@ -34,7 +30,7 @@ public class D2sWriter {
         writeHeader(save);
         writeAttributes(save);
         writeSkills(save);
-        writeItems();
+        writeItems(save);
         writeCorpse();
 
         if(save.isExpansion()) {
@@ -47,9 +43,9 @@ public class D2sWriter {
         return stream.size();
     }
 
-	/**
-	 * Obtain the byte array, calculate and write the checksum and file length at the beginning.
-	 */
+    /**
+     * Obtain the byte array, calculate and write the checksum and file length at the beginning.
+     */
     public byte[] toByteArray() {
         byte[] result = stream.toByteArray();
         int len = result.length, checksum = 0, offset = 8;
@@ -70,24 +66,24 @@ public class D2sWriter {
         return result;
     }
 
-	/**
-	 * Write the file header, or the first 765 bytes.
-	 */
+    /**
+     * Write the file header, or the first 765 bytes.
+     */
     private void writeHeader(D2Save save) {
-		writeInt(MAGIC_NUMBER);
-		writeInt(VERSION);
-		writeInt(0); // Leave length and checksum 0 and set them later
-		writeInt(0);
-		
-		// Active weapon
+        writeInt(MAGIC_NUMBER);
+        writeInt(VERSION);
+        writeInt(0); // Leave length and checksum 0 and set them later
         writeInt(0);
-		
-		// Character Name (padded to 16 bytes)
-		for(char c : save.getName().toCharArray())
-		    stream.write(c);
+        
+        // Active weapon
+        writeInt(0);
+        
+        // Character Name (padded to 16 bytes)
+        for(char c : save.getName().toCharArray())
+            stream.write(c);
         skip(16 - save.getName().length());
 
-		// Character status
+        // Character status
         byte status = 0;
         if(save.isHardcore())
             status |= 1 << 2;
@@ -95,7 +91,7 @@ public class D2sWriter {
             status |= 1 << 5;
         stream.write(status);
 
-		// Character progression
+        // Character progression
         stream.write(save.getDifficulty());
 
         // Two unknown bytes, Character class
@@ -131,14 +127,8 @@ public class D2sWriter {
         // Map ID. This may be safely set to 0 and the game can change it itself.
         writeInt(0);
 
-        // Unknown bytes
-        skip(2);
-
-        // Hireling Data - not supported yet, so all bytes set to 0
-        skip(14);
-
-        // Unknown bytes, seems to be padding
-        skip(144);
+        // Unknown bytes + Hireling Data + padding
+        skip(2 + 14 + 144);
 
         writeQuests(save.getDifficulty(), save.getStartingAct(), save.getRewards(), save.isExpansion());
 
@@ -298,26 +288,10 @@ public class D2sWriter {
 
         D2CharacterAttributes attrs = new D2CharacterAttributes(save);
         int[] lengths_map = new int[]{10, 10, 10, 10, 10, 8, 21, 21, 21, 21, 21, 21, 7, 32, 25, 25};
-
-        byte[] ids = getIds(attrs);
+        int[] ids = getIds(attrs);
         long[] values = getValues(attrs, ids.length);
 
-        // Put ID into integer, reverse the last 9 bits, write the 9 bits in reverse order.
-        // Repeat for the value itself
-        for(int i = 0; i < ids.length; i++) {
-            long id = ids[i], val = values[i];
-            id = reverseBits(id, 9);
-            writeBits(id, 9);
-
-            val = reverseBits(val, lengths_map[ids[i]]);
-            writeBits(val, lengths_map[ids[i]]);
-        }
-
-        // Write 0x01FF id, end of attributes
-        writeBits(reverseBits(0x01FF, 9), 9);
-
-        // Flush the rest of the bits, padded with 0 (already reversed)
-        stream.write((int) currentByte);
+        writeVariableData(ids, values, lengths_map, new int[16], 16);
     }
 
     // Write the amount of skill points allocated for each skill
@@ -328,45 +302,71 @@ public class D2sWriter {
             stream.write(i);
     }
 
-	// start with JM header then insert 0 items
-    private void writeItems() {
-		stream.write(0x4A); 
+    // Gather all D2Item objects and write them
+    private void writeItems(D2Save save) {
+        stream.write(0x4A);
+        stream.write(0x4D);
+        
+        int numItems = 0;
+        if(save.isRejuv()) {
+            numItems += 4;
+        }
+        stream.write(numItems);
+        stream.write(numItems >> 8);
+        
+        D2Item.Builder builder;
+        D2Item[] items = new D2Item[numItems];
+        int idx = 0;
+        
+        // Create four full rejuvs, each that differ only in X position
+        if(save.isRejuv()) {
+            builder = new D2Item.Builder("rvl");
+            builder.setSimple(true).setItemLocation(D2Item.BELT);
+            
+            for(int i = idx; i < idx + 4; i++) { // belts have no rows
+                builder.setX(i - idx);
+                items[idx + i] = builder.build();
+            }
+        }
+
+        // Write the simple and extended item data
+        D2sItemWriter itemWriter = new D2sItemWriter(stream, new BitWriter(stream));
+        for(D2Item item : items)
+            itemWriter.writeItem(item);
+    }
+
+    // save as first item header, number indicate how many items in corpse which shall be 0
+    private void writeCorpse() {
+        stream.write(0x4A); 
         stream.write(0x4D);
         skip(2);
     }
 
-	// save as first item header, number indicate how many items in corpse which shall be 0
-    private void writeCorpse() {
-		stream.write(0x4A); 
-        stream.write(0x4D);
-		skip(2);
-    }
-
-	// just write "jf", no items to store because no hireling
+    // just write "jf", no items to store because no hireling
     private void writeHireling() {
-		stream.write(0x6A); 
+        stream.write(0x6A); 
         stream.write(0x66);
     }
 
-	// just write "kf", and 0 indicating no golem
+    // just write "kf", and 0 indicating no golem
     private void writeGolem() {
-		stream.write(0x6B); 
+        stream.write(0x6B); 
         stream.write(0x66);
-		stream.write(0);
+        stream.write(0);
     }
 
     /**
      * Helper method to write four bytes to the stream, in little endian order.
      * @param i the integer to write
      */
-	private void writeInt(int i) {
-		stream.write(i);
-		stream.write(i >> 8);
-		stream.write(i >> 16);
-		stream.write(i >> 24);
-	}
+    private void writeInt(int i) {
+        stream.write(i);
+        stream.write(i >> 8);
+        stream.write(i >> 16);
+        stream.write(i >> 24);
+    }
 
-	private void writeArray(byte[] arr) {
+    private void writeArray(byte[] arr) {
         for(byte b : arr)
             stream.write(b);
     }
@@ -374,23 +374,23 @@ public class D2sWriter {
     /**
      * Write 0 for the next len bytes, effectively skipping through them.
      */
-	private void skip(int len) {
-		for(int i = 0; i < len; i++)
-			stream.write(0);
-	}
+    private void skip(int len) {
+        for(int i = 0; i < len; i++)
+            stream.write(0);
+    }
 
     /**
      * Get the correct bit index based on difficulty, set the 8th bit and OR the starting act
      */
-	private byte[] getDifficulty(D2Save save) {
-	    byte[] arr = new byte[3];
-	    int diff = save.getDifficulty(), idx = 2;
+    private byte[] getDifficulty(D2Save save) {
+        byte[] arr = new byte[3];
+        int diff = save.getDifficulty(), idx = 2;
 
-	    if(diff >= 0 && diff < 5)
-	        idx = 0;
-	    else if(diff >= 5 && diff < 10)
-	        idx = 1;
-	    arr[idx] = (byte) (-128 | save.getStartingAct()); // 0x80 means active difficulty
+        if(diff >= 0 && diff < 5)
+            idx = 0;
+        else if(diff >= 5 && diff < 10)
+            idx = 1;
+        arr[idx] = (byte) (-128 | save.getStartingAct()); // 0x80 means active difficulty
 
         return arr;
     }
@@ -445,17 +445,17 @@ public class D2sWriter {
 
     /**
      * Determine the character attribute IDs based on the save model.
-     * @return byte array containing IDs to be written to save file
+     * @return int array containing IDs to be written to save file
      */
-    private byte[] getIds(D2CharacterAttributes attrs) {
-	    ByteArrayOutputStream arr = new ByteArrayOutputStream();
-	    for(int i : new int[] {0, 1, 2, 3})
-	        arr.write(i);
+    private int[] getIds(D2CharacterAttributes attrs) {
+        ByteArrayOutputStream arr = new ByteArrayOutputStream();
+        for(int i : new int[] {0, 1, 2, 3})
+            arr.write(i);
 
-	    if(attrs.getAttrPoints() != 0)
-	        arr.write(4);
-	    if(attrs.getSkillPoints() != 0)
-	        arr.write(5);
+        if(attrs.getAttrPoints() != 0)
+            arr.write(4);
+        if(attrs.getSkillPoints() != 0)
+            arr.write(5);
 
         for(int i : new int[] {6, 7, 8, 9, 10, 11, 12})
             arr.write(i);
@@ -467,7 +467,12 @@ public class D2sWriter {
         if(attrs.getStashGold() != 0)
             arr.write(15);
 
-        return arr.toByteArray();
+        byte[] temp = arr.toByteArray();
+        int[] result = new int[temp.length];
+        for(int i = 0; i < temp.length; i++)
+            result[i] = temp[i];
+
+        return result;
     }
 
     /**
@@ -475,20 +480,20 @@ public class D2sWriter {
      * @return array containing 10-32 bit vectors to be written to save file
      */
     private long[] getValues(D2CharacterAttributes attrs, int size) {
-	    if(size > 16)
-	        throw new IllegalArgumentException("Invalid attribute size, max is 16");
+        if(size > 16)
+            throw new IllegalArgumentException("Invalid attribute size, max is 16");
 
-	    long[] arr = new long[size];
-	    arr[0] = attrs.getStr(); arr[1] = attrs.getNrg(); arr[2] = attrs.getDex(); arr[3] = attrs.getVit();
+        long[] arr = new long[size];
+        arr[0] = attrs.getStr(); arr[1] = attrs.getNrg(); arr[2] = attrs.getDex(); arr[3] = attrs.getVit();
 
-	    // At this point data may be missing so manage index.
-	    int idx = 4;
-	    if(attrs.getAttrPoints() != 0)
-	        arr[idx++] = attrs.getAttrPoints();
-	    if(attrs.getSkillPoints() != 0)
-	        arr[idx++] = attrs.getSkillPoints();
+        // At this point data may be missing so manage index.
+        int idx = 4;
+        if(attrs.getAttrPoints() != 0)
+            arr[idx++] = attrs.getAttrPoints();
+        if(attrs.getSkillPoints() != 0)
+            arr[idx++] = attrs.getSkillPoints();
 
-	    arr[idx++] = attrs.getLife(); arr[idx++] = attrs.getLife();
+        arr[idx++] = attrs.getLife(); arr[idx++] = attrs.getLife();
         arr[idx++] = attrs.getMana(); arr[idx++] = attrs.getMana();
         arr[idx++] = attrs.getStamina(); arr[idx++] = attrs.getStamina();
         arr[idx++] = attrs.getLevel();
@@ -500,52 +505,28 @@ public class D2sWriter {
         if(attrs.getStashGold() != 0)
             arr[idx] = attrs.getStashGold();
 
-	    return arr;
+        return arr;
     }
 
-    // Takes an int in the range of [0, 255]
-    private int reverseByte(int b) {
-        int r = 0;
-        for (int i = 0; i < 8; i++) {
-            r <<= 1;
-            r |= b & 1;
-            b >>= 1;
+    private void writeVariableData(int[] ids, long[] values, int[] lengths_map, int[] bias, int maxId) {
+        BitWriter writer = new BitWriter(stream);
+        for(int i = 0; i < ids.length; i++) {
+            if(ids[i] < 0 || ids[i] > maxId)
+                throw new IllegalArgumentException("Variable ID " + ids[i] + " does not exist");
+
+            // Put ID into integer, reverse the last 9 bits, write the 9 bits in reverse order.
+            // Repeat for the value itself
+            long id = ids[i], val = values[i] + bias[ids[i]];
+            id = writer.reverseBits(id, 9);
+            writer.writeBits(id, 9);
+
+            val = writer.reverseBits(val, lengths_map[ids[i]]);
+            writer.writeBits(val, lengths_map[ids[i]]);
         }
-        return r;
-    }
 
-    private long reverseBits(long vec, int num) {
-	    if(num > 64)
-	        throw new IllegalArgumentException("Cannot reverse more than 64 bits");
+        // Write 0x01FF id, end of attributes
+        writer.writeBits(writer.reverseBits(0x01FF, 9), 9);
 
-        long r = 0;
-        for (int i = 0; i < num; i++) {
-            r <<= 1;
-            r |= vec & 1;
-            vec >>= 1;
-        }
-        return r;
-    }
-
-    private void writeBits(long vec, int num) {
-        if(num > 64)
-            throw new IllegalArgumentException("Cannot write more than 64 bits");
-
-        while (num > 0) {
-            long cbit = Math.min (num, (8 - bitCount));
-
-            currentByte = (currentByte << cbit) | ((vec >>> (num - cbit)) & ((1 << cbit) - 1));
-
-            bitCount += cbit;
-            num -= cbit;
-
-            // Write the byte in reverse
-            if(bitCount == 8) {
-                int data = (int) currentByte;
-                stream.write(reverseByte(data));
-                currentByte = 0;
-                bitCount = 0;
-            }
-        }
+        stream.write((int) writer.flush());
     }
 }

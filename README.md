@@ -19,7 +19,13 @@ User Stories:
   * [X] Gold
   * [X] Quests
   * [ ] Items
-  * [ ] Mercenary
+    * [ ] As a user, I can view equipped items, inventory, belt, stash, and cube
+    * [ ] As a user, I can create certain items and delete them
+    * [ ] As a user, I can add magic properties to magic or rare items
+    * [ ] As a user, I can socket items, add socketables, and detect rune words
+    * [ ] As a user, I can view the properties of an item
+    * [ ] As a user, I can see all attribute stats gained from items
+    * [ ] As a user, I can set the items on my Mercenary and Iron Golem if the class is a Necromancer
   * [ ] (Optional) Patch Version
 * [X] As a user, I can start the process of creating the save file and either get a download link or an error message
 * [ ] As a user, I should be able to view details about the save
@@ -29,11 +35,14 @@ Developer Stories:
 * [X] As a developer, I should be able to validate the input from the page and a given save
 * [X] As a developer, I should be able to generate a save file and a link
 * [ ] As a developer, I should be able to create integration tests that can automate the process of creating a save file and using the d2s go library to verify certain save properties
-* [X] As a developer, I should be utilize CI to be able to push changes from Github into a staging or production cloud environment
+* [X] As a developer, I should utilize CI to be able to push changes from Github into a staging or production cloud environment
+* [X] As a developer, I should be able to run a local version of the web app with hot swapping
 
 ## Instructions
-To run this web application locally, clone this repo, open Intellij IDEA, and open the repository root directory.
-Go to the Gradle section at the right, press the Gradle Icon, run the `bootRun` task. You may now load the web app at localhost:8080.
+To just run the frontend, run the test task with `npm test`. Hot swapping is enabled to allow rebuilding of the bundle due to source changes.
+
+To run both the frontend and backend, run the `bootRun` command with the gradle wrapper (gradlew.) You may now load the web app at localhost:8080.
+You can also run the start task to automatically rebuild the bundle upon changes.
 
 For continuous building, open a terminal and run gradlew with the `build --continuous` command (won't work inside IDEA), 
 then run the `bootRun` task inside IDEA. Gradle will automatically rebuild the project upon changes, and Spring will automatically reload
