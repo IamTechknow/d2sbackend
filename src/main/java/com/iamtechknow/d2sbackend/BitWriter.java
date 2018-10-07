@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream;
 public class BitWriter {
     // Bit writing state for attributes and items
     private long bitCount;
+
+    // Intermediate bit state, resets after 8 bits have been written to
     private long currentByte;
 
     private ByteArrayOutputStream stream;
@@ -66,9 +68,9 @@ public class BitWriter {
         writeBits(vec, num, true);
     }
 
-    // Flush the rest of the bits, padded with 0 (already reversed)
+    // Flush the rest of the bits, padded with 0, and reverse the bits already seen
     public long flush() {
-        long retVal = currentByte;
+        long retVal = reverseBits(currentByte, (int) bitCount);
         currentByte = 0;
         bitCount = 0;
         return retVal;
