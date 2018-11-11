@@ -12,7 +12,9 @@ export default class Skills extends Component {
 
   // Activate Bootstrap tooltips via jQuery
   componentDidMount() {
-    $('[data-toggle="tooltip"]').tooltip();
+    if (typeof $ !== 'undefined') {
+      $('[data-toggle="tooltip"]').tooltip();
+    }
   }
 
   getSkillDeps(depsArray) {
