@@ -7,9 +7,9 @@ import Form from './form.jsx';
 
 // Render the Form component on the site index
 ReactDOM.render((
-    <BrowserRouter>
-        <div>
-            <Route path="/" component={Form} />
-        </div>
-    </BrowserRouter>
+  <BrowserRouter>
+    <div>
+      <Route path="/" component={Form} />
+    </div>
+  </BrowserRouter>
 ), document.getElementById('react'));
