@@ -1,23 +1,36 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Options = props => (
+const Options = ({ data, handler }) => (
   <div>
     <div className="form-check form-check-inline">
-      <input className="opts form-check-input" type="checkbox" name="expansion" id="exp" checked={props.data.expansion} onChange={props.handler} />
-      <label className="form-check-label" htmlFor="exp">Expansion</label>
+      <label className="form-check-label" htmlFor="exp">
+        <input className="opts form-check-input" type="checkbox" name="expansion" id="exp" checked={data.expansion} onChange={handler} />
+        Expansion
+      </label>
     </div>
     <div className="form-check form-check-inline">
-      <input className="opts form-check-input" type="checkbox" name="hardcore" id="hc" checked={props.data.hardcore} onChange={props.handler} />
-      <label className="form-check-label" htmlFor="hc">Hardcore</label>
+      <label className="form-check-label" htmlFor="hc">
+        <input className="opts form-check-input" type="checkbox" name="hardcore" id="hc" checked={data.hardcore} onChange={handler} />
+        Hardcore
+      </label>
     </div>
     <div className="form-check form-check-inline">
-      <input className="opts form-check-input" type="checkbox" name="rejuvs" id="rejuvs" checked={props.data.rejuvs} onChange={props.handler} />
-      <label className="form-check-label" htmlFor="rejuvs">Add Rejuvs to Belt</label>
+      <label className="form-check-label" htmlFor="rejuvs">
+        <input className="opts form-check-input" type="checkbox" name="rejuvs" id="rejuvs" checked={data.rejuvs} onChange={handler} />
+        Add Rejuvs to Belt
+      </label>
     </div>
-    <br />
-    {' '}
-    <br />
   </div>
 );
+
+Options.propTypes = {
+  data: PropTypes.shape({
+    expansion: PropTypes.bool.isRequired,
+    hardcore: PropTypes.bool.isRequired,
+    rejuvs: PropTypes.bool.isRequired,
+  }).isRequired,
+  handler: PropTypes.func.isRequired,
+};
 
 export default Options;

@@ -8,6 +8,7 @@ module.exports = {
     "jquery": true
   },
   "rules": {
-    "no-underscore-dangle": "off"
+    "one-var": "off",
+    "one-var-declaration-per-line": "off"
   }
 };

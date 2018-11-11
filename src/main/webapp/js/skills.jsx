@@ -36,11 +36,11 @@ export default class Skills extends Component {
     return (
       <div>
         <p>
-          Class:
+          Class:&nbsp;
           {Skills.getClass(classNum)}
         </p>
         <p>
-          Skill points available:
+          Skill points available:&nbsp;
           {skillPoints - allocated.reduce((accum, curr) => accum + curr)}
         </p>
 
