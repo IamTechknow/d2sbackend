@@ -7,7 +7,7 @@ const acts = [{ id: 'act1', val: 0 }, { id: 'act2', val: 1 }, { id: 'act3', val:
 const Acts = ({ currAct, handler }) => (
   <div>
     {acts.map(act => (
-      <div className="form-check form-check-inline">
+      <div key={act.id} className="form-check form-check-inline">
         <label className="form-check-label" htmlFor={act.id}>
           <input className="form-check-input" type="radio" name="startingAct" id={act.id} value={act.val} checked={currAct === act.val} onChange={handler} />
           {`Act ${act.val + 1}`}

@@ -7,7 +7,7 @@ const diffs = [{ id: 'norm', val: 0, txt: 'Normal' }, { id: 'nm', val: 5, txt: '
 const Difficulties = ({ currDiff, handler }) => (
   <div>
     {diffs.map(diff => (
-      <div className="form-check form-check-inline">
+      <div key={diff.id} className="form-check form-check-inline">
         <label className="form-check-label" htmlFor={diff.id}>
           <input className="form-check-input" type="radio" name="difficulty" id={diff.id} checked={currDiff === diff.val} onChange={handler} value={diff.val} />
           {diff.txt}

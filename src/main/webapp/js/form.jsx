@@ -126,7 +126,7 @@ export default class Form extends Component {
       attr[idx] = Number.parseInt(value, 10) - ClassData[classNum].attributes[idx];
       this.setState({ attr });
     } else {
-      this.setState({ [name]: typeof value === 'number' ? Number.parseInt(value, 10) : value });
+      this.setState({ [name]: typeof value !== 'number' ? Number.parseInt(value, 10) : value });
     }
   }
 
@@ -284,7 +284,7 @@ export default class Form extends Component {
   render() {
     const {
       invalidForClassic, invalidName, invalidAct, invalidAncients, invalidSkills,
-      invalidStats, classNum, skillPoints,
+      invalidStats, classNum, skillPoints, attr, level,
       difficulty, startingAct, allocated, valid, link, currTab, rewards,
     } = this.state;
 
@@ -342,7 +342,9 @@ export default class Form extends Component {
                   />
                   <h3>Save file options</h3>
                   <MainData
-                    data={this.state}
+                    classNum={classNum}
+                    level={level}
+                    currAttr={attr}
                     stats={this.calcStats()}
                     handler={this.onFormChange}
                     btnHandler={this.onStatClick}
@@ -350,7 +352,6 @@ export default class Form extends Component {
 
                   <h4>Options</h4>
                   <Options
-                    data={this.state}
                     handler={this.onFormChange}
                   />
 
