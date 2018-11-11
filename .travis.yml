@@ -1,24 +1,37 @@
-language: java
-jdk: oraclejdk8
+matrix:
+  include:
+    - language: node_js
+      node_js:
+        - "11"
 
-before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-cache:
-  directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+      script:
+        - npm run lint
 
-deploy:
-  provider: elasticbeanstalk
-  access_key_id: $ACCESSKEYID
-  secret_access_key:
-    secure: $SECRETACCESSKEY
-  region: "us-east-2"
-  app: "d2sbackend"
-  env: "D2sbackend-env"
-  zip_file: "build/libs/d2s-backend-0.1.0.jar"
-  skip_cleanup: true
-  bucket_name: "elasticbeanstalk-us-east-2-094365175063"
-  on:
-    branch: master
+      cache:
+        directories:
+          - node_modules
+
+    - language: java
+      jdk: oraclejdk8
+
+      before_cache:
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+        directories:
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
+
+      deploy:
+        provider: elasticbeanstalk
+        access_key_id: $ACCESSKEYID
+        secret_access_key:
+          secure: $SECRETACCESSKEY
+        region: "us-east-2"
+        app: "d2sbackend"
+        env: "D2sbackend-env"
+        zip_file: "build/libs/d2s-backend-0.1.0.jar"
+        skip_cleanup: true
+        bucket_name: "elasticbeanstalk-us-east-2-094365175063"
+        on:
+          branch: master

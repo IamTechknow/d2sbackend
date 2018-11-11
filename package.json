@@ -22,8 +22,10 @@
   },
   "scripts": {
     "start": "webpack --debug --output-pathinfo --watch",
-    "test": "webpack-dev-server --mode development --hot --open",
-    "build": "webpack --mode production"
+    "dev": "webpack-dev-server --mode development --hot --open",
+    "test": "echo \"Coming soon!\"",
+    "build": "webpack --mode production",
+    "lint": "eslint src/main/webapp/js/*.jsx"
   },
   "devDependencies": {
     "@babel/core": "^7.1.5",
