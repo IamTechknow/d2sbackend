@@ -31,6 +31,21 @@ export default class Skills extends Component {
     return `Depends on ${skills.join(', ')}`;
   }
 
+  isInvalid(idx) {
+    const { allocated, classNum } = this.props;
+    const { skills } = ClassData[classNum];
+    const { deps } = skills[idx];
+    const offset = [6, 36, 66, 96, 126, 221, 251][classNum];
+
+    for (let i = 0; i < deps.length; i += 1) {
+      if (allocated[idx] > 0 && allocated[deps[i] - offset] < 1) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   render() {
     const {
       allocated, skillPoints, classNum, handler,
@@ -56,6 +71,7 @@ export default class Skills extends Component {
                 deps={this.getSkillDeps(skill.deps)}
                 value={allocated[i]}
                 handler={handler}
+                invalid={this.isInvalid(i)}
               />
             ))}
           </div>
@@ -68,6 +84,7 @@ export default class Skills extends Component {
                 deps={this.getSkillDeps(skill.deps)}
                 value={allocated[10 + i]}
                 handler={handler}
+                invalid={this.isInvalid(10 + i)}
               />
             ))}
           </div>
@@ -80,6 +97,7 @@ export default class Skills extends Component {
                 deps={this.getSkillDeps(skill.deps)}
                 value={allocated[20 + i]}
                 handler={handler}
+                invalid={this.isInvalid(20 + i)}
               />
             ))}
           </div>

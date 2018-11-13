@@ -9,7 +9,7 @@ const MAX_SKILL_LVL = 20;
 // Control variables
 const classNum = 0;
 const allocated = new Array(30).fill(0);
-const skillPoints = 0;
+let skillPoints = 0;
 
 // Functions for dependency injection
 const onFormChange = function onFormChange(event) {
@@ -21,6 +21,7 @@ const onFormChange = function onFormChange(event) {
 
 describe('Skills component test suite', () => {
   it('Should keep track of how many skill points are available', () => {
+    skillPoints = 10;
     const header = mount(
       <Skills
         classNum={classNum}

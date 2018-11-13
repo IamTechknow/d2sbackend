@@ -116,7 +116,7 @@ export default class Form extends Component {
       allocated[idx] = Math.min(MAX_SKILL_LVL, Number.parseInt(value, 10));
       this.setState({ allocated });
     } else if (name === 'level') {
-      this.setState({ [name]: Math.min(MAX_LVL, Number.parseInt(value, 10)).toString() });
+      this.setState({ [name]: Math.min(MAX_LVL, Number.parseInt(value, 10)) });
     } else if (event.target.classList[0] === 'attr') {
       const map = {
         str: 0, dex: 1, vit: 2, nrg: 3,
@@ -126,7 +126,7 @@ export default class Form extends Component {
       attr[idx] = Number.parseInt(value, 10) - ClassData[classNum].attributes[idx];
       this.setState({ attr });
     } else {
-      this.setState({ [name]: typeof value !== 'number' ? Number.parseInt(value, 10) : value });
+      this.setState({ [name]: typeof value !== 'number' && name !== 'name' ? Number.parseInt(value, 10) : value });
     }
   }
 
@@ -284,7 +284,7 @@ export default class Form extends Component {
   render() {
     const {
       invalidForClassic, invalidName, invalidAct, invalidAncients, invalidSkills,
-      invalidStats, classNum, skillPoints, attr, level,
+      invalidStats, classNum, skillPoints, attr, level, name,
       difficulty, startingAct, allocated, valid, link, currTab, rewards,
     } = this.state;
 
@@ -343,6 +343,7 @@ export default class Form extends Component {
                   <h3>Save file options</h3>
                   <MainData
                     classNum={classNum}
+                    name={name}
                     level={level}
                     currAttr={attr}
                     stats={this.calcStats()}
