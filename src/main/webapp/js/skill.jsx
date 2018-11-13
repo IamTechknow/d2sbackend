@@ -8,9 +8,9 @@ const Skill = ({
 }) => {
   const classes = invalid ? 'skill form-control is-invalid' : 'skill form-control';
   return (
-    <label data-toggle="tooltip" data-placement="top" title={deps} htmlFor="skill">
+    <label data-toggle="tooltip" data-placement="top" title={deps} htmlFor={formName}>
       {`${skill.name} (Level ${skill.level}+)`}
-      <input type="number" className={classes} name={formName} id="skill" min="0" max="20" value={value} onChange={handler} />
+      <input type="number" className={classes} name={formName} id={formName} min="0" max="20" value={value} onChange={handler} />
     </label>
   );
 };
