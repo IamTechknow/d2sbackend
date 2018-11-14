@@ -2,7 +2,6 @@ import { mount } from 'enzyme';
 import React from 'react';
 
 import Skills from '../../main/webapp/js/skills';
-import * as ClassData from '../../main/webapp/js/class-data';
 
 const MAX_SKILL_LVL = 20;
 
@@ -16,8 +15,10 @@ const onFormChange = function onFormChange(event) {
   const { name, value } = event.target;
 
   // Parse skill number and update array
-  allocated[Number.parseInt(name.substring(6), 10)] = Math.min(MAX_SKILL_LVL, Number.parseInt(value, 10));
-  skillPoints -= 1;
+  const idx = Number.parseInt(name.substring(6), 10);
+  const old = allocated[idx];
+  allocated[idx] = Math.min(MAX_SKILL_LVL, Number.parseInt(value, 10));
+  skillPoints += old - allocated[idx];
 };
 
 describe('Skills component test suite', () => {
@@ -33,10 +34,10 @@ describe('Skills component test suite', () => {
     );
 
     // Set skills for the last three skills
-    let inputs = comp.find('input');
-    let input1 = inputs.at(27);
-    let input2 = inputs.at(28);
-    let input3 = inputs.at(29);
+    const inputs = comp.find('input');
+    const input1 = inputs.at(27);
+    const input2 = inputs.at(28);
+    const input3 = inputs.at(29);
 
     // Create the event object that will be passed into onFormChange
     input1.simulate('change', { target: { name: 'skill-27', value: input1.prop('value') + 1 } });

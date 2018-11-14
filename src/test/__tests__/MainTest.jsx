@@ -9,17 +9,13 @@ const ADD_ALL = '1', ATTR_CLASS = '.attr';
 // Control variables
 let classNum = 0;
 let level = 1;
-let attr = [0, 0, 0, 0];
-let charName = '';
+const attr = [0, 0, 0, 0];
 
 // Functions for dependency injection
 const onFormChange = function onFormChange(event) {
   const { name, value } = event.target;
 
   switch (name) {
-    case 'name':
-      charName = value;
-      break;
     case 'level':
       level = Number.parseInt(value, 10);
       break;

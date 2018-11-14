@@ -104,20 +104,20 @@ export default class Form extends Component {
     const {
       rewards, allocated, attr, classNum,
     } = this.state;
-    const { name, value } = event.target;
+    const { name, value, classList, checked } = event.target;
 
-    if (event.target.classList[0] === 'rewards') {
-      rewards[name] = event.target.checked;
+    if (classList[0] === 'rewards') {
+      rewards[name] = checked;
       this.setState({ rewards });
-    } else if (event.target.classList[0] === 'opts') {
-      this.setState({ [name]: event.target.checked });
-    } else if (event.target.classList[0] === 'skill') {
+    } else if (classList[0] === 'opts') {
+      this.setState({ [name]: checked });
+    } else if (classList[0] === 'skill') {
       const idx = Number.parseInt(name.substring(6), 10);
       allocated[idx] = Math.min(MAX_SKILL_LVL, Number.parseInt(value, 10));
       this.setState({ allocated });
     } else if (name === 'level') {
       this.setState({ [name]: Math.min(MAX_LVL, Number.parseInt(value, 10)) });
-    } else if (event.target.classList[0] === 'attr') {
+    } else if (classList[0] === 'attr') {
       const map = {
         str: 0, dex: 1, vit: 2, nrg: 3,
       };
@@ -131,18 +131,15 @@ export default class Form extends Component {
   }
 
   onSubmit(event) {
+    // Note: FormData does not handle check box values well, so use state
     event.preventDefault();
-    const { attr, rewards, allocated } = this.state;
+    const { attr, rewards, allocated, expansion } = this.state;
+    const { nAncients, nmAncients, hAncients } = rewards;
 
     // Validate name, class, act, Ancients quest
     const data = new FormData(event.target);
     const name = data.get('name');
     const level = Number.parseInt(data.get('level'), 10);
-    const expansion = data.get('expansion') === 'on';
-
-    const nAncients = data.get('nAncients') === 'on';
-    const nmAncients = data.get('nmAncients') === 'on';
-    const hAncients = data.get('hAncients') === 'on';
 
     const invalidName = name.length < 2 || name.length > 15 || !this.pattern.test(name);
     const invalidForClassic = Number.parseInt(data.get('classNum'), 10) >= 5 && !expansion;
@@ -245,6 +242,7 @@ export default class Form extends Component {
   // Check stat point allocation. Error numbers exist for going below base value of each stat
   checkStats() {
     const { attr } = this.state;
+
     const INVALID_NEG_ATTR = 1, STAT_BELOW_BASE = 2;
     const attrLeft = this.calcStats() - attr.reduce((accum, curr) => accum + curr);
     if (attrLeft < 0) {
