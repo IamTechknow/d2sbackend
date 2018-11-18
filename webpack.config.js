@@ -26,6 +26,46 @@ module.exports = {
         exclude: /node_modules/,
         use: ['babel-loader'],
       },
+      {
+        test: /\.css$/,
+        use: [ { loader: 'style-loader' }, { loader: 'css-loader' }, {
+          loader: 'postcss-loader',
+          options: {
+            plugins: [
+              require('autoprefixer'),
+              require('cssnano')
+            ]
+          }
+        }],
+        include: SRC
+      },
+      {
+        test: /\.(scss)$/,
+        use: [
+          {
+            // Adds CSS to the DOM by injecting a `<style>` tag
+            loader: 'style-loader'
+          },
+          {
+            // Interprets `@import` and `url()` like `import/require()` and will resolve them
+            loader: 'css-loader'
+          },
+          {
+            // Loader for webpack to process CSS with PostCSS
+            loader: 'postcss-loader',
+            options: {
+              plugins: [
+                require('autoprefixer'),
+                require('cssnano')
+              ]
+            }
+          },
+          {
+            // Loads a SASS/SCSS file and compiles it to CSS
+            loader: 'sass-loader'
+          }
+        ]
+      }
     ],
   },
 };

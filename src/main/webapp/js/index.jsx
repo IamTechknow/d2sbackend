@@ -5,6 +5,8 @@ import { Route, BrowserRouter } from 'react-router-dom';
 // Components
 import Form from './form';
 
+import './app.scss';
+
 // Render the Form component on the site index
 ReactDOM.render((
   <BrowserRouter>
