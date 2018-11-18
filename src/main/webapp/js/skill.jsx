@@ -1,17 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
+
+// For material-ui, use typography v2
+window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
+
+const styles = {
+  root: {
+    'font-size': '16px',
+  },
+};
 
 // A skill component contains the skill name, id, and any skill dependencies
 // as well as a customized form name. Its skill point value is passed to the Form component
 const Skill = ({
-  skill, formName, deps, value, handler, invalid,
+  skill, formName, deps, value, handler, invalid, classes
 }) => {
-  const classes = invalid ? 'skill form-control is-invalid' : 'skill form-control';
+  const validClass = invalid ? 'skill form-control is-invalid' : 'skill form-control';
   return (
-    <label data-toggle="tooltip" data-placement="top" title={deps} htmlFor={formName}>
-      {`${skill.name} (Level ${skill.level}+)`}
-      <input type="number" className={classes} name={formName} id={formName} min="0" max="20" value={value} onChange={handler} />
-    </label>
+    <Tooltip title={deps} classes={{ tooltip: classes.root }} placement="top">
+      <label htmlFor={formName}>
+        {`${skill.name} (Level ${skill.level}+)`}
+        <input type="number" className={validClass} name={formName} id={formName} min="0" max="20" value={value} onChange={handler} />
+      </label>
+    </Tooltip>
   );
 };
 
@@ -27,4 +40,5 @@ Skill.propTypes = {
   invalid: PropTypes.bool.isRequired,
 };
 
-export default Skill;
+// Export a version of Skill with overriding classes.
+export default withStyles(styles)(Skill);

@@ -10,13 +10,6 @@ export default class Skills extends Component {
     return ['Amazon', 'Sorceress', 'Necromancer', 'Paladin', 'Barbarian', 'Druid', 'Assassin'][classNum];
   }
 
-  // Activate Bootstrap tooltips via jQuery
-  componentDidMount() {
-    if (typeof $ !== 'undefined') {
-      $('[data-toggle="tooltip"]').tooltip();
-    }
-  }
-
   getSkillDeps(depsArray) {
     if (depsArray.length === 0) {
       return '';

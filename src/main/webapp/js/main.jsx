@@ -13,18 +13,18 @@ const MainData = ({
     <div id="main">
       <div className="form-row">
         <div className="form-group col-md-6">
-          <span htmlFor="name">Character Name</span>
+          <span>Character Name</span>
           <input type="text" className="form-control" id="name" name="name" placeholder="Up to 15 characters, no numbers" maxLength="15" value={name} onChange={handler} />
         </div>
 
         <div className="form-group col-md-6">
-          <span htmlFor="level">Character Level</span>
+          <span>Character Level</span>
           <input type="number" className="form-control" id="level" name="level" min="1" max="99" value={level} onChange={handler} />
         </div>
       </div>
 
       <div className="form-group">
-        <span htmlFor="classNum">Character Class</span>
+        <span>Character Class</span>
         <select className="form-control" id="classNum" name="classNum" value={classNum} onChange={handler}>
           <option value="0">Amazon</option>
           <option value="6">Assassin</option>
@@ -38,12 +38,12 @@ const MainData = ({
 
       <div className="form-row">
         <div className="form-group col-md-6">
-          <span htmlFor="gold">Gold</span>
+          <span>Gold</span>
           <input type="number" className="form-control" name="gold" id="gold" min="0" defaultValue="0" onChange={handler} />
         </div>
 
         <div className="form-group col-md-6">
-          <span htmlFor="stashed">Stashed Gold</span>
+          <span>Stashed Gold</span>
           <input type="number" className="form-control" name="stashGold" id="stashed" min="0" max="2500000" defaultValue="0" onChange={handler} />
         </div>
       </div>

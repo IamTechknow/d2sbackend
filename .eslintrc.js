@@ -9,6 +9,7 @@ module.exports = {
   },
   "rules": {
     "one-var": "off",
-    "one-var-declaration-per-line": "off"
+    "one-var-declaration-per-line": "off",
+    "no-underscore-dangle": "off"
   }
 };
