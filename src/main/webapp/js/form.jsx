@@ -104,7 +104,9 @@ export default class Form extends Component {
     const {
       rewards, allocated, attr, classNum,
     } = this.state;
-    const { name, value, classList, checked } = event.target;
+    const {
+      name, value, classList, checked,
+    } = event.target;
 
     if (classList[0] === 'rewards') {
       rewards[name] = checked;
@@ -133,7 +135,9 @@ export default class Form extends Component {
   onSubmit(event) {
     // Note: FormData does not handle check box values well, so use state
     event.preventDefault();
-    const { attr, rewards, allocated, expansion } = this.state;
+    const {
+      attr, rewards, allocated, expansion,
+    } = this.state;
     const { nAncients, nmAncients, hAncients } = rewards;
 
     // Validate name, class, act, Ancients quest
@@ -223,8 +227,8 @@ export default class Form extends Component {
 
     for (let i = 0; i < allocated.length; i += 1) {
       if (allocated[i] > 0) {
-        // Level too low for skill level
-        if (skills[i].level + allocated[i] > level) {
+        // Level too low for skill level. A point may be spent if char level meets skill req
+        if (skills[i].level + allocated[i] - 1 > level) {
           return INVALID_LEVEL_LOW;
         }
 
