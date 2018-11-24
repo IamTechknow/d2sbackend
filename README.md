@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/IamTechknow/d2sbackend.svg?branch=master)](https://travis-ci.org/IamTechknow/d2sbackend)
+[![Build Status](https://travis-ci.com/IamTechknow/d2sbackend.svg?branch=master)](https://travis-ci.com/IamTechknow/d2sbackend)
 # Diablo II Save File Generator
 
 ## Introduction
@@ -37,6 +37,7 @@ Developer Stories:
 * [ ] As a developer, I should be able to create integration tests that can automate the process of creating a save file and using the d2s go library to verify certain save properties
 * [X] As a developer, I should utilize CI to be able to push changes from Github into a staging or production cloud environment
 * [X] As a developer, I should be able to run a local version of the web app with hot swapping
+* [X] As a developer, there should be a test suite for the front end
 
 ## Instructions
 To just run the frontend, run the dev task with `npm run dev`. Hot swapping is enabled to allow rebuilding of the bundle due to source changes.
