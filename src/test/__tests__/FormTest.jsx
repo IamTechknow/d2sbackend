@@ -189,8 +189,36 @@ describe('Form component test suite', () => {
     expect(form.find('.alert').length).toBe(2);
   });
 
-  xit('can calculate the correct stats based on quest rewards', () => {
+  it('can calculate the correct stats based on quest rewards', () => {
     const form = mount(<Form />);
+
+    // Check Lam Esen's Tome box and set diff to nightmare
+    const target = {
+      name: 'lamEsen',
+      checked: true,
+      classList: ['rewards'],
+    };
+
+    const actTarget = {
+      name: 'startingAct',
+      value: '4',
+      classList: [undefined],
+    };
+
+    const diffTarget = {
+      name: 'difficulty',
+      value: '5',
+      classList: [undefined],
+    };
+
+    simName(form, 'Valid');
+    form.find('#lamEsen').simulate('change', { target });
+    form.find('#act5').simulate('change', { target: actTarget });
+    form.find('#nm').simulate('change', { target: diffTarget });
+
+    form.update();
+
+    expect(form.instance().calcStats()).toBe(10);
   });
 
   it('should not allow Ancients rewards to be completed prematurely', () => {

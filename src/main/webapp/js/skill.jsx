@@ -15,7 +15,7 @@ const styles = {
 // A skill component contains the skill name, id, and any skill dependencies
 // as well as a customized form name. Its skill point value is passed to the Form component
 const Skill = ({
-  skill, formName, deps, value, handler, invalid, classes
+  skill, formName, deps, value, handler, invalid, classes,
 }) => {
   const validClass = invalid ? 'skill form-control is-invalid' : 'skill form-control';
   return (
@@ -38,6 +38,9 @@ Skill.propTypes = {
   deps: PropTypes.string.isRequired,
   handler: PropTypes.func.isRequired,
   invalid: PropTypes.bool.isRequired,
+  classes: PropTypes.shape({
+    root: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 // Export a version of Skill with overriding classes.
