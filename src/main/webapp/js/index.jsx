@@ -6,12 +6,11 @@ import { Route, BrowserRouter } from 'react-router-dom';
 import Form from './form';
 
 import './app.scss';
+import './app.css';
 
 // Render the Form component on the site index
 ReactDOM.render((
   <BrowserRouter>
-    <div>
-      <Route path="/" component={Form} />
-    </div>
+    <Route path="/" component={Form} />
   </BrowserRouter>
 ), document.getElementById('react'));

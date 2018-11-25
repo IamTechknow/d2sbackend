@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Options = ({ handler }) => (
-  <div>
+  <div className="formKeyLines">
     <div className="form-check form-check-inline">
       <label className="form-check-label" htmlFor="exp">
         <input className="opts form-check-input" type="checkbox" name="expansion" id="exp" defaultChecked onChange={handler} />

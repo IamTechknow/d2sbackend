@@ -16,11 +16,6 @@ import Skills from './skills';
 import Items from './items';
 import * as ClassData from './class-data';
 
-// Padding style for paper components
-const paperPadding = {
-  padding: '16px',
-};
-
 const MAIN = 0, SKILLS = 1, ITEMS = 2, VALID = 0, MAX_LVL = 99, MAX_SKILL_LVL = 20;
 
 // Implementation of the Form HTML
@@ -313,7 +308,7 @@ export default class Form extends Component {
     // The Paper component accepts an object to apply CSS styling
     return (
       <div className="container">
-        <Paper square>
+        <Paper square style={{ 'margin-bottom': '16px' }}>
           <Tabs
             value={currTab}
             indicatorColor="primary"
@@ -327,9 +322,8 @@ export default class Form extends Component {
             <Tab label="Mercenary" />
           </Tabs>
         </Paper>
-        <br />
 
-        <Paper style={paperPadding}>
+        <Paper style={{ 'margin-bottom': '16px', padding: '16px' }}>
           <form onSubmit={this.onSubmit} noValidate>
             {currTab === MAIN
                 && (
@@ -404,15 +398,12 @@ export default class Form extends Component {
             <button id="submitButton" type="submit" className="btn btn-primary">Submit</button>
           </form>
         </Paper>
-        <br />
 
-        <Paper style={paperPadding}>
+        <Paper style={{ padding: '16px' }}>
           <h3>Disclaimer</h3>
-          <p>
-            This web application is for educational purposes only and is not
-            meant for creating illegitimate save files.
-            It was created to demonstrate a frontend and backend integration.
-          </p>
+          This web application is for educational purposes only and is not
+          meant for creating illegitimate save files.
+          It was created to demonstrate a frontend and backend integration.
         </Paper>
       </div>
     );

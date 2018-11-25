@@ -5,7 +5,7 @@ const diffs = [{ id: 'norm', val: 0, txt: 'Normal' }, { id: 'nm', val: 5, txt: '
   { id: 'h', val: 10, txt: 'Hell' }, { id: 'beatH', val: 15, txt: 'Completed Hell' }];
 
 const Difficulties = ({ currDiff, handler }) => (
-  <div>
+  <div className="formKeyLines">
     {diffs.map(diff => (
       <div key={diff.id} className="form-check form-check-inline">
         <label className="form-check-label" htmlFor={diff.id}>

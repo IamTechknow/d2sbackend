@@ -20,7 +20,7 @@ const Skill = ({
   const validClass = invalid ? 'skill form-control is-invalid' : 'skill form-control';
   return (
     <Tooltip title={deps} classes={{ tooltip: classes.root }} placement="top">
-      <label htmlFor={formName}>
+      <label className="skill_ui" htmlFor={formName}>
         {`${skill.name} (Level ${skill.level}+)`}
         <input type="number" className={validClass} name={formName} id={formName} min="0" max="20" value={value} onChange={handler} />
       </label>

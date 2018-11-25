@@ -54,46 +54,40 @@ export default class Skills extends Component {
           {skillPoints - allocated.reduce((accum, curr) => accum + curr)}
         </p>
 
-        <div className="form-row">
-          <div className="col-md-4">
-            { ClassData[classNum].skills.slice(0, 10).map((skill, i) => (
-              <Skill
-                key={skill.id}
-                skill={skill}
-                formName={`skill-${i}`}
-                deps={this.getSkillDeps(skill.deps)}
-                value={allocated[i]}
-                handler={handler}
-                invalid={this.isInvalid(i)}
-              />
-            ))}
-          </div>
-          <div className="col-md-4">
-            { ClassData[classNum].skills.slice(10, 20).map((skill, i) => (
-              <Skill
-                key={skill.id}
-                skill={skill}
-                formName={`skill-${10 + i}`}
-                deps={this.getSkillDeps(skill.deps)}
-                value={allocated[10 + i]}
-                handler={handler}
-                invalid={this.isInvalid(10 + i)}
-              />
-            ))}
-          </div>
-          <div className="col-md-4">
-            { ClassData[classNum].skills.slice(20, 30).map((skill, i) => (
-              <Skill
-                key={skill.id}
-                skill={skill}
-                formName={`skill-${20 + i}`}
-                deps={this.getSkillDeps(skill.deps)}
-                value={allocated[20 + i]}
-                handler={handler}
-                invalid={this.isInvalid(20 + i)}
-              />
-            ))}
-          </div>
+        <div className="d2Grid skillGrid">
+          { ClassData[classNum].skills.slice(0, 10).map((skill, i) => (
+            <Skill
+              key={skill.id}
+              skill={skill}
+              formName={`skill-${i}`}
+              deps={this.getSkillDeps(skill.deps)}
+              value={allocated[i]}
+              handler={handler}
+              invalid={this.isInvalid(i)}
+            />
+          ))}
+          { ClassData[classNum].skills.slice(10, 20).map((skill, i) => (
+            <Skill
+              key={skill.id}
+              skill={skill}
+              formName={`skill-${10 + i}`}
+              deps={this.getSkillDeps(skill.deps)}
+              value={allocated[10 + i]}
+              handler={handler}
+              invalid={this.isInvalid(10 + i)}
+            />
+          ))}
+          { ClassData[classNum].skills.slice(20, 30).map((skill, i) => (
+            <Skill
+              key={skill.id}
+              skill={skill}
+              formName={`skill-${20 + i}`}
+              deps={this.getSkillDeps(skill.deps)}
+              value={allocated[20 + i]}
+              handler={handler}
+              invalid={this.isInvalid(20 + i)}
+            />
+          ))}
         </div>
       </div>
     );
