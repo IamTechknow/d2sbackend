@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/IamTechknow/d2sbackend.svg?branch=master)](https://travis-ci.org/IamTechknow/d2sbackend)
+[![Build Status](https://travis-ci.com/IamTechknow/d2sbackend.svg?branch=master)](https://travis-ci.com/IamTechknow/d2sbackend)
 # Diablo II Save File Generator
 
 ## Introduction
@@ -37,9 +37,10 @@ Developer Stories:
 * [ ] As a developer, I should be able to create integration tests that can automate the process of creating a save file and using the d2s go library to verify certain save properties
 * [X] As a developer, I should utilize CI to be able to push changes from Github into a staging or production cloud environment
 * [X] As a developer, I should be able to run a local version of the web app with hot swapping
+* [X] As a developer, there should be a test suite for the front end
 
 ## Instructions
-To just run the frontend, run the test task with `npm test`. Hot swapping is enabled to allow rebuilding of the bundle due to source changes.
+To just run the frontend, run the dev task with `npm run dev`. Hot swapping is enabled to allow rebuilding of the bundle due to source changes.
 
 To run both the frontend and backend, run the `bootRun` command with the gradle wrapper (gradlew.) You may now load the web app at localhost:8080.
 You can also run the start task to automatically rebuild the bundle upon changes.
@@ -72,7 +73,7 @@ Omitting it will cause a 404 error for the index page.
 ### JavaScript
 During the `bootRun` task, the Webpack bundle gets generated based on the configurations in package.json and webpack.config.js. 
 
-In `package.json`, `babel` and the `transform-class-properties` are declared to allow transcribing of ES6 JavaScript code as well as React JSX. 
+In `package.json`, `babel` packages are declared to allow transcribing of ES6 JavaScript code as well as React JSX.
 In `webpack.config.js`, the app entry point, bundle output location, and module rule to use `babel-loader` are defined.
 The development mode is defined in `webpack.config.js`, omitting it or using production mode will optimize bundle size and use production libraries for React.
 

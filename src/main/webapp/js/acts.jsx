@@ -1,36 +1,25 @@
-import React, {Component} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export default class Acts extends Component {
-  constructor(props) {
-    super(props);
-  }
+const acts = [{ id: 'act1', val: 0 }, { id: 'act2', val: 1 }, { id: 'act3', val: 2 }, { id: 'act4', val: 3 }, { id: 'act5', val: 4 }];
 
-  render() {
-    var act = this.props.data.startingAct;
-    return (
-      <div>
-        <div className="form-check form-check-inline">
-          <input className="form-check-input" type="radio" name="startingAct" id="act1" value="0" checked={act === "0"} onChange={this.props.handler}></input>
-          <label className="form-check-label" htmlFor="act1">Act 1</label>
-        </div>
-        <div className="form-check form-check-inline">
-          <input className="form-check-input" type="radio" name="startingAct" id="act2" value="1" checked={act === "1"} onChange={this.props.handler}></input>
-          <label className="form-check-label" htmlFor="act2">Act 2</label>
-        </div>
-        <div className="form-check form-check-inline">
-          <input className="form-check-input" type="radio" name="startingAct" id="act3" value="2" checked={act === "2"} onChange={this.props.handler}></input>
-          <label className="form-check-label" htmlFor="act3">Act 3</label>
-        </div>
-        <div className="form-check form-check-inline">
-          <input className="form-check-input" type="radio" name="startingAct" id="act4" value="3" checked={act === "3"} onChange={this.props.handler}></input>
-          <label className="form-check-label" htmlFor="act4">Act 4</label>
-        </div>
-        <div className="form-check form-check-inline">
-          <input className="form-check-input" type="radio" name="startingAct" id="act5" value="4" checked={act === "4"} onChange={this.props.handler}></input>
-          <label className="form-check-label" htmlFor="act5">Act 5</label>
-        </div>
-        <br /> <br />
+// Constructs the Radio button group for all five acts
+const Acts = ({ currAct, handler }) => (
+  <div className="formKeyLines">
+    {acts.map(act => (
+      <div key={act.id} className="form-check form-check-inline">
+        <label className="form-check-label" htmlFor={act.id}>
+          <input className="form-check-input" type="radio" name="startingAct" id={act.id} value={act.val} checked={currAct === act.val} onChange={handler} />
+          {`Act ${act.val + 1}`}
+        </label>
       </div>
-    );
-  }
-}
+    ))}
+  </div>
+);
+
+Acts.propTypes = {
+  currAct: PropTypes.number.isRequired,
+  handler: PropTypes.func.isRequired,
+};
+
+export default Acts;
