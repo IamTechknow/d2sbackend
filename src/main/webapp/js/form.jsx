@@ -308,7 +308,7 @@ export default class Form extends Component {
     // The Paper component accepts an object to apply CSS styling
     return (
       <div className="container">
-        <Paper square style={{ 'margin-bottom': '16px' }}>
+        <Paper square style={{ marginBottom: '16px' }}>
           <Tabs
             value={currTab}
             indicatorColor="primary"
@@ -323,7 +323,7 @@ export default class Form extends Component {
           </Tabs>
         </Paper>
 
-        <Paper style={{ 'margin-bottom': '16px', padding: '16px' }}>
+        <Paper style={{ marginBottom: '16px', padding: '16px' }}>
           <form onSubmit={this.onSubmit} noValidate>
             {currTab === MAIN
                 && (

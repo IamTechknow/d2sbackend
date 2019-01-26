@@ -5,7 +5,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.2.RELEASE")
         classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
     }
 }
@@ -22,7 +22,7 @@ bootJar {
 }
 
 node {
-    version = '11.1.0'
+    version = '11.3.0'
     npmVersion = '6.4.1'
 }
 
