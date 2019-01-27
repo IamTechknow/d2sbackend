@@ -1,6 +1,4 @@
-/* eslint-disable */
 import React, { Component } from 'react';
-import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 
 export default class Inventory extends Component {
@@ -10,13 +8,12 @@ export default class Inventory extends Component {
 
   render() {
     return (
-
-      <Grid item md={6}>
+      <div className="entry">
         <h3>Inventory</h3>
-        <div className="inv-grid">
+        <div className="">
           Grid goes here
         </div>
-      </Grid>
+      </div>
     );
   }
 }
