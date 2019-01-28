@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Bonuses from './bonuses';
-import Inventory from './inventory';
+import Storage from './storage';
 
 export default class Items extends Component {
   constructor(props) {
@@ -11,7 +11,7 @@ export default class Items extends Component {
     return (
       <div className="d2Grid entryGrid">
         <Bonuses />
-        <Inventory />
+        <Storage />
       </div>
     );
   }
