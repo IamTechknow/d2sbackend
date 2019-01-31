@@ -65,3 +65,35 @@
 #classUi {
   grid-column: span 4;
 }
+
+/* Storage grid classes */
+.storageHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.storageRow {
+  display: flex;
+  margin: 0px auto;
+}
+
+.storageInv {
+  width: 280px;
+}
+
+.storageStash {
+  width: 168px;
+}
+
+.storageBelt {
+  width: 112px;
+}
+
+.storageCube {
+  width: 112px;
+}
+
+.storageItem {
+  width: 28px;
+  height: 28px;
+}

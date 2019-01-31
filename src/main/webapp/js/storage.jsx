@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import StorageGrid from './storageGrid';
 import Equipment from './equipment';
 
-const EQUIP = 0, INV = 1, STASH = 2, BELT = 3, CUBE = 4;
+const EQUIP = 0, INV = 1, STASH = 2, BELT = 3, CUBE = 4, TYPES = 5;
 
 // Manages character storage, including the current storage type and configuring the storage grid.
 // Keeps objects for all storage types.
@@ -17,8 +17,10 @@ export default class Storage extends Component {
     this.cube = [];
 
     this.state = {
-      currType: INV
+      currType: INV,
     };
+
+    this.onStorageChange = this.onStorageChange.bind(this);
   }
 
   static getStorageType(type) {
@@ -26,7 +28,7 @@ export default class Storage extends Component {
   }
 
   getItemsFrom(type) {
-    switch(type) {
+    switch (type) {
       case INV:
         return this.stash;
       case STASH:
@@ -38,12 +40,22 @@ export default class Storage extends Component {
     }
   }
 
+  onStorageChange(event) {
+    this.setState({ currType: Number.parseInt(event.target.value, 10) });
+  }
+
   render() {
-    const {currType} = this.state;
+    const { currType } = this.state;
 
     return (
       <div className="entry">
-        <h3>{Storage.getStorageType(currType)}</h3>
+        <select value={currType} onChange={this.onStorageChange} className="form-control storageHeader">
+          {
+            [...Array(TYPES)].map((obj, i) => (
+              <option key={i} value={i}>{Storage.getStorageType(i)}</option>
+            ))
+          }
+        </select>
 
         {
           currType === EQUIP
