@@ -75,10 +75,10 @@ module.exports = {
     'Other',
   ],
   BeltsNormalNormal: [
-   'Sash',
-   'Light Belt',
-   'Belt',
-   'Heavy Belt',
-   'Plated Belt',
+   { name: 'Sash', id: 'lbl' },
+   { name: 'Light Belt', id: 'vbl' },
+   { name: 'Belt', id: 'mbl' },
+   { name: 'Heavy Belt', id: 'tbl' },
+   { name: 'Plated Belt', id: 'hbl' },
   ]
 };

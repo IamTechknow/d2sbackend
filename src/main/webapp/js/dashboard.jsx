@@ -36,7 +36,9 @@ export default class Dashboard extends Component {
 
   renderItemOptions() {
     const { currSubType, currQuality, currRarity } = this.state;
-    return this.renderOptionsFor(currSubType + currQuality + currRarity);
+    return ItemData[currSubType + currQuality + currRarity].map(obj => (
+      <option key={obj.id} value={obj.id}>{obj.name}</option>
+    ));
   }
 
   renderOptionsFor(type) {
