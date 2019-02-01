@@ -23,7 +23,15 @@ export default class Dashboard extends Component {
 
   static concatDataFor(type, rarity) {
     return ItemData["quality"].slice(1)
-      .reduce((accum, curr) => accum.concat(ItemData[type + curr + rarity]), []);
+      .reduce((accum, curr) => {
+        const group = type + curr + rarity;
+        return accum.concat(ItemData[group] ? ItemData[group] : []);
+      }, []);
+  }
+
+  // Should quality and rarity select elements be disabled?
+  static isRarityDisabled(currType) {
+    return currType === 'Miscellaneous' || currType === 'Jewelry';
   }
 
   // Higher-order function to forego binding
@@ -59,9 +67,9 @@ export default class Dashboard extends Component {
       group = currSubType + currQuality + currRarity;
     }
 
-    // Use one array or concat all
-    let array = currQuality === 'All' ?
-      Dashboard.concatDataFor(currSubType, currRarity) : ItemData[group];
+    // Use one array or concat all. Fail gracefully if data doesn't exist
+    let array = !Dashboard.isRarityDisabled(currType) && currQuality === 'All' ?
+      Dashboard.concatDataFor(currSubType, currRarity) : (ItemData[group] ? ItemData[group] : []);
 
     return array.map(obj => (
       <option key={obj.id} value={obj.id}>{obj.name}</option>
@@ -101,7 +109,7 @@ export default class Dashboard extends Component {
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Quality</span>
-                <select id="currQuality" className="form-control dashboardOpt" onChange={this.onSelectChange}>
+                <select id="currQuality" className="form-control dashboardOpt" onChange={this.onSelectChange} disabled={Dashboard.isRarityDisabled(currType)}>
                   {
                     this.renderOptionsFor("quality")
                   }
@@ -109,7 +117,7 @@ export default class Dashboard extends Component {
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Rarity</span>
-                <select id="currRarity" className="form-control dashboardOpt" onChange={this.onSelectChange}>
+                <select id="currRarity" className="form-control dashboardOpt" onChange={this.onSelectChange} disabled={Dashboard.isRarityDisabled(currType)}>
                   {
                     this.renderOptionsFor("rarity")
                   }
