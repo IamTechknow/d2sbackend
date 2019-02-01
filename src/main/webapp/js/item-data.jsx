@@ -74,4 +74,11 @@ module.exports = {
     'Tomes',
     'Other',
   ],
+  BeltsNormalNormal: [
+   'Sash',
+   'Light Belt',
+   'Belt',
+   'Heavy Belt',
+   'Plated Belt',
+  ]
 };

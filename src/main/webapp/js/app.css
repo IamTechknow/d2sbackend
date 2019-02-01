@@ -78,11 +78,11 @@
   grid-column: span 7;
 }
 
-#primaryType {
+#currType {
   grid-column: span 3;
 }
 
-#subType {
+#currSubType {
   grid-column: span 4;
 }
 

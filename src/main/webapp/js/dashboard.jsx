@@ -9,12 +9,15 @@ export default class Dashboard extends Component {
     super(props);
 
     this.handleChangeFor = this.handleChangeFor.bind(this);
-    this.onSubTypeChange = this.onSubTypeChange.bind(this);
+    this.onSelectChange = this.onSelectChange.bind(this);
 
     this.state = {
       randomAttr: false,
       ethernal: false,
-      currSubType: ItemData["primary"][0],
+      currType: ItemData['primary'][0],
+      currSubType: ItemData[ItemData['primary'][0]][0],
+      currQuality: ItemData['quality'][0],
+      currRarity: ItemData['rarity'][0]
     };
   }
 
@@ -25,10 +28,15 @@ export default class Dashboard extends Component {
     };
   }
 
-  onSubTypeChange(event) {
+  onSelectChange(event) {
     this.setState({
-      currSubType : event.target.value
+      [event.target.id] : event.target.value
     });
+  }
+
+  renderItemOptions() {
+    const { currSubType, currQuality, currRarity } = this.state;
+    return this.renderOptionsFor(currSubType + currQuality + currRarity);
   }
 
   renderOptionsFor(type) {
@@ -38,7 +46,7 @@ export default class Dashboard extends Component {
   }
 
   render() {
-    const { currSubType } = this.state;
+    const { currType, currSubType } = this.state;
     return (
       <Paper style={{ padding: '16px' }}>
         <div className="d2Grid dashboardGrid">
@@ -51,20 +59,20 @@ export default class Dashboard extends Component {
             <ul className="list-group">
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Type</span>
-                <select id="primaryType" className="form-control" onChange={this.onSubTypeChange}>
+                <select id="currType" className="form-control" onChange={this.onSelectChange}>
                   {
                     this.renderOptionsFor("primary")
                   }
                 </select>
-                <select id="subType" className="form-control">
+                <select id="currSubType" className="form-control" onChange={this.onSelectChange}>
                   {
-                    this.renderOptionsFor(currSubType)
+                    this.renderOptionsFor(currType)
                   }
                 </select>
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Quality</span>
-                <select className="form-control dashboardOpt">
+                <select id="currQuality" className="form-control dashboardOpt" onChange={this.onSelectChange}>
                   {
                     this.renderOptionsFor("quality")
                   }
@@ -72,9 +80,17 @@ export default class Dashboard extends Component {
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Rarity</span>
-                <select className="form-control dashboardOpt">
+                <select id="currRarity" className="form-control dashboardOpt" onChange={this.onSelectChange}>
                   {
                     this.renderOptionsFor("rarity")
+                  }
+                </select>
+              </li>
+              <li className="list-group-item d2Grid dashboardRow">
+                <span className="dashboardItem">Item</span>
+                <select className="form-control dashboardOpt">
+                  {
+                    this.renderItemOptions()
                   }
                 </select>
               </li>
