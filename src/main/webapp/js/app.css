@@ -78,6 +78,14 @@
   grid-column: span 7;
 }
 
+#primaryType {
+  grid-column: span 3;
+}
+
+#subType {
+  grid-column: span 4;
+}
+
 #classUi, #dashboard {
   grid-column: span 4;
 }
