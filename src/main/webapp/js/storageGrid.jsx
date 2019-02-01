@@ -22,8 +22,8 @@ export default class StorageGrid extends Component {
       height = 1;
       rowClass = 'storageBelt';
     } else if (type === CUBE) {
-      width = 4;
-      height = 3;
+      width = 3;
+      height = 4;
       rowClass = 'storageCube';
     }
 
@@ -42,7 +42,7 @@ export default class StorageGrid extends Component {
             <div className={rowClasses}>
               {
                 [...Array(width)].map(c => (
-                  <div className="storageItem" />
+                  <div className="storageCell" />
                 ))
               }
             </div>

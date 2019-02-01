@@ -90,10 +90,10 @@
 }
 
 .storageCube {
-  width: 112px;
+  width: 84px;
 }
 
-.storageItem {
+.storageCell {
   width: 28px;
   height: 28px;
 }
