@@ -28,15 +28,33 @@ export default class Dashboard extends Component {
     };
   }
 
+  // Account for primary types, change subtype too
   onSelectChange(event) {
-    this.setState({
+    const newTypes = {
       [event.target.id] : event.target.value
-    });
+    };
+
+    if (event.target.id === 'currType') {
+      Object.assign(newTypes, { currSubType : ItemData[event.target.value][0] });
+    }
+
+    this.setState(newTypes);
   }
 
   renderItemOptions() {
-    const { currSubType, currQuality, currRarity } = this.state;
-    return ItemData[currSubType + currQuality + currRarity].map(obj => (
+    const { currType, currSubType, currQuality, currRarity } = this.state;
+
+    // Jewelry and misc items don't have quality/rarity
+    let group;
+    if(currType === 'Jewelry') {
+      group = currType;
+    } else if(currType === 'Miscellaneous') {
+      group = currSubType;
+    } else {
+      group = currSubType + currQuality + currRarity;
+    }
+
+    return ItemData[group].map(obj => (
       <option key={obj.id} value={obj.id}>{obj.name}</option>
     ));
   }
