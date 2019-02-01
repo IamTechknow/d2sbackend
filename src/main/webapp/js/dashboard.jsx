@@ -21,6 +21,11 @@ export default class Dashboard extends Component {
     };
   }
 
+  static concatDataFor(type, rarity) {
+    return ItemData["quality"].slice(1)
+      .reduce((accum, curr) => accum.concat(ItemData[type + curr + rarity]), []);
+  }
+
   // Higher-order function to forego binding
   handleChangeFor(name) {
     return (event) => {
@@ -54,7 +59,11 @@ export default class Dashboard extends Component {
       group = currSubType + currQuality + currRarity;
     }
 
-    return ItemData[group].map(obj => (
+    // Use one array or concat all
+    let array = currQuality === 'All' ?
+      Dashboard.concatDataFor(currSubType, currRarity) : ItemData[group];
+
+    return array.map(obj => (
       <option key={obj.id} value={obj.id}>{obj.name}</option>
     ));
   }

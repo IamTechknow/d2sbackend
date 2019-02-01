@@ -11,6 +11,7 @@ module.exports = {
     'Miscellaneous',
   ],
   quality: [
+    'All',
     'Normal',
     'Exceptional',
     'Elite',
