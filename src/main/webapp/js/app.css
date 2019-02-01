@@ -40,7 +40,7 @@
 
 .entryGrid {
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
 }
 
 .attrGrid, .questGrid {
@@ -57,12 +57,28 @@
   grid-auto-flow: column;
 }
 
+.dashboardGrid {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.dashboardRow {
+  grid-template-columns: repeat(10, 1fr);
+}
+
 /* Apply to all common form elements, only grid col number varies */
 .entry, .attr_ui, .quest, .skill_ui {
   grid-column: span 2;
 }
 
-#classUi {
+.dashboardItem {
+  grid-column: span 3;
+}
+
+.dashboardOpt {
+  grid-column: span 7;
+}
+
+#classUi, #dashboard {
   grid-column: span 4;
 }
 
@@ -96,4 +112,10 @@
 .storageCell {
   width: 28px;
   height: 28px;
+}
+
+.pickedUpItem {
+  width: 56px;
+  height: 109px;
+  margin: 0px auto;
 }
