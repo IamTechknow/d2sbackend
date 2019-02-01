@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import ItemData from './item-data';
 
@@ -109,7 +110,11 @@ export default class Dashboard extends Component {
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Quality</span>
-                <select id="currQuality" className="form-control dashboardOpt" onChange={this.onSelectChange} disabled={Dashboard.isRarityDisabled(currType)}>
+                <select
+                  id="currQuality"
+                  className="form-control dashboardOpt"
+                  onChange={this.onSelectChange}
+                  disabled={Dashboard.isRarityDisabled(currType)}>
                   {
                     this.renderOptionsFor("quality")
                   }
@@ -117,7 +122,10 @@ export default class Dashboard extends Component {
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Rarity</span>
-                <select id="currRarity" className="form-control dashboardOpt" onChange={this.onSelectChange} disabled={Dashboard.isRarityDisabled(currType)}>
+                <select id="currRarity"
+                  className="form-control dashboardOpt"
+                  onChange={this.onSelectChange}
+                  disabled={Dashboard.isRarityDisabled(currType)}>
                   {
                     this.renderOptionsFor("rarity")
                   }
@@ -132,19 +140,33 @@ export default class Dashboard extends Component {
                 </select>
               </li>
               <li className="list-group-item d2Grid dashboardRow">
-                <span className="dashboardItem">Random attribute values</span>
-                <Switch
-                  checked={this.state.randomAttr}
-                  onChange={this.handleChangeFor('randomAttr')}
-                  color="primary"
-                />
+                <span className="dashboardItem">Runeword</span>
+                <select id="currRW"
+                  className="form-control dashboardOpt"
+                  onChange={this.onSelectChange}
+                  disabled={Dashboard.isRarityDisabled(currType)}>
+                </select>
               </li>
               <li className="list-group-item d2Grid dashboardRow">
-                <span className="dashboardItem">Ethernal</span>
-                <Switch
+                <span className="dashboardItem">Options</span>
+                <span className="dashboardItem"></span>
+                <FormControlLabel control={<Switch
+                  checked={this.state.randomAttr}
+                  onChange={this.handleChangeFor('randomAttr')}
+                  color="primary" />}
+                  label="Random attribute values"
+                />
+                <FormControlLabel control={<Switch
                   checked={this.state.ethernal}
                   onChange={this.handleChangeFor('ethernal')}
-                  color="primary"
+                  color="primary"/>}
+                  label="Ethernal"
+                />
+                <FormControlLabel control={<Switch
+                  checked={this.state.ethernal}
+                  onChange={this.handleChangeFor('inferior')}
+                  color="primary"/>}
+                  label="Inferior"
                 />
               </li>
             </ul>
