@@ -32,6 +32,23 @@ export default class Dashboard extends Component {
       }, []);
   }
 
+  static getDataArray(type, subType, quality, rarity, group) {
+    // Use one array or concat all. Fail gracefully if data doesn't exist
+    return !Dashboard.isRarityDisabled(type) && quality === 'All' ?
+      Dashboard.concatDataFor(subType, rarity) : (ItemData[group] ? ItemData[group] : []);
+  }
+
+  static getGroup(type, subType, quality, rarity) {
+    // Jewelry and misc items don't have quality/rarity
+    if(type === 'Jewelry') {
+      return type;
+    } else if(type === 'Miscellaneous') {
+      return subType;
+    } else {
+      return subType + quality + rarity;
+    }
+  }
+
   static getImgClasses(type, subType) {
     let result = 'pickedUpImg ';
 
@@ -72,20 +89,8 @@ export default class Dashboard extends Component {
 
   renderItemOptions() {
     const { currType, currSubType, currQuality, currRarity } = this.state;
-
-    // Jewelry and misc items don't have quality/rarity
-    let group;
-    if(currType === 'Jewelry') {
-      group = currType;
-    } else if(currType === 'Miscellaneous') {
-      group = currSubType;
-    } else {
-      group = currSubType + currQuality + currRarity;
-    }
-
-    // Use one array or concat all. Fail gracefully if data doesn't exist
-    let array = !Dashboard.isRarityDisabled(currType) && currQuality === 'All' ?
-      Dashboard.concatDataFor(currSubType, currRarity) : (ItemData[group] ? ItemData[group] : []);
+    let group = Dashboard.getGroup(currType, currSubType, currQuality, currRarity);
+    let array = Dashboard.getDataArray(currType, currSubType, currQuality, currRarity, group);
 
     return array.map(obj => (
       <option key={obj.id} value={obj.id}>{obj.name}</option>
