@@ -13,6 +13,7 @@ export default class Dashboard extends Component {
 
     this.handleChangeFor = this.handleChangeFor.bind(this);
     this.onSelectChange = this.onSelectChange.bind(this);
+    this.rarityRef = React.createRef();
 
     this.state = {
       randomAttr: false,
@@ -74,14 +75,39 @@ export default class Dashboard extends Component {
     };
   }
 
-  // Account for primary types, change subtype too
   onSelectChange(event) {
+    const { currType, currSubType, currQuality, currRarity } = this.state;
     const newTypes = {
       [event.target.id] : event.target.value
     };
 
+    // Account for new primary type, change subtype, rarity
     if (event.target.id === 'currType') {
-      Object.assign(newTypes, { currSubType : ItemData[event.target.value][0] });
+      const extras = { currSubType : ItemData[event.target.value][0] };
+
+      if (Dashboard.isRarityDisabled(event.target.value)) {
+        extras['currRarity'] = ItemData['rarity'][0];
+      }
+
+      Object.assign(newTypes, extras);
+    }
+
+    // Change current item. If rarity should be on, use rarity from select element
+    const newRarity = this.rarityRef.current.value;
+    const newType = event.target.id === 'currType' ? newTypes.currType : currType;
+    const newSubType = event.target.id === 'currType' || event.target.id === 'currSubType'
+      ? newTypes.currSubType : currSubType;
+
+    if (!newTypes['currItemId']) {
+      if (!Dashboard.isRarityDisabled(newType)) {
+        const group = Dashboard.getGroup(newType, newSubType, currQuality, newRarity);
+        const data = Dashboard.getDataArray(newType, newSubType, currQuality, newRarity, group);
+        newTypes['currRarity'] = newRarity;
+        newTypes['currItemId'] = data.length ? data[0].id : undefined;
+      } else {
+        const group = Dashboard.getGroup(newType, newSubType, currQuality, newTypes.currRarity);
+        newTypes['currItemId'] = ItemData[group][0].id;
+      }
     }
 
     this.setState(newTypes);
@@ -99,7 +125,7 @@ export default class Dashboard extends Component {
 
   renderOptionsFor(type) {
     return ItemData[type].map(opt => (
-      <option key={opt}>{opt}</option>
+      <option key={opt} value={opt}>{opt}</option>
     ));
   }
 
@@ -151,6 +177,7 @@ export default class Dashboard extends Component {
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Rarity</span>
                 <select id="currRarity"
+                  ref={this.rarityRef}
                   className="form-control dashboardOpt"
                   onChange={this.onSelectChange}
                   disabled={Dashboard.isRarityDisabled(currType)}>
@@ -163,7 +190,8 @@ export default class Dashboard extends Component {
                 <span className="dashboardItem">Item</span>
                 <select id="currItemId"
                   className="form-control dashboardOpt"
-                  onChange={this.onSelectChange}>
+                  onChange={this.onSelectChange}
+                  value={currItemId}>
                   {
                     this.renderItemOptions()
                   }
