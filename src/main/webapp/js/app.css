@@ -127,3 +127,20 @@
   height: 109px;
   margin: 0px auto;
 }
+
+/* Positioning classes based on item size */
+.pickedUpImg {
+  position: relative;
+}
+
+.pickedUp1x1 {
+  top: 33%;
+}
+
+.pickedUp1x2 {
+  top: 33%;
+}
+
+.pickedUp2x2 {
+  top: 25%;
+}

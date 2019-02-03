@@ -5,6 +5,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import ItemData from './item-data';
 
+const IMG_PREFIX = '';
+
 export default class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -28,6 +30,19 @@ export default class Dashboard extends Component {
         const group = type + curr + rarity;
         return accum.concat(ItemData[group] ? ItemData[group] : []);
       }, []);
+  }
+
+  static getImgClasses(type, subType) {
+    let result = 'pickedUpImg ';
+
+    switch(subType) {
+      case 'Belts':
+        return result + 'pickedUp1x2';
+      case 'Gloves':
+        return result + 'pickedUp2x2';
+      default:
+        return result + 'pickedUp1x1';
+    }
   }
 
   // Should quality and rarity select elements be disabled?
@@ -84,13 +99,21 @@ export default class Dashboard extends Component {
   }
 
   render() {
-    const { currType, currSubType } = this.state;
+    const { currType, currSubType, currRarity, currItemId } = this.state;
+    const imagePrefix = currRarity === 'Unique' ? 'u' : currRarity === 'Set' ? 's' : '';
+    const imgClasses = Dashboard.getImgClasses(currType, currSubType);
+
     return (
       <Paper style={{ padding: '16px' }}>
         <div className="d2Grid dashboardGrid">
           <div className="entry">
             <h3 className="storageHeader">Current item</h3>
-            <div className="pickedUpItem" />
+            <div className="pickedUpItem">
+              {
+                currItemId
+                  && <img className={imgClasses} src={`${IMG_PREFIX}${imagePrefix}${currItemId}.png`} />
+              }
+            </div>
           </div>
           <div id="dashboard">
             <h3 className="storageHeader">Item creation</h3>
@@ -133,7 +156,9 @@ export default class Dashboard extends Component {
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Item</span>
-                <select className="form-control dashboardOpt">
+                <select id="currItemId"
+                  className="form-control dashboardOpt"
+                  onChange={this.onSelectChange}>
                   {
                     this.renderItemOptions()
                   }
