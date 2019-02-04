@@ -142,6 +142,24 @@
   top: 33%;
 }
 
+.pickedUp2x1 {
+  top: 25%;
+  left: 25%;
+}
+
 .pickedUp2x2 {
   top: 25%;
+}
+
+.pickedUp3x1 {
+  top: 12%;
+  left: 25%;
+}
+
+.pickedUp3x2 {
+  top: 12%;
+}
+
+.pickedUp4x1 {
+  left: 25%;
 }
