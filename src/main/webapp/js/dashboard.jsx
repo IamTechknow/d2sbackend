@@ -76,14 +76,18 @@ export default class Dashboard extends Component {
   }
 
   onSelectChange(event) {
-    const { currType, currSubType, currQuality, currRarity } = this.state;
+    const { currType, currSubType, currQuality, currRarity, prevType, prevSub } = this.state;
     const newTypes = {
       [event.target.id] : event.target.value
     };
 
     // Account for new primary type, change subtype, rarity
     if (event.target.id === 'currType') {
-      const extras = { currSubType : ItemData[event.target.value][0] };
+      const extras = {
+        currSubType : event.target.value !== prevType ? ItemData[event.target.value][0] : prevSub,
+        prevSub : currSubType,
+        prevType: currType
+      };
 
       if (Dashboard.isRarityDisabled(event.target.value)) {
         extras['currRarity'] = ItemData['rarity'][0];
@@ -156,7 +160,11 @@ export default class Dashboard extends Component {
                     this.renderOptionsFor("primary")
                   }
                 </select>
-                <select id="currSubType" className="form-control" onChange={this.onSelectChange}>
+                <select
+                  id="currSubType"
+                  className="form-control"
+                  onChange={this.onSelectChange}
+                  value={currSubType}>
                   {
                     this.renderOptionsFor(currType)
                   }
@@ -176,7 +184,8 @@ export default class Dashboard extends Component {
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Rarity</span>
-                <select id="currRarity"
+                <select
+                  id="currRarity"
                   ref={this.rarityRef}
                   className="form-control dashboardOpt"
                   onChange={this.onSelectChange}
