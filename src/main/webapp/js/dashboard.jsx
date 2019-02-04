@@ -50,17 +50,91 @@ export default class Dashboard extends Component {
     }
   }
 
-  static getImgClasses(type, subType) {
+  static getImgClasses(subType, currItemId) {
     let result = 'pickedUpImg ';
 
     switch(subType) {
       case 'Belts':
         return result + 'pickedUp1x2';
       case 'Gloves':
+      case 'Boots':
+      case 'Necromancer Totems':
+      case 'Helms':
+      case 'Druid Helms':
+      case 'Barbarian Helms':
+      case 'Circlets':
         return result + 'pickedUp2x2';
-      default:
+      case 'Body Armor':
+        return result + 'pickedUp3x2';
+      case 'Assassin Claws':
+        return result + 'pickedUp3x1';
+      case 'Tomes':
+      case 'Wands':
+        return result + 'pickedUp2x1';
+      case 'No subtypes':
+      case 'Runes':
+      case 'Gems':
+      case 'Potions':
+      case 'Other':
         return result + 'pickedUp1x1';
+      case 'Spears':
+      case 'Polearms':
+        return result;
+      default: // account for items with various grid sizes
+        return result + getImgClassesFor(currItemId);
     }
+  }
+
+  // Account for normal, unique, and set IDs that don't fit the above criteria
+  static getImgClassesFor(id) {
+    // Sorc orbs
+    const Items2By1 = ['ob1', 'ob2', 'ob3', 'ob4', 'ob6', 'ob7', 'ob8', 'ob9',
+      'obb', 'obc', 'obd', 'obe'];
+    // Daggers, throwing knives
+    Items2By1 = ['dgr', 'dir', 'kri', 'bld', 'tkf', 'tax', 'bkf', '9dg', '9di',
+      '9tk', '9ta', '9bk', '7dg', '7di', '7tk', '7ta', '7bk', '9tk', '9ta', '9bk', '7dg'];
+
+    // Shields and Paladin Shields
+    const Items2By2 = ['buc', 'sml', 'xuc', 'xml', 'pal', 'pa2', 'pa5', 'uuc',
+      'uml', 'pa6', 'pa7', 'paa', 'pab', 'pac', 'paf'];
+    const Items3By2 = ['lrg', 'kit', 'tow', 'bsh', 'spk', 'xrg', 'xit', 'xow',
+      'xsh', 'xpk', 'urg', 'uit', 'uow', 'ush', 'upk'];
+
+    // Normal Swords, Axes, Scepters, Throwing weapons, staves
+    const Items3By1 = ['hax', 'clb', 'scp', 'gsc', 'spc', 'mac', 'mst', 'ssd',
+      'scm', 'flc', 'wsd', 'kri', 'bld', 'jav', 'pil', 'ssp', 'sst', 'leg', 'msf'];
+    Items3By1.append(['9ha', '9cl', '9sc', '9qs', '9sp', '9ma', '9mt', '9ss',
+      '9sm', '9sb', '9fc', '9wd', '9kr', '9bl', '9ja', '9pi', '9s9', '8ss']);
+    Items3By1.append(['7ha', '7cl', '7sc', '7qs', '7sp', '7ma', '7mt', '7ss',
+      '7sm', '7sb', '7fc', '7wd', '7kr', '7bl', '7ja', '7pi', '7s7', '6ss']);
+
+    // Sorc orbs, Amazon javelins
+    Items3By1.append(['ob5', 'am5', 'oba', 'ama', 'obf', 'amf']);
+
+    const Items4By1 = [];
+
+    if (new Set(Items2By1).has(id)) {
+      return result + 'pickedUp2x1';
+    }
+
+    if (new Set(Items2By2).has(id)) {
+      return result + 'pickedUp2x2';
+    }
+
+    if (new Set(Items3By2).has(id)) {
+      return result + 'pickedUp3x2';
+    }
+
+    if (new Set(Items3By1).has(id)) {
+      return result + 'pickedUp3x1';
+    }
+
+    if (new Set(Items4By1).has(id)) {
+      return result + 'pickedUp4x1';
+    }
+
+    // All other IDs are for 4x2
+    return result;
   }
 
   // Should quality and rarity select elements be disabled?
@@ -136,7 +210,7 @@ export default class Dashboard extends Component {
   render() {
     const { currType, currSubType, currRarity, currItemId } = this.state;
     const imagePrefix = currRarity === 'Unique' ? 'u' : currRarity === 'Set' ? 's' : '';
-    const imgClasses = Dashboard.getImgClasses(currType, currSubType);
+    const imgClasses = Dashboard.getImgClasses(currSubType, currItemId);
 
     return (
       <Paper style={{ padding: '16px' }}>
