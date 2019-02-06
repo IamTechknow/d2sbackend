@@ -7,6 +7,13 @@ import Dashboard from './dashboard';
 export default class Items extends Component {
   constructor(props) {
     super(props);
+
+    this.onItemSelected = this.onItemSelected.bind(this);
+    this.state = { itemId: undefined };
+  }
+
+  onItemSelected(itemType, itemId) {
+    this.setState({ itemType, itemId });
   }
 
   render() {
@@ -17,7 +24,7 @@ export default class Items extends Component {
           <Storage />
         </div>
 
-        <Dashboard />
+        <Dashboard itemHandler={this.onItemSelected} />
       </div>
     );
   }

@@ -88,7 +88,7 @@ export default class Dashboard extends Component {
     const newRarity = this.rarityRef.current.value;
     const newType = event.target.id === 'currType' ? newTypes.currType : currType;
     const newSubType = event.target.id === 'currType' || event.target.id === 'currSubType'
-      ? newTypes.currSubType : currSubType;
+      ? newTypes['currSubType'] : currSubType;
 
     if (!newTypes['currItemId']) {
       if (!Dashboard.isRarityDisabled(newType)) {
@@ -102,6 +102,7 @@ export default class Dashboard extends Component {
       }
     }
 
+    this.props.itemHandler(newSubType, newTypes['currItemId']);
     this.setState(newTypes);
   }
 
