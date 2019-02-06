@@ -2,19 +2,12 @@ import React, { Component } from 'react';
 import StorageGrid from './storageGrid';
 import Equipment from './equipment';
 
-const EQUIP = 0, INV = 1, STASH = 2, BELT = 3, CUBE = 4, TYPES = 5;
+const EQUIP = 0, INV = 1, TYPES = 5;
 
 // Manages character storage, including the current storage type and configuring the storage grid.
-// Keeps objects for all storage types.
 export default class Storage extends Component {
   constructor(props) {
     super(props);
-
-    this.equipment = [];
-    this.inventory = [];
-    this.stash = [];
-    this.belt = [];
-    this.cube = [];
 
     this.state = {
       currType: INV,
@@ -28,16 +21,7 @@ export default class Storage extends Component {
   }
 
   getItemsFrom(type) {
-    switch (type) {
-      case INV:
-        return this.stash;
-      case STASH:
-        return this.belt;
-      case BELT:
-        return this.cube;
-      default:
-        return this.inventory;
-    }
+    return this.props.items[type];
   }
 
   onStorageChange(event) {
@@ -64,7 +48,7 @@ export default class Storage extends Component {
           )
         }
 
-        <StorageGrid type={currType} items={this.getItemsFrom(currType)} />
+        <StorageGrid type={currType} items={this.getItemsFrom(currType)} clickHandler={this.props.clickHandler} />
       </div>
     );
   }

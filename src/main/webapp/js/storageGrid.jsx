@@ -30,6 +30,13 @@ export default class StorageGrid extends Component {
     return { width, height, rowClass };
   }
 
+  // Higher-order function to forego binding, send clicked coordinates to items component
+  onClickAt(r, c) {
+    return (event) => {
+      this.props.clickHandler(this.props.type, r, c);
+    };
+  }
+
   // Render the grid, will use conditional rendering for items based on size and coordinates
   render() {
     const { width, height, rowClass } = StorageGrid.getData(this.props.type);
@@ -38,11 +45,15 @@ export default class StorageGrid extends Component {
     return (
       <div>
         { this.props.type > 0 &&
-          [...Array(height)].map(r => (
-            <div className={rowClasses}>
+          [...Array(height)].map((undef, r) => (
+            <div key={`row-${r}`} className={rowClasses}>
               {
-                [...Array(width)].map(c => (
-                  <div className="storageCell" />
+                [...Array(width)].map((undef, c) => (
+                  <div key={`col-${c}`} className="storageCell" onClick={this.onClickAt(r, c)}>
+                    {
+                      
+                    }
+                  </div>
                 ))
               }
             </div>
