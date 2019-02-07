@@ -6,26 +6,11 @@ import StorageGrid from './storageGrid';
 import Dashboard from './dashboard';
 import ItemUtils from './itemUtils';
 
-const TYPES = 5, TOP = 1, OCCUIPED = 2;
-
 export default class Items extends Component {
   constructor(props) {
     super(props);
 
-    // Arrays that contain all items in a storage grid
-    this.storage = new Array(TYPES);
-
-    // Sets that indicate occupied cells of a storage grid
-    this.storageMap = new Array(TYPES);
-
-    for (let i = 0; i < this.storage.length; i++) {
-      this.storage[i] = [];
-      this.storageMap[i] = new Map();
-    }
-
     this.onCellClick = this.onCellClick.bind(this);
-    this.onItemSelected = this.onItemSelected.bind(this);
-    this.state = { itemId: undefined };
   }
 
   // Determine all possible slots in the grid, and whether any are taken already
@@ -40,7 +25,7 @@ export default class Items extends Component {
           return false;
         }
 
-        if (this.storageMap[type].has(r1 * gridWidth + c1)) {
+        if (this.props.itemMaps[type].has(r1 * gridWidth + c1)) {
           return false;
         }
       }
@@ -50,48 +35,25 @@ export default class Items extends Component {
   }
 
   // Try to put an item in the specified storage
+  // NOTE: When clicking on an item, the parent div will actually be clicked.
+  // ATM that's not too problematic.
   onCellClick(type, r, c) {
-    const { itemType, itemId, rarity } = this.state;
+    const { itemType, itemId, rarity } = this.props;
     if (!itemId) {
       return;
     }
 
     const { h, w } = ItemUtils.getSizeFor(itemType, itemId);
     if (this.canItemFitHere(type, r, c, h, w)) {
-      this.storage[type].push({ itemType, itemId, rarity, r, c, h, w });
-      this.updateStorageMap(type, this.storage[type].length - 1, r, c, h, w);
-      console.log(this.storageMap[type]);
-      this.forceUpdate();
+      this.props.onNewItem({ itemType, itemId, rarity, r, c, h, w }, type);
     } else {
+      // TODO: Use Snackbar or alert to indicate item may not be placed
       console.log('Item can\'t fit here at', r, c);
     }
   }
 
-  onItemSelected(itemType, itemId, rarity) {
-    this.setState({ itemType, itemId, rarity });
-  }
-
-  // Fill the map for the given item, indicating the top left corner
-  // That location contains the array index for the item
-  updateStorageMap(type, itemIdx, r, c, height, width) {
-    const gridWidth = StorageGrid.getData(type).width;
-    for (let r1 = r; r1 < r + height; r1++) {
-      for (let c1 = c; c1 < c + width; c1++) {
-        const mapObj = {};
-        if (r1 === r && c1 === c) {
-          mapObj.status = TOP;
-          mapObj.idx = itemIdx;
-        } else {
-          mapObj.status = OCCUIPED;
-        }
-
-        this.storageMap[type].set(r1 * gridWidth + c1, mapObj);
-      }
-    }
-  }
-
   render() {
-    const { itemId } = this.state;
+    const { items, itemMaps, onItemSelected, type, itemId, itemType, itemSubtype, rarity, quality } = this.props;
 
     return (
       <div>
@@ -99,12 +61,18 @@ export default class Items extends Component {
           <Bonuses />
           <Storage
             currItemId={itemId}
-            items={this.storage}
-            itemMaps={this.storageMap}
+            items={items}
+            itemMaps={itemMaps}
             clickHandler={this.onCellClick} />
         </div>
 
-        <Dashboard itemHandler={this.onItemSelected} />
+        <Dashboard
+          currType={itemType}
+          currSubType={itemSubtype}
+          currRarity={rarity}
+          currQuality={quality}
+          currItemId={itemId}
+          itemHandler={onItemSelected} />
       </div>
     );
   }

@@ -19,10 +19,7 @@ export default class Dashboard extends Component {
     this.state = {
       randomAttr: false,
       ethernal: false,
-      currType: ItemData['primary'][0],
-      currSubType: ItemData[ItemData['primary'][0]][0],
-      currQuality: ItemData['quality'][0],
-      currRarity: ItemData['rarity'][0]
+      inferior: false
     };
   }
 
@@ -64,7 +61,9 @@ export default class Dashboard extends Component {
   }
 
   onSelectChange(event) {
-    const { currType, currSubType, currQuality, currRarity, prevType, prevSub } = this.state;
+    const { prevType, prevSub } = this.state;
+    const { currType, currSubType, currQuality, currRarity } = this.props;
+
     const newTypes = {
       [event.target.id] : event.target.value
     };
@@ -102,12 +101,11 @@ export default class Dashboard extends Component {
       }
     }
 
-    this.props.itemHandler(newSubType, newTypes['currItemId'], newRarity);
-    this.setState(newTypes);
+    this.props.itemHandler(newTypes); // Set state in the Form
   }
 
   renderItemOptions() {
-    const { currType, currSubType, currQuality, currRarity } = this.state;
+    const { currType, currSubType, currQuality, currRarity } = this.props;
     let group = Dashboard.getGroup(currType, currSubType, currQuality, currRarity);
     let array = Dashboard.getDataArray(currType, currSubType, currQuality, currRarity, group);
 
@@ -123,7 +121,7 @@ export default class Dashboard extends Component {
   }
 
   render() {
-    const { currType, currSubType, currRarity, currItemId } = this.state;
+    const { currType, currSubType, currRarity, currItemId } = this.props;
     const imagePrefix = currRarity === 'Unique' ? 'u' : currRarity === 'Set' ? 's' : '';
     const imgClasses = ItemUtils.getImgClasses(currSubType, currItemId);
 
@@ -219,7 +217,7 @@ export default class Dashboard extends Component {
                   label="Ethernal"
                 />
                 <FormControlLabel control={<Switch
-                  checked={this.state.ethernal}
+                  checked={this.state.inferior}
                   onChange={this.handleChangeFor('inferior')}
                   color="primary"/>}
                   label="Inferior"
