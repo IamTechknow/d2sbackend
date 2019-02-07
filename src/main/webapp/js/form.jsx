@@ -49,8 +49,8 @@ export default class Form extends Component {
   // That location contains the array index for the item
   static updateItemMap(type, itemMap, itemIdx, r, c, height, width) {
     const gridWidth = StorageGrid.getData(type).width;
-    for (let r1 = r; r1 < r + height; r1++) {
-      for (let c1 = c; c1 < c + width; c1++) {
+    for (let r1 = r; r1 < r + height; r1 += 1) {
+      for (let c1 = c; c1 < c + width; c1 += 1) {
         const mapObj = {};
         if (r1 === r && c1 === c) {
           mapObj.status = TOP;
@@ -100,10 +100,10 @@ export default class Form extends Component {
       rewards,
       items,
       itemMaps,
-      currType: ItemData['primary'][0],
-      currSubType: ItemData[ItemData['primary'][0]][0],
-      currQuality: ItemData['quality'][0],
-      currRarity: ItemData['rarity'][0]
+      currType: ItemData.primary[0],
+      currSubType: ItemData[ItemData.primary[0]][0],
+      currQuality: ItemData.quality[0],
+      currRarity: ItemData.rarity[0],
     };
 
     this.pattern = new RegExp(/^[a-zA-Z][a-zA-Z_-]*$/);
@@ -177,10 +177,11 @@ export default class Form extends Component {
     const { items, itemMaps } = this.state;
 
     items[type].push(item);
-    Form.updateItemMap(type, itemMaps[type], items[type].length - 1, item.r, item.c, item.h, item.w);
+    Form.updateItemMap(type, itemMaps[type], items[type].length - 1,
+      item.r, item.c, item.h, item.w);
 
     this.setState({
-      items, itemMaps
+      items, itemMaps,
     });
   }
 

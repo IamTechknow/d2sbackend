@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -19,12 +20,12 @@ export default class Dashboard extends Component {
     this.state = {
       randomAttr: false,
       ethernal: false,
-      inferior: false
+      inferior: false,
     };
   }
 
   static concatDataFor(type, rarity) {
-    return ItemData["quality"].slice(1)
+    return ItemData.quality.slice(1)
       .reduce((accum, curr) => {
         const group = type + curr + rarity;
         return accum.concat(ItemData[group] ? ItemData[group] : []);
@@ -33,24 +34,29 @@ export default class Dashboard extends Component {
 
   static getDataArray(type, subType, quality, rarity, group) {
     // Use one array or concat all. Fail gracefully if data doesn't exist
-    return !Dashboard.isRarityDisabled(type) && quality === 'All' ?
-      Dashboard.concatDataFor(subType, rarity) : (ItemData[group] ? ItemData[group] : []);
+    return !Dashboard.isRarityDisabled(type) && quality === 'All'
+      ? Dashboard.concatDataFor(subType, rarity) : (ItemData[group] ? ItemData[group] : []);
   }
 
   static getGroup(type, subType, quality, rarity) {
     // Jewelry and misc items don't have quality/rarity
-    if(type === 'Jewelry') {
+    if (type === 'Jewelry') {
       return type;
-    } else if(type === 'Miscellaneous') {
+    } if (type === 'Miscellaneous') {
       return subType;
-    } else {
-      return subType + quality + rarity;
     }
+    return subType + quality + rarity;
   }
 
   // Should quality and rarity select elements be disabled?
   static isRarityDisabled(currType) {
     return currType === 'Miscellaneous' || currType === 'Jewelry';
+  }
+
+  static renderOptionsFor(type) {
+    return ItemData[type].map(opt => (
+      <option key={opt} value={opt}>{opt}</option>
+    ));
   }
 
   // Higher-order function to forego binding
@@ -63,10 +69,12 @@ export default class Dashboard extends Component {
   onSelectChange(event) {
     const { id, value } = event.target;
     const { prevType, prevSub } = this.state;
-    const { currType, currSubType, currQuality, currRarity } = this.props;
+    const {
+      currType, currSubType, currQuality, currRarity,
+    } = this.props;
 
     const newTypes = {
-      [id] : value
+      [id]: value,
     };
 
     let prevState;
@@ -74,28 +82,28 @@ export default class Dashboard extends Component {
     // Account for new primary type, change subtype, rarity
     if (id === 'currType') {
       prevState = {
-        prevSub : currSubType,
-        prevType: currType
+        prevSub: currSubType,
+        prevType: currType,
       };
 
-      newTypes['currSubType'] = value !== prevType ? ItemData[value][0] : prevSub;
+      newTypes.currSubType = value !== prevType ? ItemData[value][0] : prevSub;
     }
 
     // Change current item. If rarity should be on, use rarity from select element
     const newRarity = this.rarityRef.current.value;
     const newType = id === 'currType' ? newTypes.currType : currType;
     const newSubType = id === 'currType' || id === 'currSubType'
-      ? newTypes['currSubType'] : currSubType;
+      ? newTypes.currSubType : currSubType;
 
-    if (!newTypes['currItemId']) {
+    if (!newTypes.currItemId) {
       if (!Dashboard.isRarityDisabled(newType)) {
         const group = Dashboard.getGroup(newType, newSubType, currQuality, newRarity);
         const data = Dashboard.getDataArray(newType, newSubType, currQuality, newRarity, group);
-        newTypes['currRarity'] = newRarity;
-        newTypes['currItemId'] = data.length ? data[0].id : undefined;
+        newTypes.currRarity = newRarity;
+        newTypes.currItemId = data.length ? data[0].id : undefined;
       } else {
         const group = Dashboard.getGroup(newType, newSubType, currQuality, newTypes.currRarity);
-        newTypes['currItemId'] = ItemData[group][0].id;
+        newTypes.currItemId = ItemData[group][0].id;
       }
     }
 
@@ -106,23 +114,21 @@ export default class Dashboard extends Component {
   }
 
   renderItemOptions() {
-    const { currType, currSubType, currQuality, currRarity } = this.props;
-    let group = Dashboard.getGroup(currType, currSubType, currQuality, currRarity);
-    let array = Dashboard.getDataArray(currType, currSubType, currQuality, currRarity, group);
+    const {
+      currType, currSubType, currQuality, currRarity,
+    } = this.props;
+    const group = Dashboard.getGroup(currType, currSubType, currQuality, currRarity);
+    const array = Dashboard.getDataArray(currType, currSubType, currQuality, currRarity, group);
 
     return array.map(obj => (
       <option key={obj.id} value={obj.id}>{obj.name}</option>
     ));
   }
 
-  renderOptionsFor(type) {
-    return ItemData[type].map(opt => (
-      <option key={opt} value={opt}>{opt}</option>
-    ));
-  }
-
   render() {
-    const { currType, currSubType, currRarity, currItemId } = this.props;
+    const {
+      currType, currSubType, currRarity, currItemId,
+    } = this.props;
     const imagePrefix = currRarity === 'Unique' ? 'u' : currRarity === 'Set' ? 's' : '';
     const imgClasses = ItemUtils.getImgClasses(currSubType, currItemId);
 
@@ -134,7 +140,7 @@ export default class Dashboard extends Component {
             <div className="pickedUpItem">
               {
                 currItemId
-                  && <img className={imgClasses} src={`${IMG_PREFIX}${imagePrefix}${currItemId}.png`} />
+                  && <img className={imgClasses} alt="" src={`${IMG_PREFIX}${imagePrefix}${currItemId}.png`} />
               }
             </div>
           </div>
@@ -145,14 +151,15 @@ export default class Dashboard extends Component {
                 <span className="dashboardItem">Type</span>
                 <select id="currType" className="form-control" onChange={this.onSelectChange}>
                   {
-                    this.renderOptionsFor("primary")
+                    this.renderOptionsFor('primary')
                   }
                 </select>
                 <select
                   id="currSubType"
                   className="form-control"
                   onChange={this.onSelectChange}
-                  value={currSubType}>
+                  value={currSubType}
+                >
                   {
                     this.renderOptionsFor(currType)
                   }
@@ -164,9 +171,10 @@ export default class Dashboard extends Component {
                   id="currQuality"
                   className="form-control dashboardOpt"
                   onChange={this.onSelectChange}
-                  disabled={Dashboard.isRarityDisabled(currType)}>
+                  disabled={Dashboard.isRarityDisabled(currType)}
+                >
                   {
-                    this.renderOptionsFor("quality")
+                    this.renderOptionsFor('quality')
                   }
                 </select>
               </li>
@@ -177,18 +185,21 @@ export default class Dashboard extends Component {
                   ref={this.rarityRef}
                   className="form-control dashboardOpt"
                   onChange={this.onSelectChange}
-                  disabled={Dashboard.isRarityDisabled(currType)}>
+                  disabled={Dashboard.isRarityDisabled(currType)}
+                >
                   {
-                    this.renderOptionsFor("rarity")
+                    this.renderOptionsFor('rarity')
                   }
                 </select>
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Item</span>
-                <select id="currItemId"
+                <select
+                  id="currItemId"
                   className="form-control dashboardOpt"
                   onChange={this.onSelectChange}
-                  value={currItemId}>
+                  value={currItemId}
+                >
                   {
                     this.renderItemOptions()
                   }
@@ -196,31 +207,44 @@ export default class Dashboard extends Component {
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Runeword</span>
-                <select id="currRW"
+                <select
+                  id="currRW"
                   className="form-control dashboardOpt"
                   onChange={this.onSelectChange}
-                  disabled={Dashboard.isRarityDisabled(currType)}>
-                </select>
+                  disabled={Dashboard.isRarityDisabled(currType)}
+                />
               </li>
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Options</span>
-                <span className="dashboardItem"></span>
-                <FormControlLabel control={<Switch
-                  checked={this.state.randomAttr}
-                  onChange={this.handleChangeFor('randomAttr')}
-                  color="primary" />}
+                <span className="dashboardItem" />
+                <FormControlLabel
+                  control={(
+                    <Switch
+                      checked={this.state.randomAttr}
+                      onChange={this.handleChangeFor('randomAttr')}
+                      color="primary"
+                    />
+)}
                   label="Random attribute values"
                 />
-                <FormControlLabel control={<Switch
-                  checked={this.state.ethernal}
-                  onChange={this.handleChangeFor('ethernal')}
-                  color="primary"/>}
+                <FormControlLabel
+                  control={(
+                    <Switch
+                      checked={this.state.ethernal}
+                      onChange={this.handleChangeFor('ethernal')}
+                      color="primary"
+                    />
+)}
                   label="Ethernal"
                 />
-                <FormControlLabel control={<Switch
-                  checked={this.state.inferior}
-                  onChange={this.handleChangeFor('inferior')}
-                  color="primary"/>}
+                <FormControlLabel
+                  control={(
+                    <Switch
+                      checked={this.state.inferior}
+                      onChange={this.handleChangeFor('inferior')}
+                      color="primary"
+                    />
+)}
                   label="Inferior"
                 />
               </li>
@@ -231,3 +255,12 @@ export default class Dashboard extends Component {
     );
   }
 }
+
+Dashboard.propTypes = {
+  currType: PropTypes.string.isRequired,
+  currSubType: PropTypes.string.isRequired,
+  currRarity: PropTypes.string.isRequired,
+  currQuality: PropTypes.string.isRequired,
+  currItemId: PropTypes.string.isRequired,
+  itemHandler: PropTypes.func.isRequired,
+};

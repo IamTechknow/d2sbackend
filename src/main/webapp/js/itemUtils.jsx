@@ -1,8 +1,8 @@
 export default class ItemUtils {
   static getSizeFor(subType, currItemId) {
-    switch(subType) {
+    switch (subType) {
       case 'Belts':
-        return {h: 1, w: 2};
+        return { h: 1, w: 2 };
       case 'Gloves':
       case 'Boots':
       case 'Necromancer Totems':
@@ -10,23 +10,23 @@ export default class ItemUtils {
       case 'Druid Helms':
       case 'Barbarian Helms':
       case 'Circlets':
-        return {h: 2, w: 2};
+        return { h: 2, w: 2 };
       case 'Body Armor':
-        return {h: 3, w: 2};
+        return { h: 3, w: 2 };
       case 'Assassin Claws':
-        return {h: 3, w: 1};
+        return { h: 3, w: 1 };
       case 'Tomes':
       case 'Wands':
-        return {h: 2, w: 1};
+        return { h: 2, w: 1 };
       case 'No subtypes':
       case 'Runes':
       case 'Gems':
       case 'Potions':
       case 'Other':
-        return {h: 1, w: 1};
+        return { h: 1, w: 1 };
       case 'Spears':
       case 'Polearms':
-        return {h: 4, w: 2};
+        return { h: 4, w: 2 };
       default: // account for items with various grid sizes
         return ItemUtils.getSizesFor(currItemId);
     }
@@ -61,31 +61,31 @@ export default class ItemUtils {
     const Items4By1 = [];
 
     if (new Set(Items2By1).has(id)) {
-      return {h: 2, w: 1};
+      return { h: 2, w: 1 };
     }
 
     if (new Set(Items2By2).has(id)) {
-      return {h: 2, w: 2};
+      return { h: 2, w: 2 };
     }
 
     if (new Set(Items3By2).has(id)) {
-      return {h: 3, w: 2};
+      return { h: 3, w: 2 };
     }
 
     if (new Set(Items3By1).has(id)) {
-      return {h: 3, w: 1};
+      return { h: 3, w: 1 };
     }
 
     if (new Set(Items4By1).has(id)) {
-      return {h: 4, w: 1};
+      return { h: 4, w: 1 };
     }
 
     // All other IDs are for 4x2
-    return {h: 4, w: 2};
+    return { h: 4, w: 2 };
   }
 
   static getImgClasses(subType, currItemId) {
-    let {h, w} = ItemUtils.getSizeFor(subType, currItemId);
+    const { h, w } = ItemUtils.getSizeFor(subType, currItemId);
 
     return `pickedUpImg pickedUp${h}x${w}`;
   }

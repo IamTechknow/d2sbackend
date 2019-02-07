@@ -52,10 +52,12 @@ export default class Storage extends Component {
           )
         }
 
-        <StorageGrid type={currType}
+        <StorageGrid
+          type={currType}
           items={this.getItemsFrom(currType)}
           itemMap={this.getMapFrom(currType)}
-          clickHandler={this.props.clickHandler} />
+          clickHandler={this.props.clickHandler}
+        />
       </div>
     );
   }

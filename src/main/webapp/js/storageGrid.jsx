@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 const INV = 1, TOP = 1, STASH = 2, BELT = 3, CUBE = 4, DEFAULT_ROWS = 4, DEFAULT_COLS = 10;
 const IMG_PREFIX = '';
 
 // Displays any items onto the grid. Grid size depends on the storage type
 export default class StorageGrid extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   static getData(type) {
     let width = DEFAULT_COLS;
     let height = DEFAULT_ROWS;
@@ -33,36 +30,36 @@ export default class StorageGrid extends Component {
 
   // Higher-order function to forego binding, send clicked coordinates to items component
   onClickAt(r, c) {
-    return (event) => {
+    return () => {
       this.props.clickHandler(this.props.type, r, c);
     };
   }
 
   isItemTopAt(r, c) {
-    const { width, height, rowClass } = StorageGrid.getData(this.props.type);
+    const { width } = StorageGrid.getData(this.props.type);
     const temp = this.props.itemMap.get(r * width + c);
     return temp && temp.status === TOP;
   }
 
   getImageForItem(r, c) {
-    const { width, height, rowClass } = StorageGrid.getData(this.props.type);
-    const { items, itemMap } = this.props;
+    const { items, itemMap, type } = this.props;
+    const { width } = StorageGrid.getData(type);
     const item = items[itemMap.get(r * width + c).idx];
     const imagePrefix = item.rarity === 'Unique' ? 'u' : item.rarity === 'Set' ? 's' : '';
 
-    return <img src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`} />;
+    return <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`} />;
   }
 
   // Render the grid, will use conditional rendering for items based on size and coordinates
   render() {
-    const { width, height, rowClass } = StorageGrid.getData(this.props.type);
-    const { items, itemMap } = this.props;
+    const { type } = this.props;
+    const { width, height, rowClass } = StorageGrid.getData(type);
     const rowClasses = `storageRow ${rowClass}`;
 
     return (
       <div>
-        { this.props.type > 0 &&
-          [...Array(height)].map((undef, r) => (
+        { type > 0
+          && [...Array(height)].map((undef, r) => (
             <div key={`row-${r}`} className={rowClasses}>
               {
                 [...Array(width)].map((undef, c) => (
@@ -80,3 +77,9 @@ export default class StorageGrid extends Component {
     );
   }
 }
+
+StorageGrid.propTypes = {
+  clickHandler: PropTypes.func.isRequired,
+  type: PropTypes.number.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
