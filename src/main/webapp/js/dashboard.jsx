@@ -61,32 +61,30 @@ export default class Dashboard extends Component {
   }
 
   onSelectChange(event) {
+    const { id, value } = event.target;
     const { prevType, prevSub } = this.state;
     const { currType, currSubType, currQuality, currRarity } = this.props;
 
     const newTypes = {
-      [event.target.id] : event.target.value
+      [id] : value
     };
 
+    let prevState;
+
     // Account for new primary type, change subtype, rarity
-    if (event.target.id === 'currType') {
-      const extras = {
-        currSubType : event.target.value !== prevType ? ItemData[event.target.value][0] : prevSub,
+    if (id === 'currType') {
+      prevState = {
         prevSub : currSubType,
         prevType: currType
       };
 
-      if (Dashboard.isRarityDisabled(event.target.value)) {
-        extras['currRarity'] = ItemData['rarity'][0];
-      }
-
-      Object.assign(newTypes, extras);
+      newTypes['currSubType'] = value !== prevType ? ItemData[value][0] : prevSub;
     }
 
     // Change current item. If rarity should be on, use rarity from select element
     const newRarity = this.rarityRef.current.value;
-    const newType = event.target.id === 'currType' ? newTypes.currType : currType;
-    const newSubType = event.target.id === 'currType' || event.target.id === 'currSubType'
+    const newType = id === 'currType' ? newTypes.currType : currType;
+    const newSubType = id === 'currType' || id === 'currSubType'
       ? newTypes['currSubType'] : currSubType;
 
     if (!newTypes['currItemId']) {
@@ -101,7 +99,10 @@ export default class Dashboard extends Component {
       }
     }
 
-    this.props.itemHandler(newTypes); // Set state in the Form
+    this.props.itemHandler(newTypes); // Set state in the Form, keep prev state here
+    if (prevState) {
+      this.setState(prevState);
+    }
   }
 
   renderItemOptions() {
