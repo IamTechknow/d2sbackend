@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
-const INV = 1, STASH = 2, BELT = 3, CUBE = 4, DEFAULT_ROWS = 4, DEFAULT_COLS = 10;
+const INV = 1, TOP = 1, STASH = 2, BELT = 3, CUBE = 4, DEFAULT_ROWS = 4, DEFAULT_COLS = 10;
+const IMG_PREFIX = '';
 
 // Displays any items onto the grid. Grid size depends on the storage type
 export default class StorageGrid extends Component {
@@ -37,9 +38,25 @@ export default class StorageGrid extends Component {
     };
   }
 
+  isItemTopAt(r, c) {
+    const { width, height, rowClass } = StorageGrid.getData(this.props.type);
+    const temp = this.props.itemMap.get(r * width + c);
+    return temp && temp.status === TOP;
+  }
+
+  getImageForItem(r, c) {
+    const { width, height, rowClass } = StorageGrid.getData(this.props.type);
+    const { items, itemMap } = this.props;
+    const item = items[itemMap.get(r * width + c).idx];
+    const imagePrefix = item.rarity === 'Unique' ? 'u' : item.rarity === 'Set' ? 's' : '';
+
+    return <img src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`} />;
+  }
+
   // Render the grid, will use conditional rendering for items based on size and coordinates
   render() {
     const { width, height, rowClass } = StorageGrid.getData(this.props.type);
+    const { items, itemMap } = this.props;
     const rowClasses = `storageRow ${rowClass}`;
 
     return (
@@ -51,7 +68,7 @@ export default class StorageGrid extends Component {
                 [...Array(width)].map((undef, c) => (
                   <div key={`col-${c}`} className="storageCell" onClick={this.onClickAt(r, c)}>
                     {
-                      
+                      this.isItemTopAt(r, c) && this.getImageForItem(r, c)
                     }
                   </div>
                 ))

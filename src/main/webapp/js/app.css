@@ -122,6 +122,10 @@
   height: 28px;
 }
 
+img {
+  position: relative;
+}
+
 .pickedUpItem {
   width: 56px;
   height: 109px;

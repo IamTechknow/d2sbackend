@@ -24,6 +24,10 @@ export default class Storage extends Component {
     return this.props.items[type];
   }
 
+  getMapFrom(type) {
+    return this.props.itemMaps[type];
+  }
+
   onStorageChange(event) {
     this.setState({ currType: Number.parseInt(event.target.value, 10) });
   }
@@ -48,7 +52,10 @@ export default class Storage extends Component {
           )
         }
 
-        <StorageGrid type={currType} items={this.getItemsFrom(currType)} clickHandler={this.props.clickHandler} />
+        <StorageGrid type={currType}
+          items={this.getItemsFrom(currType)}
+          itemMap={this.getMapFrom(currType)}
+          clickHandler={this.props.clickHandler} />
       </div>
     );
   }

@@ -102,7 +102,7 @@ export default class Dashboard extends Component {
       }
     }
 
-    this.props.itemHandler(newSubType, newTypes['currItemId']);
+    this.props.itemHandler(newSubType, newTypes['currItemId'], newRarity);
     this.setState(newTypes);
   }
 
