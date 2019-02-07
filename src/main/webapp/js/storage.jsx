@@ -57,6 +57,7 @@ export default class Storage extends Component {
           items={this.getItemsFrom(currType)}
           itemMap={this.getMapFrom(currType)}
           clickHandler={this.props.clickHandler}
+          delHandler={this.props.delHandler}
         />
       </div>
     );

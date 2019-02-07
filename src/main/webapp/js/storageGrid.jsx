@@ -28,10 +28,17 @@ export default class StorageGrid extends Component {
     return { width, height, rowClass };
   }
 
-  // Higher-order function to forego binding, send clicked coordinates to items component
+  // Higher-order functions to forego binding, send clicked coordinates to items component
   onClickAt(r, c) {
     return () => {
       this.props.clickHandler(this.props.type, r, c);
+    };
+  }
+
+  onRightClickAt(r, c) {
+    return (event) => {
+      event.preventDefault();
+      this.props.delHandler(this.props.type, r, c);
     };
   }
 
@@ -47,7 +54,8 @@ export default class StorageGrid extends Component {
     const item = items[itemMap.get(r * width + c).idx];
     const imagePrefix = item.rarity === 'Unique' ? 'u' : item.rarity === 'Set' ? 's' : '';
 
-    return <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`} />;
+    return <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`}
+      onContextMenu={this.onRightClickAt(r, c)} />;
   }
 
   // Render the grid, will use conditional rendering for items based on size and coordinates
@@ -80,6 +88,7 @@ export default class StorageGrid extends Component {
 
 StorageGrid.propTypes = {
   clickHandler: PropTypes.func.isRequired,
+  delHandler: PropTypes.func.isRequired,
   type: PropTypes.number.isRequired,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

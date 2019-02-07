@@ -64,6 +64,15 @@ export default class Form extends Component {
     }
   }
 
+  static deleteInItemMap(type, itemMap, r, c, height, width) {
+    const gridWidth = StorageGrid.getData(type).width;
+    for (let r1 = r; r1 < r + height; r1 += 1) {
+      for (let c1 = c; c1 < c + width; c1 += 1) {
+        itemMap.delete(r1 * gridWidth + c1);
+      }
+    }
+  }
+
   constructor(props) {
     super(props);
 
@@ -113,6 +122,7 @@ export default class Form extends Component {
     this.onFormChange = this.onFormChange.bind(this);
     this.onStatClick = this.onStatClick.bind(this);
     this.onNewItem = this.onNewItem.bind(this);
+    this.onDeleteItem = this.onDeleteItem.bind(this);
     this.onItemSelected = this.onItemSelected.bind(this);
   }
 
@@ -172,7 +182,24 @@ export default class Form extends Component {
     this.setState(newItemState);
   }
 
-  // New item, update storage and map for the type
+  // Delete item, splice item object and update map.
+  // Here, deleting means to nullify the array element, to avoid updating mapped indices
+  onDeleteItem(type, r, c) {
+    const { items, itemMaps } = this.state;
+    const gridWidth = StorageGrid.getData(type).width;
+    const itemIdx = itemMaps[type].get(r * gridWidth + c);
+
+    const old = items[type][itemIdx.idx];
+    items[type][itemIdx.idx] = undefined;
+
+    Form.deleteInItemMap(type, itemMaps[type], old.r, old.c, old.h, old.w);
+
+    this.setState({
+      items, itemMaps,
+    });
+  }
+
+  // New item, update array and map for the type
   onNewItem(item, type) {
     const { items, itemMaps } = this.state;
 
@@ -449,6 +476,7 @@ export default class Form extends Component {
                 && (
                 <Items
                   onNewItem={this.onNewItem}
+                  onDeleteItem={this.onDeleteItem}
                   onItemSelected={this.onItemSelected}
                   itemId={currItemId}
                   itemType={currType}

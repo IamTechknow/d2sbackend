@@ -47,7 +47,7 @@ export default class Items extends Component {
     }
 
     const { h, w } = ItemUtils.getSizeFor(itemSubtype, itemId);
-    if (this.canItemFitHere(itemMaps[type], type, r, c, h, w)) {
+    if (Items.canItemFitHere(itemMaps[type], type, r, c, h, w)) {
       this.props.onNewItem({
         itemType, itemSubtype, itemId, rarity, r, c, h, w,
       }, type);
@@ -59,7 +59,7 @@ export default class Items extends Component {
 
   render() {
     const {
-      items, itemMaps, onItemSelected, itemId, itemType, itemSubtype, rarity, quality,
+      items, itemMaps, onItemSelected, onDeleteItem, itemId, itemType, itemSubtype, rarity, quality,
     } = this.props;
 
     return (
@@ -71,6 +71,7 @@ export default class Items extends Component {
             items={items}
             itemMaps={itemMaps}
             clickHandler={this.onCellClick}
+            delHandler={onDeleteItem}
           />
         </div>
 
@@ -95,5 +96,4 @@ Items.propTypes = {
   itemSubtype: PropTypes.string.isRequired,
   rarity: PropTypes.string.isRequired,
   quality: PropTypes.string.isRequired,
-  type: PropTypes.number.isRequired,
 };

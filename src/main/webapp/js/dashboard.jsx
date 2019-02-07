@@ -151,7 +151,7 @@ export default class Dashboard extends Component {
                 <span className="dashboardItem">Type</span>
                 <select id="currType" className="form-control" onChange={this.onSelectChange}>
                   {
-                    this.renderOptionsFor('primary')
+                    Dashboard.renderOptionsFor('primary')
                   }
                 </select>
                 <select
@@ -161,7 +161,7 @@ export default class Dashboard extends Component {
                   value={currSubType}
                 >
                   {
-                    this.renderOptionsFor(currType)
+                    Dashboard.renderOptionsFor(currType)
                   }
                 </select>
               </li>
@@ -174,7 +174,7 @@ export default class Dashboard extends Component {
                   disabled={Dashboard.isRarityDisabled(currType)}
                 >
                   {
-                    this.renderOptionsFor('quality')
+                    Dashboard.renderOptionsFor('quality')
                   }
                 </select>
               </li>
@@ -188,7 +188,7 @@ export default class Dashboard extends Component {
                   disabled={Dashboard.isRarityDisabled(currType)}
                 >
                   {
-                    this.renderOptionsFor('rarity')
+                    Dashboard.renderOptionsFor('rarity')
                   }
                 </select>
               </li>
