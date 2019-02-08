@@ -40,7 +40,13 @@
 
 .entryGrid {
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.itemSeparator {
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  margin-bottom: 32px;
 }
 
 .attrGrid, .questGrid {
@@ -57,11 +63,113 @@
   grid-auto-flow: column;
 }
 
+.dashboardGrid {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.dashboardRow {
+  grid-template-columns: repeat(10, 1fr);
+}
+
 /* Apply to all common form elements, only grid col number varies */
 .entry, .attr_ui, .quest, .skill_ui {
   grid-column: span 2;
 }
 
-#classUi {
+.dashboardItem {
+  grid-column: span 3;
+}
+
+.dashboardOpt {
+  grid-column: span 7;
+}
+
+#currType {
+  grid-column: span 3;
+}
+
+#currSubType {
   grid-column: span 4;
+}
+
+#classUi, #dashboard {
+  grid-column: span 4;
+}
+
+/* Storage grid classes */
+.storageHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.storageRow {
+  display: flex;
+  margin: 0px auto;
+}
+
+.storageInv {
+  width: 280px;
+}
+
+.storageStash {
+  width: 168px;
+}
+
+.storageBelt {
+  width: 112px;
+}
+
+.storageCube {
+  width: 84px;
+}
+
+.storageCell {
+  width: 28px;
+  height: 28px;
+}
+
+img {
+  position: relative;
+}
+
+.pickedUpItem {
+  width: 56px;
+  height: 109px;
+  margin: 0px auto;
+}
+
+/* Positioning classes based on item size */
+.pickedUpImg {
+  position: relative;
+}
+
+.pickedUp1x1 {
+  top: 33%;
+  left: 25%;
+}
+
+.pickedUp1x2 {
+  top: 33%;
+}
+
+.pickedUp2x1 {
+  top: 25%;
+  left: 25%;
+}
+
+.pickedUp2x2 {
+  top: 25%;
+}
+
+.pickedUp3x1 {
+  top: 12%;
+  left: 25%;
+}
+
+.pickedUp3x2 {
+  top: 12%;
+}
+
+.pickedUp4x1 {
+  left: 25%;
 }

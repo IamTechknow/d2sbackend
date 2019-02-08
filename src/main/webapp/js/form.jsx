@@ -15,8 +15,11 @@ import Quests from './quests';
 import Skills from './skills';
 import Items from './items';
 import * as ClassData from './class-data';
+import ItemData from './item-data';
+import StorageGrid from './storageGrid';
 
 const MAIN = 0, SKILLS = 1, ITEMS = 2, VALID = 0, MAX_LVL = 99, MAX_SKILL_LVL = 20;
+const TYPES = 5, TOP = 1, OCCUIPED = 2;
 
 // Implementation of the Form HTML
 export default class Form extends Component {
@@ -42,6 +45,34 @@ export default class Form extends Component {
     }).then(response => response.json());
   }
 
+  // Fill the map for the given item, indicating the top left corner
+  // That location contains the array index for the item
+  static updateItemMap(type, itemMap, itemIdx, r, c, height, width) {
+    const gridWidth = StorageGrid.getData(type).width;
+    for (let r1 = r; r1 < r + height; r1 += 1) {
+      for (let c1 = c; c1 < c + width; c1 += 1) {
+        const mapObj = {};
+        if (r1 === r && c1 === c) {
+          mapObj.status = TOP;
+          mapObj.idx = itemIdx;
+        } else {
+          mapObj.status = OCCUIPED;
+        }
+
+        itemMap.set(r1 * gridWidth + c1, mapObj);
+      }
+    }
+  }
+
+  static deleteInItemMap(type, itemMap, r, c, height, width) {
+    const gridWidth = StorageGrid.getData(type).width;
+    for (let r1 = r; r1 < r + height; r1 += 1) {
+      for (let c1 = c; c1 < c + width; c1 += 1) {
+        itemMap.delete(r1 * gridWidth + c1);
+      }
+    }
+  }
+
   constructor(props) {
     super(props);
 
@@ -50,6 +81,17 @@ export default class Form extends Component {
       'scroll', 'nAncients', 'nmAncients', 'hAncients'].forEach((key) => {
       rewards[key] = false;
     });
+
+    // Arrays that contain all items in a storage grid
+    const items = new Array(TYPES);
+
+    // Sets that indicate occupied cells of a storage grid
+    const itemMaps = new Array(TYPES);
+
+    for (let i = 0; i < items.length; i += 1) {
+      items[i] = [];
+      itemMaps[i] = new Map();
+    }
 
     this.state = {
       currTab: MAIN,
@@ -65,6 +107,12 @@ export default class Form extends Component {
       allocated: new Array(30).fill(0),
       attr: [0, 0, 0, 0],
       rewards,
+      items,
+      itemMaps,
+      currType: ItemData.primary[0],
+      currSubType: ItemData[ItemData.primary[0]][0],
+      currQuality: ItemData.quality[0],
+      currRarity: ItemData.rarity[0],
     };
 
     this.pattern = new RegExp(/^[a-zA-Z][a-zA-Z_-]*$/);
@@ -73,6 +121,9 @@ export default class Form extends Component {
     this.onTabChange = this.onTabChange.bind(this);
     this.onFormChange = this.onFormChange.bind(this);
     this.onStatClick = this.onStatClick.bind(this);
+    this.onNewItem = this.onNewItem.bind(this);
+    this.onDeleteItem = this.onDeleteItem.bind(this);
+    this.onItemSelected = this.onItemSelected.bind(this);
   }
 
   // On Tab change, update data that can be passed onto other tabs, such as skill points
@@ -125,6 +176,40 @@ export default class Form extends Component {
     } else {
       this.setState({ [name]: typeof value !== 'number' && name !== 'name' ? Number.parseInt(value, 10) : value });
     }
+  }
+
+  onItemSelected(newItemState) {
+    this.setState(newItemState);
+  }
+
+  // Delete item, splice item object and update map.
+  // Here, deleting means to nullify the array element, to avoid updating mapped indices
+  onDeleteItem(type, r, c) {
+    const { items, itemMaps } = this.state;
+    const gridWidth = StorageGrid.getData(type).width;
+    const itemIdx = itemMaps[type].get(r * gridWidth + c);
+
+    const old = items[type][itemIdx.idx];
+    items[type][itemIdx.idx] = undefined;
+
+    Form.deleteInItemMap(type, itemMaps[type], old.r, old.c, old.h, old.w);
+
+    this.setState({
+      items, itemMaps,
+    });
+  }
+
+  // New item, update array and map for the type
+  onNewItem(item, type) {
+    const { items, itemMaps } = this.state;
+
+    items[type].push(item);
+    Form.updateItemMap(type, itemMaps[type], items[type].length - 1,
+      item.r, item.c, item.h, item.w);
+
+    this.setState({
+      items, itemMaps,
+    });
   }
 
   onSubmit(event) {
@@ -283,6 +368,7 @@ export default class Form extends Component {
       invalidForClassic, invalidName, invalidAct, invalidAncients, invalidSkills,
       invalidStats, classNum, skillPoints, attr, level, name,
       difficulty, startingAct, allocated, valid, link, currTab, rewards,
+      items, itemMaps, currType, currSubType, currQuality, currRarity, currItemId,
     } = this.state;
 
     if (valid) {
@@ -323,81 +409,88 @@ export default class Form extends Component {
           </Tabs>
         </Paper>
 
-        <Paper style={{ marginBottom: '16px', padding: '16px' }}>
-          <form onSubmit={this.onSubmit} noValidate>
-            {currTab === MAIN
-                && (
-                <React.Fragment>
-                  <Warnings
-                    invalidForClassic={invalidForClassic}
-                    invalidName={invalidName}
-                    invalidAct={invalidAct}
-                    invalidAncients={invalidAncients}
-                    invalidSkills={invalidSkills}
-                    invalidStats={invalidStats}
-                  />
-                  <h3>Save file options</h3>
-                  <MainData
-                    classNum={classNum}
-                    name={name}
-                    level={level}
-                    currAttr={attr}
-                    stats={this.calcStats()}
-                    handler={this.onFormChange}
-                    btnHandler={this.onStatClick}
-                  />
+        <form onSubmit={this.onSubmit} noValidate>
+          {currTab === MAIN
+            && (
+            <Paper style={{ marginBottom: '16px', padding: '16px' }}>
+              <Warnings
+                invalidForClassic={invalidForClassic}
+                invalidName={invalidName}
+                invalidAct={invalidAct}
+                invalidAncients={invalidAncients}
+                invalidSkills={invalidSkills}
+                invalidStats={invalidStats}
+              />
+              <h3>Save file options</h3>
+              <MainData
+                classNum={classNum}
+                name={name}
+                level={level}
+                currAttr={attr}
+                stats={this.calcStats()}
+                handler={this.onFormChange}
+                btnHandler={this.onStatClick}
+              />
 
-                  <h4>Options</h4>
-                  <Options
-                    handler={this.onFormChange}
-                  />
+              <h4>Options</h4>
+              <Options
+                handler={this.onFormChange}
+              />
 
-                  <h4>Difficulty</h4>
-                  <Difficulties
-                    currDiff={difficulty}
-                    handler={this.onFormChange}
-                  />
+              <h4>Difficulty</h4>
+              <Difficulties
+                currDiff={difficulty}
+                handler={this.onFormChange}
+              />
 
-                  <h4>Starting Act</h4>
-                  <Acts
-                    currAct={startingAct}
-                    handler={this.onFormChange}
-                  />
+              <h4>Starting Act</h4>
+              <Acts
+                currAct={startingAct}
+                handler={this.onFormChange}
+              />
 
-                  <h4>Quest Rewards (most rewards need to be redeemed manually)</h4>
-                  <button type="button" id="checkAll" onClick={this.checkQuestBoxes}>Check All</button>
-                  <Quests
-                    data={rewards}
-                    handler={this.onFormChange}
-                  />
-                </React.Fragment>
-                )
-              }
+              <h4>Quest Rewards (most rewards need to be redeemed manually)</h4>
+              <button type="button" id="checkAll" onClick={this.checkQuestBoxes}>Check All</button>
+              <Quests
+                data={rewards}
+                handler={this.onFormChange}
+              />
+              <button id="submitButton" type="submit" className="btn btn-primary">Submit</button>
+            </Paper>
+            )
+          }
 
-            {
-                currTab === SKILLS
-                && (
-                <Skills
-                  classNum={classNum}
-                  allocated={allocated}
-                  skillPoints={skillPoints}
-                  handler={this.onFormChange}
-                />
-                )
-              }
-            {
-                currTab === ITEMS
-                && (
-                <Items
-                  data={this.state}
-                  handler={this.onFormChange}
-                />
-                )
-              }
-
-            <button id="submitButton" type="submit" className="btn btn-primary">Submit</button>
-          </form>
-        </Paper>
+          {
+            currTab === SKILLS
+            && (
+            <Paper style={{ marginBottom: '16px', padding: '16px' }}>
+              <Skills
+                classNum={classNum}
+                allocated={allocated}
+                skillPoints={skillPoints}
+                handler={this.onFormChange}
+              />
+            </Paper>
+            )
+          }
+          {
+            currTab === ITEMS
+            && (
+            <Items
+              onNewItem={this.onNewItem}
+              onDeleteItem={this.onDeleteItem}
+              onItemSelected={this.onItemSelected}
+              itemId={currItemId}
+              itemType={currType}
+              itemSubtype={currSubType}
+              rarity={currRarity}
+              quality={currQuality}
+              items={items}
+              itemMaps={itemMaps}
+            />
+            )
+          }
+        </form>
 
         <Paper style={{ padding: '16px' }}>
           <h3>Disclaimer</h3>

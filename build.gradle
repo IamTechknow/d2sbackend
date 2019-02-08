@@ -22,8 +22,8 @@ bootJar {
 }
 
 node {
-    version = '11.3.0'
-    npmVersion = '6.4.1'
+    version = '11.9.0'
+    npmVersion = '6.5.0'
 }
 
 repositories {

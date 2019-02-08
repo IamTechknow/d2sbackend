@@ -10,6 +10,8 @@ module.exports = {
   "rules": {
     "one-var": "off",
     "one-var-declaration-per-line": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "no-fallthrough": "off",
+    "react/no-array-index-key": "off"
   }
 };
