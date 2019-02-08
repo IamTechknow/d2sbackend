@@ -29,9 +29,10 @@ export default class StorageGrid extends Component {
   }
 
   // Higher-order functions to forego binding, send clicked coordinates to items component
-  onClickAt(r, c) {
-    return () => {
-      this.props.clickHandler(this.props.type, r, c);
+  onClickAt(r, c, item) {
+    return (event) => {
+      event.stopPropagation();
+      this.props.clickHandler(this.props.type, r, c, item);
     };
   }
 
@@ -55,6 +56,7 @@ export default class StorageGrid extends Component {
     const imagePrefix = item.rarity === 'Unique' ? 'u' : item.rarity === 'Set' ? 's' : '';
 
     return <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`}
+      onClick={this.onClickAt(r, c, item)}
       onContextMenu={this.onRightClickAt(r, c)} />;
   }
 

@@ -7,6 +7,8 @@ import StorageGrid from './storageGrid';
 import Dashboard from './dashboard';
 import ItemUtils from './itemUtils';
 
+const BELT = 3;
+
 export default class Items extends Component {
   constructor(props) {
     super(props);
@@ -43,17 +45,32 @@ export default class Items extends Component {
   // Try to put an item in the specified storage
   // NOTE: When clicking on an item, the parent div will actually be clicked.
   // ATM that's not too problematic.
-  onCellClick(type, r, c) {
+  onCellClick(type, r, c, item) {
     const {
-      itemType, itemSubtype, itemId, rarity, itemMaps,
+      itemType, itemSubtype, itemId, rarity, quality, itemMaps, onItemSelected, onNewItem
     } = this.props;
+
     if (!itemId) {
       return;
     }
 
+    // If item was selected, call onItemSelected prop
+    // Don't switch unless quality is All to prevent putting wrong pictures
+    if (item) {
+      if (quality === 'All') {
+        onItemSelected({
+          currRarity: item.rarity,
+          currItemId: item.itemId,
+          currType: item.itemType,
+          currSubType: item.itemSubtype,
+        });
+      }
+      return;
+    }
+
     const { h, w } = ItemUtils.getSizeFor(itemSubtype, itemId);
-    if (Items.canItemFitHere(itemMaps[type], type, r, c, h, w)) {
-      this.props.onNewItem({
+    if (Items.canItemFitHere(itemMaps[type], type, itemSubtype, r, c, h, w)) {
+      onNewItem({
         itemType, itemSubtype, itemId, rarity, r, c, h, w,
       }, type);
     } else {

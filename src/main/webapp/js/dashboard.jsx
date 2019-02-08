@@ -149,7 +149,12 @@ export default class Dashboard extends Component {
             <ul className="list-group">
               <li className="list-group-item d2Grid dashboardRow">
                 <span className="dashboardItem">Type</span>
-                <select id="currType" className="form-control" onChange={this.onSelectChange}>
+                <select
+                  id="currType"
+                  className="form-control"
+                  onChange={this.onSelectChange}
+                  value={currType}
+                >
                   {
                     Dashboard.renderOptionsFor('primary')
                   }
@@ -185,6 +190,7 @@ export default class Dashboard extends Component {
                   ref={this.rarityRef}
                   className="form-control dashboardOpt"
                   onChange={this.onSelectChange}
+                  value={currRarity}
                   disabled={Dashboard.isRarityDisabled(currType)}
                 >
                   {
