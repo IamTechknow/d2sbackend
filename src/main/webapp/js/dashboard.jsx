@@ -129,7 +129,7 @@ export default class Dashboard extends Component {
     const {
       currType, currSubType, currRarity, currItemId,
     } = this.props;
-    const imagePrefix = currRarity === 'Unique' ? 'u' : currRarity === 'Set' ? 's' : '';
+    const imagePrefix = ItemUtils.getImgPrefix(currType, currRarity);
     const imgClasses = ItemUtils.getImgClasses(currSubType, currItemId);
 
     return (

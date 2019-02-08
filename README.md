@@ -19,8 +19,8 @@ User Stories:
   * [X] Gold
   * [X] Quests
   * [ ] Items
-    * [ ] As a user, I can view equipped items, inventory, belt, stash, and cube
-    * [ ] As a user, I can create certain items and delete them
+    * [X] As a user, I can view equipped items, inventory, belt, stash, and cube
+    * [X] As a user, I can create certain items and delete them
     * [ ] As a user, I can add magic properties to magic or rare items
     * [ ] As a user, I can socket items, add socketables, and detect rune words
     * [ ] As a user, I can view the properties of an item

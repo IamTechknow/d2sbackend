@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import ItemUtils from './itemUtils';
+
 const INV = 1, TOP = 1, STASH = 2, BELT = 3, CUBE = 4, DEFAULT_ROWS = 4, DEFAULT_COLS = 10;
 const IMG_PREFIX = '';
 
@@ -53,7 +55,7 @@ export default class StorageGrid extends Component {
     const { items, itemMap, type } = this.props;
     const { width } = StorageGrid.getData(type);
     const item = items[itemMap.get(r * width + c).idx];
-    const imagePrefix = item.rarity === 'Unique' ? 'u' : item.rarity === 'Set' ? 's' : '';
+    const imagePrefix = ItemUtils.getImgPrefix(item.itemType, item.rarity);
 
     return <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`}
       onClick={this.onClickAt(r, c, item)}

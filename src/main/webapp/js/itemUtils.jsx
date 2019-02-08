@@ -89,4 +89,12 @@ export default class ItemUtils {
 
     return `pickedUpImg pickedUp${h}x${w}`;
   }
+
+  static getImgPrefix(type, rarity) {
+    if (type === 'Miscellaneous' || type === 'Jewelry' ) {
+      return '';
+    }
+
+    return rarity === 'Unique' ? 'u' : rarity === 'Set' ? 's' : '';
+  }
 }
