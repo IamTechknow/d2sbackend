@@ -409,89 +409,88 @@ export default class Form extends Component {
           </Tabs>
         </Paper>
 
-        <Paper style={{ marginBottom: '16px', padding: '16px' }}>
-          <form onSubmit={this.onSubmit} noValidate>
-            {currTab === MAIN
-                && (
-                <React.Fragment>
-                  <Warnings
-                    invalidForClassic={invalidForClassic}
-                    invalidName={invalidName}
-                    invalidAct={invalidAct}
-                    invalidAncients={invalidAncients}
-                    invalidSkills={invalidSkills}
-                    invalidStats={invalidStats}
-                  />
-                  <h3>Save file options</h3>
-                  <MainData
-                    classNum={classNum}
-                    name={name}
-                    level={level}
-                    currAttr={attr}
-                    stats={this.calcStats()}
-                    handler={this.onFormChange}
-                    btnHandler={this.onStatClick}
-                  />
+        <form onSubmit={this.onSubmit} noValidate>
+          {currTab === MAIN
+            && (
+            <Paper style={{ marginBottom: '16px', padding: '16px' }}>
+              <Warnings
+                invalidForClassic={invalidForClassic}
+                invalidName={invalidName}
+                invalidAct={invalidAct}
+                invalidAncients={invalidAncients}
+                invalidSkills={invalidSkills}
+                invalidStats={invalidStats}
+              />
+              <h3>Save file options</h3>
+              <MainData
+                classNum={classNum}
+                name={name}
+                level={level}
+                currAttr={attr}
+                stats={this.calcStats()}
+                handler={this.onFormChange}
+                btnHandler={this.onStatClick}
+              />
 
-                  <h4>Options</h4>
-                  <Options
-                    handler={this.onFormChange}
-                  />
+              <h4>Options</h4>
+              <Options
+                handler={this.onFormChange}
+              />
 
-                  <h4>Difficulty</h4>
-                  <Difficulties
-                    currDiff={difficulty}
-                    handler={this.onFormChange}
-                  />
+              <h4>Difficulty</h4>
+              <Difficulties
+                currDiff={difficulty}
+                handler={this.onFormChange}
+              />
 
-                  <h4>Starting Act</h4>
-                  <Acts
-                    currAct={startingAct}
-                    handler={this.onFormChange}
-                  />
+              <h4>Starting Act</h4>
+              <Acts
+                currAct={startingAct}
+                handler={this.onFormChange}
+              />
 
-                  <h4>Quest Rewards (most rewards need to be redeemed manually)</h4>
-                  <button type="button" id="checkAll" onClick={this.checkQuestBoxes}>Check All</button>
-                  <Quests
-                    data={rewards}
-                    handler={this.onFormChange}
-                  />
-                </React.Fragment>
-                )
-              }
+              <h4>Quest Rewards (most rewards need to be redeemed manually)</h4>
+              <button type="button" id="checkAll" onClick={this.checkQuestBoxes}>Check All</button>
+              <Quests
+                data={rewards}
+                handler={this.onFormChange}
+              />
+              <button id="submitButton" type="submit" className="btn btn-primary">Submit</button>
+            </Paper>
+            )
+          }
 
-            {
-                currTab === SKILLS
-                && (
-                <Skills
-                  classNum={classNum}
-                  allocated={allocated}
-                  skillPoints={skillPoints}
-                  handler={this.onFormChange}
-                />
-                )
-              }
-            {
-                currTab === ITEMS
-                && (
-                <Items
-                  onNewItem={this.onNewItem}
-                  onDeleteItem={this.onDeleteItem}
-                  onItemSelected={this.onItemSelected}
-                  itemId={currItemId}
-                  itemType={currType}
-                  itemSubtype={currSubType}
-                  rarity={currRarity}
-                  quality={currQuality}
-                  items={items}
-                  itemMaps={itemMaps}
-                />
-                )
-              }
-
-            <button id="submitButton" type="submit" className="btn btn-primary">Submit</button>
-          </form>
-        </Paper>
+          {
+            currTab === SKILLS
+            && (
+            <Paper style={{ marginBottom: '16px', padding: '16px' }}>
+              <Skills
+                classNum={classNum}
+                allocated={allocated}
+                skillPoints={skillPoints}
+                handler={this.onFormChange}
+              />
+            </Paper>
+            )
+          }
+          {
+            currTab === ITEMS
+            && (
+            <Items
+              onNewItem={this.onNewItem}
+              onDeleteItem={this.onDeleteItem}
+              onItemSelected={this.onItemSelected}
+              itemId={currItemId}
+              itemType={currType}
+              itemSubtype={currSubType}
+              rarity={currRarity}
+              quality={currQuality}
+              items={items}
+              itemMaps={itemMaps}
+            />
+            )
+          }
+        </form>
 
         <Paper style={{ padding: '16px' }}>
           <h3>Disclaimer</h3>

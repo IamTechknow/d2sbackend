@@ -47,7 +47,7 @@ export default class Items extends Component {
   // ATM that's not too problematic.
   onCellClick(type, r, c, item) {
     const {
-      itemType, itemSubtype, itemId, rarity, quality, itemMaps, onItemSelected, onNewItem
+      itemType, itemSubtype, itemId, rarity, quality, itemMaps, onItemSelected, onNewItem,
     } = this.props;
 
     if (!itemId) {
@@ -86,7 +86,7 @@ export default class Items extends Component {
 
     return (
       <div>
-        <div className="d2Grid entryGrid">
+        <div className="d2Grid itemSeparator">
           <Bonuses />
           <Storage
             currItemId={itemId}

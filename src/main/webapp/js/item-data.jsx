@@ -348,8 +348,8 @@ module.exports = {
     { name: 'Full Rejuvenation Potion', id: 'rvl' },
   ],
   Scrolls: [
-    { name: 'Identity Scroll' , id: 'isc' },
-    { name: 'Town Portal Scroll' , id: 'tsc' },
+    { name: 'Identity Scroll', id: 'isc' },
+    { name: 'Town Portal Scroll', id: 'tsc' },
   ],
   Tomes: [
     { name: 'Identify Book', id: 'ibk' },

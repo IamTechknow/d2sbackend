@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
 import StorageGrid from './storageGrid';
 import Equipment from './equipment';
 
@@ -21,11 +23,15 @@ export default class Storage extends Component {
   }
 
   getItemsFrom(type) {
-    return this.props.items[type];
+    const { items } = this.props;
+
+    return items[type];
   }
 
   getMapFrom(type) {
-    return this.props.itemMaps[type];
+    const { itemMaps } = this.props;
+
+    return itemMaps[type];
   }
 
   onStorageChange(event) {
@@ -63,3 +69,9 @@ export default class Storage extends Component {
     );
   }
 }
+
+Storage.propTypes = {
+  clickHandler: PropTypes.func.isRequired,
+  delHandler: PropTypes.func.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+};

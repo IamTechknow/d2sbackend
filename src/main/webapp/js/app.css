@@ -43,6 +43,12 @@
   grid-template-rows: repeat(2, 1fr);
 }
 
+.itemSeparator {
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  margin-bottom: 32px;
+}
+
 .attrGrid, .questGrid {
   grid-template-columns: repeat(8, 1fr);
 }

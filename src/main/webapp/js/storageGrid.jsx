@@ -32,22 +32,28 @@ export default class StorageGrid extends Component {
 
   // Higher-order functions to forego binding, send clicked coordinates to items component
   onClickAt(r, c, item) {
+    const { clickHandler, type } = this.props;
+
     return (event) => {
       event.stopPropagation();
-      this.props.clickHandler(this.props.type, r, c, item);
+      clickHandler(type, r, c, item);
     };
   }
 
   onRightClickAt(r, c) {
+    const { delHandler, type } = this.props;
+
     return (event) => {
       event.preventDefault();
-      this.props.delHandler(this.props.type, r, c);
+      delHandler(type, r, c);
     };
   }
 
   isItemTopAt(r, c) {
-    const { width } = StorageGrid.getData(this.props.type);
-    const temp = this.props.itemMap.get(r * width + c);
+    const { itemMap, type } = this.props;
+
+    const { width } = StorageGrid.getData(type);
+    const temp = itemMap.get(r * width + c);
     return temp && temp.status === TOP;
   }
 
@@ -57,9 +63,14 @@ export default class StorageGrid extends Component {
     const item = items[itemMap.get(r * width + c).idx];
     const imagePrefix = ItemUtils.getImgPrefix(item.itemType, item.rarity);
 
-    return <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`}
-      onClick={this.onClickAt(r, c, item)}
-      onContextMenu={this.onRightClickAt(r, c)} />;
+    return (
+      <img
+        alt=""
+        src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`}
+        onClick={this.onClickAt(r, c, item)}
+        onContextMenu={this.onRightClickAt(r, c)}
+      />
+    );
   }
 
   // Render the grid, will use conditional rendering for items based on size and coordinates

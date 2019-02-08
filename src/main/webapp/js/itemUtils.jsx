@@ -91,7 +91,7 @@ export default class ItemUtils {
   }
 
   static getImgPrefix(type, rarity) {
-    if (type === 'Miscellaneous' || type === 'Jewelry' ) {
+    if (type === 'Miscellaneous' || type === 'Jewelry') {
       return '';
     }
 

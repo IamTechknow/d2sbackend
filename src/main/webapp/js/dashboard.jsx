@@ -70,7 +70,7 @@ export default class Dashboard extends Component {
     const { id, value } = event.target;
     const { prevType, prevSub } = this.state;
     const {
-      currType, currSubType, currQuality, currRarity,
+      currType, currSubType, currQuality,
     } = this.props;
 
     const newTypes = {
@@ -129,11 +129,15 @@ export default class Dashboard extends Component {
     const {
       currType, currSubType, currRarity, currItemId,
     } = this.props;
+    const {
+      randomAttr, ethernal, inferior,
+    } = this.state;
+
     const imagePrefix = ItemUtils.getImgPrefix(currType, currRarity);
     const imgClasses = ItemUtils.getImgClasses(currSubType, currItemId);
 
     return (
-      <Paper style={{ padding: '16px' }}>
+      <Paper style={{ marginBottom: '16px', padding: '16px' }}>
         <div className="d2Grid dashboardGrid">
           <div className="entry">
             <h3 className="storageHeader">Current item</h3>
@@ -226,7 +230,7 @@ export default class Dashboard extends Component {
                 <FormControlLabel
                   control={(
                     <Switch
-                      checked={this.state.randomAttr}
+                      checked={randomAttr}
                       onChange={this.handleChangeFor('randomAttr')}
                       color="primary"
                     />
@@ -236,7 +240,7 @@ export default class Dashboard extends Component {
                 <FormControlLabel
                   control={(
                     <Switch
-                      checked={this.state.ethernal}
+                      checked={ethernal}
                       onChange={this.handleChangeFor('ethernal')}
                       color="primary"
                     />
@@ -246,7 +250,7 @@ export default class Dashboard extends Component {
                 <FormControlLabel
                   control={(
                     <Switch
-                      checked={this.state.inferior}
+                      checked={inferior}
                       onChange={this.handleChangeFor('inferior')}
                       color="primary"
                     />
