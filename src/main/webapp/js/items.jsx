@@ -15,9 +15,14 @@ export default class Items extends Component {
   }
 
   // Determine all possible slots in the grid, and whether any are taken already
-  static canItemFitHere(itemMap, type, r, c, height, width) {
-    const gridWidth = StorageGrid.getData(type).width;
-    const gridHeight = StorageGrid.getData(type).height;
+  static canItemFitHere(itemMap, storageType, subType, r, c, height, width) {
+    const gridWidth = StorageGrid.getData(storageType).width;
+    const gridHeight = StorageGrid.getData(storageType).height;
+
+    // Only potions and scrolls for belts
+    if (storageType === BELT) {
+      return subType === 'Potions' || subType === 'Scrolls';
+    }
 
     for (let r1 = r; r1 < r + height; r1 += 1) {
       for (let c1 = c; c1 < c + width; c1 += 1) {
