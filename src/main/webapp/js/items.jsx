@@ -10,12 +10,6 @@ import ItemUtils from './itemUtils';
 const BELT = 3;
 
 export default class Items extends Component {
-  constructor(props) {
-    super(props);
-
-    this.onCellClick = this.onCellClick.bind(this);
-  }
-
   // Determine all possible slots in the grid, and whether any are taken already
   static canItemFitHere(itemMap, storageType, subType, r, c, height, width) {
     const gridWidth = StorageGrid.getData(storageType).width;
@@ -40,6 +34,12 @@ export default class Items extends Component {
     }
 
     return true;
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.onCellClick = this.onCellClick.bind(this);
   }
 
   // Try to put an item in the specified storage
@@ -73,10 +73,8 @@ export default class Items extends Component {
       onNewItem({
         itemType, itemSubtype, itemId, rarity, r, c, h, w,
       }, type);
-    } else {
-      // TODO: Use Snackbar or alert to indicate item may not be placed
-      console.log('Item can\'t fit here at', r, c);
     }
+    // TODO: Use Snackbar or alert to indicate item may not be placed
   }
 
   render() {
@@ -85,7 +83,7 @@ export default class Items extends Component {
     } = this.props;
 
     return (
-      <div>
+      <>
         <div className="d2Grid itemSeparator">
           <Bonuses />
           <Storage
@@ -105,7 +103,7 @@ export default class Items extends Component {
           currItemId={itemId}
           itemHandler={onItemSelected}
         />
-      </div>
+      </>
     );
   }
 }
@@ -113,9 +111,12 @@ export default class Items extends Component {
 Items.propTypes = {
   onNewItem: PropTypes.func.isRequired,
   onItemSelected: PropTypes.func.isRequired,
+  onDeleteItem: PropTypes.func.isRequired,
   itemId: PropTypes.string.isRequired,
   itemType: PropTypes.string.isRequired,
   itemSubtype: PropTypes.string.isRequired,
   rarity: PropTypes.string.isRequired,
   quality: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  itemMaps: PropTypes.arrayOf(PropTypes.instanceOf(Map)).isRequired,
 };

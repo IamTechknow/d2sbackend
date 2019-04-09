@@ -10,20 +10,6 @@ import ItemUtils from './itemUtils';
 const IMG_PREFIX = '';
 
 export default class Dashboard extends Component {
-  constructor(props) {
-    super(props);
-
-    this.handleChangeFor = this.handleChangeFor.bind(this);
-    this.onSelectChange = this.onSelectChange.bind(this);
-    this.rarityRef = React.createRef();
-
-    this.state = {
-      randomAttr: false,
-      ethernal: false,
-      inferior: false,
-    };
-  }
-
   static concatDataFor(type, rarity) {
     return ItemData.quality.slice(1)
       .reduce((accum, curr) => {
@@ -34,8 +20,11 @@ export default class Dashboard extends Component {
 
   static getDataArray(type, subType, quality, rarity, group) {
     // Use one array or concat all. Fail gracefully if data doesn't exist
-    return !Dashboard.isRarityDisabled(type) && quality === 'All'
-      ? Dashboard.concatDataFor(subType, rarity) : (ItemData[group] ? ItemData[group] : []);
+    if (!Dashboard.isRarityDisabled(type) && quality === 'All') {
+      return Dashboard.concatDataFor(subType, rarity);
+    }
+
+    return ItemData[group] ? ItemData[group] : [];
   }
 
   static getGroup(type, subType, quality, rarity) {
@@ -59,10 +48,17 @@ export default class Dashboard extends Component {
     ));
   }
 
-  // Higher-order function to forego binding
-  handleChangeFor(name) {
-    return (event) => {
-      this.setState({ [name]: event.target.checked });
+  constructor(props) {
+    super(props);
+
+    this.handleChangeFor = this.handleChangeFor.bind(this);
+    this.onSelectChange = this.onSelectChange.bind(this);
+    this.rarityRef = React.createRef();
+
+    this.state = {
+      randomAttr: false,
+      ethernal: false,
+      inferior: false,
     };
   }
 
@@ -70,7 +66,7 @@ export default class Dashboard extends Component {
     const { id, value } = event.target;
     const { prevType, prevSub } = this.state;
     const {
-      currType, currSubType, currQuality,
+      currType, currSubType, currQuality, itemHandler,
     } = this.props;
 
     const newTypes = {
@@ -107,10 +103,17 @@ export default class Dashboard extends Component {
       }
     }
 
-    this.props.itemHandler(newTypes); // Set state in the Form, keep prev state here
+    itemHandler(newTypes); // Set state in the Form, keep prev state here
     if (prevState) {
       this.setState(prevState);
     }
+  }
+
+  // Higher-order function to forego binding
+  handleChangeFor(name) {
+    return (event) => {
+      this.setState({ [name]: event.target.checked });
+    };
   }
 
   renderItemOptions() {
@@ -142,10 +145,7 @@ export default class Dashboard extends Component {
           <div className="entry">
             <h3 className="storageHeader">Current item</h3>
             <div className="pickedUpItem">
-              {
-                currItemId
-                  && <img className={imgClasses} alt="" src={`${IMG_PREFIX}${imagePrefix}${currItemId}.png`} />
-              }
+              <img className={imgClasses} alt="" src={`${IMG_PREFIX}${imagePrefix}${currItemId}.png`} />
             </div>
           </div>
           <div id="dashboard">

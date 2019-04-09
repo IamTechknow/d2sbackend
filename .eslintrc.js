@@ -12,6 +12,7 @@ module.exports = {
     "one-var-declaration-per-line": "off",
     "no-underscore-dangle": "off",
     "no-fallthrough": "off",
-    "react/no-array-index-key": "off"
+    "react/no-array-index-key": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off"
   }
 };

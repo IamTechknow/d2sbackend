@@ -95,6 +95,10 @@ export default class ItemUtils {
       return '';
     }
 
-    return rarity === 'Unique' ? 'u' : rarity === 'Set' ? 's' : '';
+    if (rarity === 'Unique') {
+      return 'u';
+    }
+
+    return rarity === 'Set' ? 's' : '';
   }
 }

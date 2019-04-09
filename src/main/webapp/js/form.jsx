@@ -113,6 +113,7 @@ export default class Form extends Component {
       currSubType: ItemData[ItemData.primary[0]][0],
       currQuality: ItemData.quality[0],
       currRarity: ItemData.rarity[0],
+      currItemId: 'lbl',
     };
 
     this.pattern = new RegExp(/^[a-zA-Z][a-zA-Z_-]*$/);

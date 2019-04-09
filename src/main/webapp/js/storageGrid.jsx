@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 import ItemUtils from './itemUtils';
 
-const INV = 1, TOP = 1, STASH = 2, BELT = 3, CUBE = 4, DEFAULT_ROWS = 4, DEFAULT_COLS = 10;
 const IMG_PREFIX = '';
+const TOP = 1, STASH = 2, BELT = 3, CUBE = 4, DEFAULT_ROWS = 4, DEFAULT_COLS = 10;
 
 // Displays any items onto the grid. Grid size depends on the storage type
 export default class StorageGrid extends Component {
@@ -49,14 +49,6 @@ export default class StorageGrid extends Component {
     };
   }
 
-  isItemTopAt(r, c) {
-    const { itemMap, type } = this.props;
-
-    const { width } = StorageGrid.getData(type);
-    const temp = itemMap.get(r * width + c);
-    return temp && temp.status === TOP;
-  }
-
   getImageForItem(r, c) {
     const { items, itemMap, type } = this.props;
     const { width } = StorageGrid.getData(type);
@@ -68,9 +60,18 @@ export default class StorageGrid extends Component {
         alt=""
         src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`}
         onClick={this.onClickAt(r, c, item)}
+        onKeyPress={this.onClickAt(r, c, item)}
         onContextMenu={this.onRightClickAt(r, c)}
       />
     );
+  }
+
+  isItemTopAt(r, c) {
+    const { itemMap, type } = this.props;
+
+    const { width } = StorageGrid.getData(type);
+    const temp = itemMap.get(r * width + c);
+    return temp && temp.status === TOP;
   }
 
   // Render the grid, will use conditional rendering for items based on size and coordinates
@@ -80,13 +81,20 @@ export default class StorageGrid extends Component {
     const rowClasses = `storageRow ${rowClass}`;
 
     return (
-      <div>
+      <>
         { type > 0
           && [...Array(height)].map((undef, r) => (
             <div key={`row-${r}`} className={rowClasses}>
               {
-                [...Array(width)].map((undef, c) => (
-                  <div key={`col-${c}`} className="storageCell" onClick={this.onClickAt(r, c)}>
+                [...Array(width)].map((unused, c) => (
+                  <div
+                    key={`col-${c}`}
+                    role="button"
+                    tabIndex="-1"
+                    className="storageCell"
+                    onClick={this.onClickAt(r, c)}
+                    onKeyPress={this.onClickAt(r, c)}
+                  >
                     {
                       this.isItemTopAt(r, c) && this.getImageForItem(r, c)
                     }
@@ -96,7 +104,7 @@ export default class StorageGrid extends Component {
             </div>
           ))
         }
-      </div>
+      </>
     );
   }
 }
@@ -106,4 +114,5 @@ StorageGrid.propTypes = {
   delHandler: PropTypes.func.isRequired,
   type: PropTypes.number.isRequired,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  itemMap: PropTypes.instanceOf(Map).isRequired,
 };
