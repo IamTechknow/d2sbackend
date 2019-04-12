@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "webpack --debug --output-pathinfo --watch",
-    "dev": "webpack-dev-server --mode development --hot --open",
+    "dev": "webpack-dev-server --mode development --hot --open-page src/main/resources/templates/index.html",
     "test": "jest",
     "build": "webpack --mode production",
     "lint": "eslint src/main/webapp/js/*.jsx src/test/__tests__/*.jsx"

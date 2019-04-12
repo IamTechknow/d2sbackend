@@ -4,6 +4,17 @@ const ROOT = path.resolve(__dirname, 'src/main/webapp');
 const SRC = path.resolve(ROOT, 'js');
 const DEST = path.resolve(__dirname, 'src/main/webapp/dist');
 
+const postcssObj = {
+  // Loader for webpack to process CSS with PostCSS
+  loader: 'postcss-loader',
+  options: {
+    plugins: [
+      require('autoprefixer'),
+      require('cssnano')
+    ]
+  }
+};
+
 module.exports = {
   entry: {
     app: `${SRC}/index.jsx`,
@@ -28,15 +39,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [ { loader: 'style-loader' }, { loader: 'css-loader' }, {
-          loader: 'postcss-loader',
-          options: {
-            plugins: [
-              require('autoprefixer'),
-              require('cssnano')
-            ]
-          }
-        }],
+        use: [ { loader: 'style-loader' }, { loader: 'css-loader' }, postcssObj],
         include: SRC
       },
       {
@@ -50,16 +53,7 @@ module.exports = {
             // Interprets `@import` and `url()` like `import/require()` and will resolve them
             loader: 'css-loader'
           },
-          {
-            // Loader for webpack to process CSS with PostCSS
-            loader: 'postcss-loader',
-            options: {
-              plugins: [
-                require('autoprefixer'),
-                require('cssnano')
-              ]
-            }
-          },
+          postcssObj,
           {
             // Loads a SASS/SCSS file and compiles it to CSS
             loader: 'sass-loader'
