@@ -43,20 +43,27 @@ export default class Items extends Component {
   }
 
   // Try to put an item in the specified storage
-  // NOTE: When clicking on an item, the parent div will actually be clicked.
+  // NOTE: When clicking on an item, the cell div that contains the item will be clicked.
   // ATM that's not too problematic.
-  onCellClick(type, r, c, item) {
+  onCellClick(storageType, r, c) {
     const {
-      itemType, itemSubtype, itemId, rarity, quality, itemMaps, onItemSelected, onNewItem,
+      items, itemType, itemSubtype, itemId, rarity, quality, itemMaps, onItemSelected, onNewItem,
     } = this.props;
 
     if (!itemId) {
       return;
     }
 
-    // If item was selected, call onItemSelected prop
-    // Don't switch unless quality is All to prevent putting wrong pictures
-    if (item) {
+    const { h, w } = ItemUtils.getSizeFor(itemSubtype, itemId);
+    if (Items.canItemFitHere(itemMaps[storageType], storageType, itemSubtype, r, c, h, w)) {
+      onNewItem({
+        itemType, itemSubtype, itemId, rarity, r, c, h, w,
+      }, storageType);
+    } else { // Item exists here, get the item and call onItemSelected prop
+      const { width } = StorageGrid.getData(storageType);
+      const itemArray = items[storageType];
+      const item = itemArray[itemMaps[storageType].get(r * width + c).idx];
+
       if (quality === 'All') {
         onItemSelected({
           currRarity: item.rarity,
@@ -65,16 +72,7 @@ export default class Items extends Component {
           currSubType: item.itemSubtype,
         });
       }
-      return;
     }
-
-    const { h, w } = ItemUtils.getSizeFor(itemSubtype, itemId);
-    if (Items.canItemFitHere(itemMaps[type], type, itemSubtype, r, c, h, w)) {
-      onNewItem({
-        itemType, itemSubtype, itemId, rarity, r, c, h, w,
-      }, type);
-    }
-    // TODO: Use Snackbar or alert to indicate item may not be placed
   }
 
   render() {

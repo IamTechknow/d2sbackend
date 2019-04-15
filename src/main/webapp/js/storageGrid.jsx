@@ -31,12 +31,11 @@ export default class StorageGrid extends Component {
   }
 
   // Higher-order functions to forego binding, send clicked coordinates to items component
-  onClickAt(r, c, item) {
+  onClickAt(r, c) {
     const { clickHandler, type } = this.props;
 
-    return (event) => {
-      event.stopPropagation();
-      clickHandler(type, r, c, item);
+    return () => {
+      clickHandler(type, r, c);
     };
   }
 
@@ -59,9 +58,6 @@ export default class StorageGrid extends Component {
       <img
         alt=""
         src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`}
-        onClick={this.onClickAt(r, c, item)}
-        onKeyPress={this.onClickAt(r, c, item)}
-        onContextMenu={this.onRightClickAt(r, c)}
       />
     );
   }
@@ -83,10 +79,10 @@ export default class StorageGrid extends Component {
     return (
       <>
         { type > 0
-          && [...Array(height)].map((undef, r) => (
+          && [...Array(height)].map((unusedR, r) => (
             <div key={`row-${r}`} className={rowClasses}>
               {
-                [...Array(width)].map((unused, c) => (
+                [...Array(width)].map((unusedC, c) => (
                   <div
                     key={`col-${c}`}
                     role="button"
@@ -94,6 +90,7 @@ export default class StorageGrid extends Component {
                     className="storageCell"
                     onClick={this.onClickAt(r, c)}
                     onKeyPress={this.onClickAt(r, c)}
+                    onContextMenu={this.onRightClickAt(r, c)}
                   >
                     {
                       this.isItemTopAt(r, c) && this.getImageForItem(r, c)
