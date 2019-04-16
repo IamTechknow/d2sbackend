@@ -179,6 +179,7 @@ export default class Form extends Component {
     }
   }
 
+  // newItemState is an object containing item identifying properties
   onItemSelected(newItemState) {
     this.setState(newItemState);
   }

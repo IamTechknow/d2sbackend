@@ -55,10 +55,7 @@ export default class StorageGrid extends Component {
     const imagePrefix = ItemUtils.getImgPrefix(item.itemType, item.rarity);
 
     return (
-      <img
-        alt=""
-        src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`}
-      />
+      <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`} />
     );
   }
 
