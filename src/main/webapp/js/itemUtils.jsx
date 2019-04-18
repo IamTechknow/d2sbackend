@@ -107,4 +107,22 @@ export default class ItemUtils {
 
     return rarity === 'Set' ? 's' : '';
   }
+
+  static getGroup(type, subType, quality, rarity) {
+    // Jewelry and misc items don't have quality/rarity
+    if (type === 'Jewelry') {
+      return type;
+    } else if (type === 'Miscellaneous') {
+      return subType;
+    }
+    return subType + quality + rarity;
+  }
+
+  static concatDataFor(allItemData, type, rarity) {
+    return allItemData.quality.slice(1)
+      .reduce((accum, curr) => {
+        const group = type + curr + rarity;
+        return accum.concat(allItemData[group] ? allItemData[group] : []);
+      }, []);
+  }
 }

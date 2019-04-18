@@ -14,9 +14,10 @@ import Difficulties from './difficulties';
 import Quests from './quests';
 import Skills from './skills';
 import Items from './items';
-import * as ClassData from './class-data';
+import ClassData from './class-data';
 import ItemData from './item-data';
 import StorageGrid from './storageGrid';
+import Item from './item';
 
 const MAIN = 0, SKILLS = 1, ITEMS = 2, VALID = 0, MAX_LVL = 99, MAX_SKILL_LVL = 20;
 const TYPES = 5, TOP = 1, OCCUIPED = 2;
@@ -109,11 +110,7 @@ export default class Form extends Component {
       rewards,
       items,
       itemMaps,
-      currType: ItemData.primary[0],
-      currSubType: ItemData[ItemData.primary[0]][0],
-      currQuality: ItemData.quality[0],
-      currRarity: ItemData.rarity[0],
-      currItemId: 'lbl',
+      currItem: new Item('lbl', ItemData.primary[0], ItemData[ItemData.primary[0]][0], ItemData.rarity[0], ItemData.quality[0]),
     };
 
     this.pattern = new RegExp(/^[a-zA-Z][a-zA-Z_-]*$/);
@@ -179,9 +176,9 @@ export default class Form extends Component {
     }
   }
 
-  // newItemState is an object containing item identifying properties
-  onItemSelected(newItemState) {
-    this.setState(newItemState);
+  // newCurrItem is an object containing item identifying properties
+  onItemSelected(newCurrItem) {
+    this.setState({ currItem: newCurrItem });
   }
 
   // Delete item, splice item object and update map.
@@ -194,7 +191,7 @@ export default class Form extends Component {
     const old = items[type][itemIdx.idx];
     items[type][itemIdx.idx] = undefined;
 
-    Form.deleteInItemMap(type, itemMaps[type], old.r, old.c, old.h, old.w);
+    Form.deleteInItemMap(type, itemMaps[type], old.r, old.c, old.height, old.width);
 
     this.setState({
       items, itemMaps,
@@ -207,7 +204,7 @@ export default class Form extends Component {
 
     items[type].push(item);
     Form.updateItemMap(type, itemMaps[type], items[type].length - 1,
-      item.r, item.c, item.h, item.w);
+      item.r, item.c, item.height, item.width);
 
     this.setState({
       items, itemMaps,
@@ -370,7 +367,7 @@ export default class Form extends Component {
       invalidForClassic, invalidName, invalidAct, invalidAncients, invalidSkills,
       invalidStats, classNum, skillPoints, attr, level, name,
       difficulty, startingAct, allocated, valid, link, currTab, rewards,
-      items, itemMaps, currType, currSubType, currQuality, currRarity, currItemId,
+      items, itemMaps, currItem,
     } = this.state;
 
     if (valid) {
@@ -482,11 +479,12 @@ export default class Form extends Component {
               onNewItem={this.onNewItem}
               onDeleteItem={this.onDeleteItem}
               onItemSelected={this.onItemSelected}
-              itemId={currItemId}
-              itemType={currType}
-              itemSubtype={currSubType}
-              rarity={currRarity}
-              quality={currQuality}
+              itemId={currItem.itemId}
+              itemType={currItem.type}
+              itemSubtype={currItem.subType}
+              itemStr={currItem.toString()}
+              rarity={currItem.rarity}
+              quality={currItem.quality}
               items={items}
               itemMaps={itemMaps}
             />

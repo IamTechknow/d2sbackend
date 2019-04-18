@@ -4,37 +4,20 @@ import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
+import Item from './item';
 import ItemData from './item-data';
 import ItemUtils from './itemUtils';
 
 const IMG_PREFIX = '';
 
 export default class Dashboard extends Component {
-  static concatDataFor(type, rarity) {
-    return ItemData.quality.slice(1)
-      .reduce((accum, curr) => {
-        const group = type + curr + rarity;
-        return accum.concat(ItemData[group] ? ItemData[group] : []);
-      }, []);
-  }
-
   static getDataArray(type, subType, quality, rarity, group) {
     // Use one array or concat all. Fail gracefully if data doesn't exist
     if (!Dashboard.isRarityDisabled(type) && quality === 'All') {
-      return Dashboard.concatDataFor(subType, rarity);
+      return ItemUtils.concatDataFor(ItemData, subType, rarity);
     }
 
     return ItemData[group] ? ItemData[group] : [];
-  }
-
-  static getGroup(type, subType, quality, rarity) {
-    // Jewelry and misc items don't have quality/rarity
-    if (type === 'Jewelry') {
-      return type;
-    } if (type === 'Miscellaneous') {
-      return subType;
-    }
-    return subType + quality + rarity;
   }
 
   // Should quality and rarity select elements be disabled?
@@ -75,7 +58,7 @@ export default class Dashboard extends Component {
 
     let prevState;
 
-    // Account for new primary type, change subtype, rarity
+    // Account for new primary type
     if (id === 'currType') {
       prevState = {
         prevSub: currSubType,
@@ -87,23 +70,26 @@ export default class Dashboard extends Component {
 
     // Change current item. If rarity should be on, use rarity from select element
     const newRarity = this.rarityRef.current.value;
+    const newQuality = id === 'currQuality' ? value : currQuality;
     const newType = id === 'currType' ? newTypes.currType : currType;
     const newSubType = id === 'currType' || id === 'currSubType'
       ? newTypes.currSubType : currSubType;
 
     if (!newTypes.currItemId) {
       if (!Dashboard.isRarityDisabled(newType)) {
-        const group = Dashboard.getGroup(newType, newSubType, currQuality, newRarity);
-        const data = Dashboard.getDataArray(newType, newSubType, currQuality, newRarity, group);
+        const group = ItemUtils.getGroup(newType, newSubType, newQuality, newRarity);
+        const data = Dashboard.getDataArray(newType, newSubType, newQuality, newRarity, group);
         newTypes.currRarity = newRarity;
         newTypes.currItemId = data.length ? data[0].id : undefined;
       } else {
-        const group = Dashboard.getGroup(newType, newSubType, currQuality, newTypes.currRarity);
+        const group = ItemUtils.getGroup(newType, newSubType, newQuality, newTypes.currRarity);
         newTypes.currItemId = ItemData[group][0].id;
+        newTypes.currRarity = 'Unique';
       }
     }
 
-    itemHandler(newTypes); // Set state in the Form, keep prev state here
+    // Create a new item to change the form state, keep prev state locally
+    itemHandler(new Item(newTypes.currItemId, newType, newSubType, newRarity, newQuality));
     if (prevState) {
       this.setState(prevState);
     }
@@ -120,7 +106,7 @@ export default class Dashboard extends Component {
     const {
       currType, currSubType, currQuality, currRarity,
     } = this.props;
-    const group = Dashboard.getGroup(currType, currSubType, currQuality, currRarity);
+    const group = ItemUtils.getGroup(currType, currSubType, currQuality, currRarity);
     const array = Dashboard.getDataArray(currType, currSubType, currQuality, currRarity, group);
 
     return array.map(obj => (
@@ -128,9 +114,10 @@ export default class Dashboard extends Component {
     ));
   }
 
+  // Since item quality is internal to Items, its onChange handler differs
   render() {
     const {
-      currType, currSubType, currRarity, currItemId,
+      currType, currSubType, currRarity, currItemId, itemStr
     } = this.props;
     const {
       randomAttr, ethernal, inferior,
@@ -147,7 +134,11 @@ export default class Dashboard extends Component {
             <div className="pickedUpItem">
               <img className={imgClasses} alt="" src={`${IMG_PREFIX}${imagePrefix}${currItemId}.png`} />
             </div>
+            <p className="stats">
+              {itemStr}
+            </p>
           </div>
+
           <div id="dashboard">
             <h3 className="storageHeader">Item creation</h3>
             <ul className="list-group">
@@ -272,5 +263,6 @@ Dashboard.propTypes = {
   currRarity: PropTypes.string.isRequired,
   currQuality: PropTypes.string.isRequired,
   currItemId: PropTypes.string.isRequired,
+  itemStr: PropTypes.string.isRequired,
   itemHandler: PropTypes.func.isRequired,
 };

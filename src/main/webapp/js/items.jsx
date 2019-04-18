@@ -6,6 +6,7 @@ import Storage from './storage';
 import StorageGrid from './storageGrid';
 import Dashboard from './dashboard';
 import ItemUtils from './itemUtils';
+import Item from './item';
 
 const BELT = 3;
 
@@ -56,28 +57,22 @@ export default class Items extends Component {
 
     const { h, w } = ItemUtils.getSizeFor(itemSubtype, itemId);
     if (Items.canItemFitHere(itemMaps[storageType], storageType, itemSubtype, r, c, h, w)) {
-      onNewItem({
-        itemType, itemSubtype, itemId, rarity, r, c, h, w,
-      }, storageType);
+      onNewItem(new Item(itemId, itemType, itemSubtype, rarity, quality, r, c, h, w), storageType);
     } else { // Item exists here, get the item and call onItemSelected prop
       const { width } = StorageGrid.getData(storageType);
       const itemArray = items[storageType];
       const item = itemArray[itemMaps[storageType].get(r * width + c).idx];
 
       if (quality === 'All') {
-        onItemSelected({
-          currRarity: item.rarity,
-          currItemId: item.itemId,
-          currType: item.itemType,
-          currSubType: item.itemSubtype,
-        });
+        onItemSelected(item);
       }
     }
   }
 
   render() {
     const {
-      items, itemMaps, onItemSelected, onDeleteItem, itemId, itemType, itemSubtype, rarity, quality,
+      items, itemMaps, onItemSelected, onDeleteItem, itemId, itemType, itemSubtype, itemStr,
+      rarity, quality,
     } = this.props;
 
     return (
@@ -99,6 +94,7 @@ export default class Items extends Component {
           currRarity={rarity}
           currQuality={quality}
           currItemId={itemId}
+          itemStr={itemStr}
           itemHandler={onItemSelected}
         />
       </>
@@ -113,6 +109,7 @@ Items.propTypes = {
   itemId: PropTypes.string.isRequired,
   itemType: PropTypes.string.isRequired,
   itemSubtype: PropTypes.string.isRequired,
+  itemStr: PropTypes.string.isRequired,
   rarity: PropTypes.string.isRequired,
   quality: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,

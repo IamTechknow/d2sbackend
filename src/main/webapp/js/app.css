@@ -138,6 +138,11 @@ img {
   margin: 0px auto;
 }
 
+.stats {
+  margin-top: 1em;
+  text-align: center;
+}
+
 /* Positioning classes based on item size */
 .pickedUpImg {
   position: relative;
