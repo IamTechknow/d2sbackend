@@ -31,10 +31,24 @@ export default class Warnings extends Component {
     }
   }
 
+  isNoInvalid() {
+    const {
+      invalidName, invalidForClassic, invalidAct, invalidAncients, invalidSkills, invalidStats,
+    } = this.props;
+
+    return !(invalidName || invalidForClassic || invalidAct || invalidAncients ||
+      invalidSkills || invalidStats);
+  }
+
   render() {
     const {
       invalidName, invalidForClassic, invalidAct, invalidAncients, invalidSkills, invalidStats,
     } = this.props;
+
+    if (this.isNoInvalid()) {
+      return null;
+    }
+
     return (
       <div>
         {invalidName
