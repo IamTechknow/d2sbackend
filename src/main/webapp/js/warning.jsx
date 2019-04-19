@@ -36,8 +36,8 @@ export default class Warnings extends Component {
       invalidName, invalidForClassic, invalidAct, invalidAncients, invalidSkills, invalidStats,
     } = this.props;
 
-    return !(invalidName || invalidForClassic || invalidAct || invalidAncients ||
-      invalidSkills || invalidStats);
+    return !(invalidName || invalidForClassic || invalidAct || invalidAncients
+      || invalidSkills || invalidStats);
   }
 
   render() {

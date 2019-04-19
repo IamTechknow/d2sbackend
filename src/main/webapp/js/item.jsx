@@ -20,8 +20,8 @@ export default class Item {
 
     // Search item data for corresponding item object then set item stats
     const group = ItemUtils.getGroup(type, subType, quality, rarity);
-    const itemArray = quality === 'All' ?
-      ItemUtils.concatDataFor(ItemData, subType, rarity) : ItemData[group];
+    const itemArray = quality === 'All' && type !== 'Miscellaneous' && type !== 'Jewelry'
+      ? ItemUtils.concatDataFor(ItemData, subType, rarity) : ItemData[group];
 
     itemArray.forEach((itemObj) => {
       if (itemObj.id === id) {
@@ -37,7 +37,7 @@ export default class Item {
   }
 
   toString() {
-    let lines = [this.name];
+    const lines = [this.name];
 
     if (this.classification === 'armor') {
       lines.push(`Defense: ${this.currValue}`, `Durability: ${this.durability}`);

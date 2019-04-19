@@ -108,7 +108,9 @@ export default class ItemUtils {
     // Jewelry and misc items don't have quality/rarity
     if (type === 'Jewelry') {
       return type;
-    } else if (type === 'Miscellaneous') {
+    }
+
+    if (type === 'Miscellaneous') {
       return subType;
     }
     return subType + quality + rarity;
@@ -124,7 +126,7 @@ export default class ItemUtils {
 
   // Determine if the type/subtype is armor, weapon for quality upgrades and socketing
   static getClassificationFor(type, subType) {
-    switch(type) {
+    switch (type) {
       case 'Armor':
       case 'Shields':
         return 'armor';
@@ -132,12 +134,12 @@ export default class ItemUtils {
       case 'Miscellaneous':
         return 'other';
       case 'Class Items':
-        if (subType === 'Amazon Weapons' || subType === 'Assassin Claws' ||
-          subType === 'Sorceress Orbs') {
+        if (subType === 'Amazon Weapons' || subType === 'Assassin Claws'
+          || subType === 'Sorceress Orbs') {
           return 'weapon';
-        } else {
-          return 'armor';
         }
+        return 'armor';
+
       default:
         return 'weapon';
     }

@@ -117,7 +117,7 @@ export default class Dashboard extends Component {
   // Since item quality is internal to Items, its onChange handler differs
   render() {
     const {
-      currType, currSubType, currRarity, currItemId, itemStr
+      currType, currSubType, currRarity, currItemId, itemStr,
     } = this.props;
     const {
       randomAttr, ethernal, inferior,

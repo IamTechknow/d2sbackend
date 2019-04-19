@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import ItemUtils from './itemUtils';
+import ItemTooltip from './itemToolTip';
 
-const IMG_PREFIX = '';
 const TOP = 1, STASH = 2, BELT = 3, CUBE = 4, DEFAULT_ROWS = 4, DEFAULT_COLS = 10;
+
 
 // Displays any items onto the grid. Grid size depends on the storage type
 export default class StorageGrid extends Component {
@@ -55,7 +56,10 @@ export default class StorageGrid extends Component {
     const imagePrefix = ItemUtils.getImgPrefix(item.rarity);
 
     return (
-      <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`} />
+      <ItemTooltip
+        item={item}
+        imagePrefix={imagePrefix}
+      />
     );
   }
 
