@@ -10,6 +10,7 @@ export default class Item {
     this.subType = subType;
     this.rarity = rarity;
     this.quality = quality;
+    this.classification = ItemUtils.getClassificationFor(type, subType);
 
     // Item location (optional)
     this.r = r;
@@ -31,7 +32,6 @@ export default class Item {
       }
     });
     this.currValue = this.maxValue;
-    this.currDur = this.durability;
 
     // TODO: Setters to allow item editing, getters for derived info like image prefix + classes
   }
@@ -39,7 +39,12 @@ export default class Item {
   toString() {
     let lines = [this.name];
 
-    // TODO: Determine whether item is armor/weapon/misc
+    if (this.classification === 'armor') {
+      lines.push(`Defense: ${this.currValue}`, `Durability: ${this.durability}`);
+    } else if (this.classification === 'weapon') {
+      lines.push(`Damage: ${this.minValue} to ${this.maxValue}`, `Durability: ${this.durability}`);
+    }
+
     return lines.join('\n');
   }
 }

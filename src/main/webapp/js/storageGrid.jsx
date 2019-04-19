@@ -52,7 +52,7 @@ export default class StorageGrid extends Component {
     const { items, itemMap, type } = this.props;
     const { width } = StorageGrid.getData(type);
     const item = items[itemMap.get(r * width + c).idx];
-    const imagePrefix = ItemUtils.getImgPrefix(item.type, item.rarity);
+    const imagePrefix = ItemUtils.getImgPrefix(item.rarity);
 
     return (
       <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`} />

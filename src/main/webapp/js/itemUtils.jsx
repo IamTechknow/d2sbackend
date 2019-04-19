@@ -96,11 +96,7 @@ export default class ItemUtils {
     return `pickedUpImg pickedUp${h}x${w}`;
   }
 
-  static getImgPrefix(type, rarity) {
-    if (type === 'Miscellaneous' || type === 'Jewelry') {
-      return '';
-    }
-
+  static getImgPrefix(rarity) {
     if (rarity === 'Unique') {
       return 'u';
     }
@@ -124,5 +120,26 @@ export default class ItemUtils {
         const group = type + curr + rarity;
         return accum.concat(allItemData[group] ? allItemData[group] : []);
       }, []);
+  }
+
+  // Determine if the type/subtype is armor, weapon for quality upgrades and socketing
+  static getClassificationFor(type, subType) {
+    switch(type) {
+      case 'Armor':
+      case 'Shields':
+        return 'armor';
+      case 'Jewelry':
+      case 'Miscellaneous':
+        return 'other';
+      case 'Class Items':
+        if (subType === 'Amazon Weapons' || subType === 'Assassin Claws' ||
+          subType === 'Sorceress Orbs') {
+          return 'weapon';
+        } else {
+          return 'armor';
+        }
+      default:
+        return 'weapon';
+    }
   }
 }

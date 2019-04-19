@@ -141,6 +141,7 @@ img {
 .stats {
   margin-top: 1em;
   text-align: center;
+  white-space: pre-line;
 }
 
 /* Positioning classes based on item size */

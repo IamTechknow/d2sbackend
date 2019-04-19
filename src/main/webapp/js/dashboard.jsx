@@ -123,7 +123,7 @@ export default class Dashboard extends Component {
       randomAttr, ethernal, inferior,
     } = this.state;
 
-    const imagePrefix = ItemUtils.getImgPrefix(currType, currRarity);
+    const imagePrefix = ItemUtils.getImgPrefix(currRarity);
     const imgClasses = ItemUtils.getImgClasses(currSubType, currItemId);
 
     return (
