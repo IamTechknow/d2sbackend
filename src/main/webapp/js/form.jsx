@@ -20,7 +20,7 @@ import StorageGrid from './storageGrid';
 import Item from './item';
 
 const MAIN = 0, SKILLS = 1, ITEMS = 2, VALID = 0, MAX_LVL = 99, MAX_SKILL_LVL = 20;
-const TYPES = 5, TOP = 1, OCCUIPED = 2;
+const TYPES = 5, TOP = 1, OCCUIPED = 2, EQUIPMENT = 0, EQUIP_SLOTS = 12;
 
 // Implementation of the Form HTML
 export default class Form extends Component {
@@ -90,7 +90,7 @@ export default class Form extends Component {
     const itemMaps = new Array(TYPES);
 
     for (let i = 0; i < items.length; i += 1) {
-      items[i] = [];
+      items[i] = i === 0 ? new Array(EQUIP_SLOTS) : [];
       itemMaps[i] = new Map();
     }
 
@@ -191,7 +191,11 @@ export default class Form extends Component {
     const old = items[type][itemIdx.idx];
     items[type][itemIdx.idx] = undefined;
 
-    Form.deleteInItemMap(type, itemMaps[type], old.r, old.c, old.height, old.width);
+    if (type === EQUIPMENT) {
+      itemMaps[type].delete(c);
+    } else {
+      Form.deleteInItemMap(type, itemMaps[type], old.r, old.c, old.height, old.width);
+    }
 
     this.setState({
       items, itemMaps,
@@ -199,12 +203,20 @@ export default class Form extends Component {
   }
 
   // New item, update array and map for the type
-  onNewItem(item, type) {
+  onNewItem(item, type, slot = 0) {
     const { items, itemMaps } = this.state;
 
-    items[type].push(item);
-    Form.updateItemMap(type, itemMaps[type], items[type].length - 1,
-      item.r, item.c, item.height, item.width);
+    if (type === EQUIPMENT) {
+      items[type][slot] = item;
+      itemMaps[type].set(slot, {
+        status: TOP,
+        idx: slot,
+      });
+    } else {
+      items[type].push(item);
+      Form.updateItemMap(type, itemMaps[type], items[type].length - 1,
+        item.r, item.c, item.height, item.width);
+    }
 
     this.setState({
       items, itemMaps,

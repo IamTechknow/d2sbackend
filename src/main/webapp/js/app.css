@@ -183,3 +183,90 @@ img {
 .pickedUp4x2 {
   top: -3%;
 }
+
+/* Equipment classes */
+.equipment {
+  max-width: 400px;
+  min-height: 250px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.equip {
+  position: absolute;
+}
+
+.head {
+  top: 0;
+  left: 172px;
+  width: 56px;
+  height: 56px;
+}
+
+.amulet {
+  top: 28px;
+  left: 240px;
+  width: 28px;
+  height: 28px;
+}
+
+.left {
+  top: 39px;
+  left: 59px;
+  width: 56px;
+  height: 109px;
+}
+
+.body {
+  top: 70px;
+  left: 172px;
+  width: 56px;
+  height: 84px;
+}
+
+.right {
+  top: 39px;
+  left: 287px;
+  width: 56px;
+  height: 109px;
+}
+
+.hands {
+  top: 0;
+  left: 172px;
+  width: 56px;
+  height: 56px;
+}
+
+.leftFinger {
+  top: 171px;
+  left: 127px;
+  width: 28px;
+  height: 28px;
+}
+
+.belt {
+  top: 171px;
+  left: 172px;
+  width: 52px;
+  height: 25px;
+}
+
+.rightFinger {
+  top: 171px;
+  left: 245px;
+  width: 28px;
+  height: 28px;
+}
+
+.feet {
+  top: 171px;
+  left: 287px;
+  width: 56px;
+  height: 56px;
+}
+
+/* Weapon switch not implemented yet */
+.left2, .right2 {
+  display: none;
+}

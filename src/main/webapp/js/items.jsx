@@ -8,7 +8,7 @@ import Dashboard from './dashboard';
 import ItemUtils from './itemUtils';
 import Item from './item';
 
-const BELT = 3;
+const BELT = 3, EQUIPMENT = 0;
 
 export default class Items extends Component {
   // Determine all possible slots in the grid, and whether any are taken already
@@ -19,6 +19,10 @@ export default class Items extends Component {
     // Only potions and scrolls for belts
     if (storageType === BELT) {
       return subType === 'Potions' || subType === 'Scrolls';
+    }
+
+    if (storageType === EQUIPMENT) {
+      return !itemMap.has(c);
     }
 
     for (let r1 = r; r1 < r + height; r1 += 1) {
@@ -43,7 +47,7 @@ export default class Items extends Component {
     this.onCellClick = this.onCellClick.bind(this);
   }
 
-  // Try to put an item in the specified storage
+  // Try to put an item in the specified storage. c = slot number for equipment storage
   // NOTE: When clicking on an item, the cell div that contains the item will be clicked.
   // ATM that's not too problematic.
   onCellClick(storageType, r, c) {
@@ -57,7 +61,7 @@ export default class Items extends Component {
 
     const { h, w } = ItemUtils.getSizeFor(itemSubtype, itemId);
     if (Items.canItemFitHere(itemMaps[storageType], storageType, itemSubtype, r, c, h, w)) {
-      onNewItem(new Item(itemId, itemType, itemSubtype, rarity, quality, r, c, h, w), storageType);
+      onNewItem(new Item(itemId, itemType, itemSubtype, rarity, quality, r, c, h, w), storageType, c);
     } else { // Item exists here, get the item and call onItemSelected prop
       const { width } = StorageGrid.getData(storageType);
       const itemArray = items[storageType];

@@ -52,18 +52,23 @@ export default class Storage extends Component {
 
         {
           currType === EQUIP
-          && (
-            <Equipment items={this.equipment} />
+          ? (
+            <Equipment
+              items={this.getItemsFrom(currType)}
+              itemMap={this.getMapFrom(currType)}
+              clickHandler={clickHandler}
+              delHandler={delHandler}
+            />
+          ) : (
+            <StorageGrid
+              type={currType}
+              items={this.getItemsFrom(currType)}
+              itemMap={this.getMapFrom(currType)}
+              clickHandler={clickHandler}
+              delHandler={delHandler}
+            />
           )
         }
-
-        <StorageGrid
-          type={currType}
-          items={this.getItemsFrom(currType)}
-          itemMap={this.getMapFrom(currType)}
-          clickHandler={clickHandler}
-          delHandler={delHandler}
-        />
       </div>
     );
   }
