@@ -200,7 +200,7 @@ img {
   top: 0;
   left: 172px;
   width: 56px;
-  height: 56px;
+  height: 53px;
 }
 
 .amulet {
@@ -220,8 +220,8 @@ img {
 .body {
   top: 70px;
   left: 172px;
-  width: 56px;
-  height: 84px;
+  width: 54px;
+  height: 82px;
 }
 
 .right {
@@ -232,8 +232,8 @@ img {
 }
 
 .hands {
-  top: 0;
-  left: 172px;
+  top: 171px;
+  left: 59px;
   width: 56px;
   height: 56px;
 }

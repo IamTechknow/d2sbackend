@@ -22,7 +22,7 @@ export default class Items extends Component {
     }
 
     if (storageType === EQUIPMENT) {
-      return !itemMap.has(c);
+      return ItemUtils.canFitInEquipSlot(c, subType) && !itemMap.has(c);
     }
 
     for (let r1 = r; r1 < r + height; r1 += 1) {
@@ -59,10 +59,11 @@ export default class Items extends Component {
       return;
     }
 
+    // If an item doesn't fit in the clicked area, check if an item already exists there
     const { h, w } = ItemUtils.getSizeFor(itemSubtype, itemId);
     if (Items.canItemFitHere(itemMaps[storageType], storageType, itemSubtype, r, c, h, w)) {
       onNewItem(new Item(itemId, itemType, itemSubtype, rarity, quality, r, c, h, w), storageType, c);
-    } else { // Item exists here, get the item and call onItemSelected prop
+    } else if (storageType !== EQUIPMENT || items[storageType][c]) {
       const { width } = StorageGrid.getData(storageType);
       const itemArray = items[storageType];
       const item = itemArray[itemMaps[storageType].get(r * width + c).idx];

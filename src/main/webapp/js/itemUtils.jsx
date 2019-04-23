@@ -18,7 +18,8 @@ export default class ItemUtils {
       case 'Tomes':
       case 'Wands':
         return { h: 2, w: 1 };
-      case 'No subtypes':
+      case 'Rings':
+      case 'Amulets':
       case 'Runes':
       case 'Gems':
       case 'Potions':
@@ -128,8 +129,9 @@ export default class ItemUtils {
   static getClassificationFor(type, subType) {
     switch (type) {
       case 'Armor':
-      case 'Shields':
         return 'armor';
+      case 'Shields':
+        return 'shield';
       case 'Jewelry':
       case 'Miscellaneous':
         return 'other';
@@ -138,10 +140,52 @@ export default class ItemUtils {
           || subType === 'Sorceress Orbs') {
           return 'weapon';
         }
+        if (subType === 'Necromancer Totems' || subType === 'Paladin Shields') {
+          return 'shield';
+        }
         return 'armor';
 
       default:
         return 'weapon';
+    }
+  }
+
+  // Doesn't account for classes or dual wield yet
+  static canFitInEquipSlot(slot, subType) {
+    const HEAD = 0, LEFT = 2, ARMOR = 3, RIGHT = 4, HAND = 5, BELT = 7, FEET = 9,
+      LEFT_FINGER = 6, RIGHT_FINGER = 8;
+
+    switch(subType) {
+      case 'Helms':
+      case 'Circlets':
+      case 'Barbarian Helms':
+      case 'Druid Helms':
+        return slot === HEAD;
+      case 'Body Armor':
+        return slot === ARMOR;
+      case 'Gloves':
+        return slot === HAND;
+      case 'Belts':
+        return slot === BELT;
+      case 'Boots':
+        return slot === FEET;
+      case 'Shields':
+      case 'Paladin Shields':
+      case 'Necromancer Totems':
+        return slot === RIGHT;
+      case 'Rings':
+      case 'Amulets':
+        return slot === LEFT_FINGER || slot === RIGHT_FINGER;
+      case 'Runes':
+      case 'Gems':
+      case 'Potions':
+      case 'Scrolls':
+      case 'Tomes':
+      case 'Other':
+        return false;
+
+      default: // Weapons
+        return slot === LEFT;
     }
   }
 }

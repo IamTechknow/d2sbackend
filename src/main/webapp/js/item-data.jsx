@@ -31,8 +31,6 @@ module.exports = {
   ],
   Shields: [
     'Shields',
-    'Paladin Shields',
-    'Necromancer Totems',
   ],
   'Melee Weapons': [
     'Axes',
@@ -55,7 +53,8 @@ module.exports = {
     'Sorceress Orbs',
   ],
   Jewelry: [
-    'No subtypes',
+    'Rings',
+    'Amulets',
   ],
   'Class Items': [
     'Amazon Weapons',

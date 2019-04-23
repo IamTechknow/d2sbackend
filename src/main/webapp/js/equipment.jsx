@@ -33,7 +33,7 @@ export default class Equipment extends Component {
   }
 
   getImageForItem(slot) {
-    const { items, itemMap} = this.props;
+    const { items, itemMap } = this.props;
     const item = items[slot];
     const imagePrefix = ItemUtils.getImgPrefix(item.rarity);
 
