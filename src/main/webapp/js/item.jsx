@@ -13,10 +13,7 @@ export default class Item {
     this.classification = ItemUtils.getClassificationFor(type, subType);
 
     // Item location (optional)
-    this.r = r;
-    this.c = c;
-    this.height = h;
-    this.width = w;
+    this.setStorageData(r, c, h, w);
 
     // Search item data for corresponding item object then set item stats
     const group = ItemUtils.getGroup(type, subType, quality, rarity);
@@ -34,6 +31,13 @@ export default class Item {
     this.currValue = this.maxValue;
 
     // TODO: Setters to allow item editing, getters for derived info like image prefix + classes
+  }
+
+  setStorageData(r, c, h, w) {
+    this.r = r;
+    this.c = c;
+    this.height = h;
+    this.width = w;
   }
 
   toString() {

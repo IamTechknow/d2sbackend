@@ -202,15 +202,20 @@ export default class Form extends Component {
     });
   }
 
-  // New item, update array and map for the type
-  onNewItem(item, type, slot = 0) {
-    const { items, itemMaps } = this.state;
+  // Clone current item, update array and map for the type
+  onNewItem(type, r, c, h, w) {
+    const { currItem, items, itemMaps } = this.state;
+    const item = Object.create(
+      Object.getPrototypeOf(currItem),
+      Object.getOwnPropertyDescriptors(currItem)
+    );
+    item.setStorageData(r, c, h, w);
 
     if (type === EQUIPMENT) {
-      items[type][slot] = item;
-      itemMaps[type].set(slot, {
+      items[type][c] = item;
+      itemMaps[type].set(c, {
         status: TOP,
-        idx: slot,
+        idx: c,
       });
     } else {
       items[type].push(item);

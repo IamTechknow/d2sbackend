@@ -62,7 +62,7 @@ export default class Items extends Component {
     // If an item doesn't fit in the clicked area, check if an item already exists there
     const { h, w } = ItemUtils.getSizeFor(itemSubtype, itemId);
     if (Items.canItemFitHere(itemMaps[storageType], storageType, itemSubtype, r, c, h, w)) {
-      onNewItem(new Item(itemId, itemType, itemSubtype, rarity, quality, r, c, h, w), storageType, c);
+      onNewItem(storageType, r, c, h, w);
     } else if (storageType !== EQUIPMENT || items[storageType][c]) {
       const { width } = StorageGrid.getData(storageType);
       const itemArray = items[storageType];
