@@ -126,6 +126,7 @@
 .storageCell {
   width: 28px;
   height: 28px;
+  background-image: url(/img/cell.png);
 }
 
 img {
@@ -136,6 +137,7 @@ img {
   width: 56px;
   height: 109px;
   margin: 0px auto;
+  background-image: url(/img/item.png);
 }
 
 .stats {
@@ -201,6 +203,7 @@ img {
   left: 172px;
   width: 56px;
   height: 53px;
+  background-image: url(/img/head.png);
 }
 
 .amulet {
@@ -215,6 +218,7 @@ img {
   left: 59px;
   width: 56px;
   height: 109px;
+  background-image: url(/img/item.png);
 }
 
 .body {
@@ -222,6 +226,7 @@ img {
   left: 172px;
   width: 54px;
   height: 82px;
+  background-image: url(/img/body.png);
 }
 
 .right {
@@ -229,6 +234,7 @@ img {
   left: 287px;
   width: 56px;
   height: 109px;
+  background-image: url(/img/item.png);
 }
 
 .hands {
@@ -250,6 +256,7 @@ img {
   left: 172px;
   width: 52px;
   height: 25px;
+  background-image: url(/img/belt.png);
 }
 
 .rightFinger {

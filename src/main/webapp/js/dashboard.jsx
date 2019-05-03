@@ -8,7 +8,7 @@ import Item from './item';
 import ItemData from './item-data';
 import ItemUtils from './itemUtils';
 
-const IMG_PREFIX = '';
+const IMG_PREFIX = '/img/';
 
 export default class Dashboard extends Component {
   static getDataArray(type, subType, quality, rarity, group) {
@@ -132,7 +132,7 @@ export default class Dashboard extends Component {
           <div className="entry">
             <h3 className="storageHeader">Current item</h3>
             <div className="pickedUpItem">
-              <img className={imgClasses} alt="" src={`${IMG_PREFIX}${imagePrefix}${currItemId}.png`} />
+              <img className={imgClasses} alt="" src={`${IMG_PREFIX}${imagePrefix}${currItemId}.gif`} />
             </div>
             <p className="stats">
               {itemStr}

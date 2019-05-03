@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 // For material-ui, use typography v2
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
-const IMG_PREFIX = '';
+const IMG_PREFIX = '/img/';
 
 const styles = {
   root: {
@@ -19,7 +19,7 @@ const styles = {
 
 const ItemTooltip = ({ item, imagePrefix, classes }) => (
   <Tooltip title={item.toString()} classes={{ tooltip: classes.root }} placement="top">
-    <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.png`} />
+    <img alt="" src={`${IMG_PREFIX}${imagePrefix}${item.itemId}.gif`} />
   </Tooltip>
 );
 

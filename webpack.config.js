@@ -30,6 +30,9 @@ module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx'],
   },
+  devServer: {
+    contentBase: [__dirname, DEST], // Serve index page and images
+  },
   module: {
     rules: [
       {
